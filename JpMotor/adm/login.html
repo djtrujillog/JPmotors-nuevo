@@ -1,0 +1,51 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=11">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximun-scale=1"/>	
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>Panel de Administración</title>
+	<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"> 
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="css/style.css">	
+	<link rel="stylesheet" type="text/css" href="css/design-color.css">	
+	<!-- AWESOME FONT ICONS -->
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+	<script src="js/jquery-1.11.1.min.js"></script>
+	<script src="js/validate.login.js"></script>	
+	<style type="text/css">
+		body, html{
+			font-family: 'Open Sans', sans-serif;
+		}
+	</style>
+</head>
+<body>
+	<div id="preloader">
+	   	<div id="loader"></div>
+	</div>
+	
+	<section id="login">
+		<div class="cajon-login">
+		<img src="../Images/Imagen_Principal.png">	    
+	        <form id="form-login" action="login.php" method="post" enctype="multipart/form-data">
+				<div class="form-group">
+					<input type="text" id="Usuario" name="usuario" class="form-control" autofocus placeholder="Usuario" autocomplete="off" />
+				</div>
+
+				<div class="form-group">
+					<input type="password" id="Password" name="password" class="form-control" placeholder="Password"/>
+				</div>
+				<div class="form-group">
+					<input type="checkbox" name="cookie"> Mantener sesión abierta
+				</div>
+
+				<div class="error-login alert alert-danger text-center ocultar"></div>
+				<button id="Ingresar" class="btn btn-success btn-block"><i class="fas fa-key"></i> INGRESAR</button>
+			</form>				
+	    </div>	
+	</section>
+</body>
+</html>

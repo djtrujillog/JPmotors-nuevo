@@ -1,0 +1,613 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+		<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=10">
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Panel de administración | Jp Motors</title>	
+
+	
+	<!-- FUENTES GOOGLE FONTS -->
+	<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"> 
+	<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600&display=swap" rel="stylesheet"> 	
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" >	
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.css">	
+	<link rel="stylesheet" type="text/css" href="css/style.css?ref=2401">		
+	<link rel="stylesheet" type="text/css" href="css/design-color.css?ref=2401">	
+	<link rel="stylesheet" type="text/css" href="css/dataTables.bootstrap.css">	
+	<link rel="stylesheet" type="text/css" href="css/print.css?ref=2401" media="print">
+	<link rel="stylesheet" type="text/css" href="../upload/jquery.fileupload.css">
+
+	<!-- SCRIPT JQUERY -->
+	<script src="js/jquery-1.11.1.min.js"></script>	
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/dataTables.min.js"></script> 
+	<script src="js/dataTables.bootstrap.min.js"></script>
+	<script src="js/scripts.js"></script>
+	<script src="js/scripts_validaciones.js"></script>
+
+	<!-- CARGA DE IMAGENES -->
+	<script src="../upload/js/jquery.ui.widget.js"></script>
+	<script src="../upload/js/jquery.fileupload.js"></script> 
+
+    <!-- include summernote css/js -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.12/summernote.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.12/summernote.js"></script>
+
+    <!-- CALENDARIO -->
+    <link href="css/calendar/core-main.css" rel='stylesheet' />
+	<script src="css/calendar/core-main.js"></script>
+	<script src="css/calendar/daygrid-main.js"></script>
+
+	<!-- ALERTAS -->
+	<script src="js/sweatalert2.min.js"></script>
+</head>
+
+<body>
+<div id="preloader">
+   	<div id="loader"><p>Cargando...</p></div>
+</div>
+
+<header>	
+	<div class="contenedor-header">
+		<div class="logo-header">
+			<img src="images/Imagen_Principal.png" alt="Logo principal" class="img-responsive">
+		</div>
+
+		<div class="menu-header">
+			<nav>
+				<ul class="menu-nav">
+					<li><a href="index.html"><i class="fas fa-home"></i> Inicio</a></li>
+						<li><a href="calendario.html"><i class="far fa-calendar-alt"></i> Calendario</a></li>
+					<li>
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fas fa-id-card"></i>  Cartera <span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li><a href="cartera.html">Activa</a></li>
+							<li><a href="cartera.html">Cerrada</a></li>
+							<li><a href="cartera.html">Caída</a></li>
+							<li><a href="cartera.html">Terminada</a></li>
+						</ul>
+					</li>
+					<li>
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fas fa-car"></i>  Vehículos <span class="caret"></span></a>
+						<ul class="dropdown-menu">							
+							<li><a href="listado.html">Nuevos</a></li>
+						</ul>
+					</li>				
+					
+					
+					<li><a href="#" class="dropdown-toggle activo" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fas fa-user-circle"></i>  diegotrujillo  <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="usuario.html">Cambiar contraseña</a></li>
+						<li role="separator" class="divider"></li>
+						<li><a href="login.html">Cerrar sesión</a></li>
+					</ul></li>
+				</ul>
+			</nav>
+		</div>
+
+	</div>
+
+</header>
+<div style="max-width: 1366px; margin: 10px auto;"><div style="background-color: #fff; padding: 10px 15px; border-radius: 5px; margin-bottom: 15px; border: #e1e1e1 1px solid;">	
+
+	<div class="row">
+		<div class="col-sm-2 padding-top-10">
+			<a href="cartera.html" class="btn btn-default" style="font-size: 1.1em; margin-right: 7px;"><i class="fas fa-chevron-left"></i></a>
+			<a href="index.html" class="btn btn-default" style="font-size: 1.1em;"><i class="fas fa-home"></i></a>
+		</div>
+		<div class="col-sm-8 text-center">
+			<h1>DETALLE DE SOLICITUD</h1>
+		</div>
+		<div class="col-sm-2 padding-top-10 text-right">
+	</div>
+	</div>
+
+	<hr>
+	</div>	
+	<section>		
+<div class="row ventas-main">
+
+	<div class="col-md-5">
+		<div class="row" style="margin: 0px !important;">
+			<div class="col-md-12 margin-bottom-20 contenido-ventas">
+				<h5><i class="fas fa-caret-right"></i> Seguimiento del proceso</h5>	
+			
+			        <div class="text-center no-informacion">
+			            <i class="far fa-grin-beam-sweat"></i>
+			            <br>¡No hay seguimiento realizado para el cliente!
+			        </div>
+							<form method="post" action="page/cartera/action/save_seguimiento">
+					<div class="row">
+						<div class="col-md-5 ">
+							<label><i class="far fa-check-circle"></i> Tipo de seguimiento:</label>
+
+							<select class="form-control" name="tipo_seguimiento" id="TipoSeguimiento">
+								<option value="">-- Seleccione opción --</option>
+								<option value="0">Llamada</option><option value="1">Whatsapp</option><option value="2">Prueba de manejo</option><option value="3">Visita</option>							</select>
+						</div>
+						<div class="col-md-7">
+							<label><i class="far fa-check-circle"></i> Fecha y hora:</label><br>
+							<div style="width: 100%; float: left;">
+								<div style="width: 49%; float: left; padding-right: 10px;">
+									<input type="date" class="form-control" name="fecha_seguimiento" id="FechaSeguimiento">
+								</div>
+								<div style="width: 25%; float: left; padding-right: 10px;">
+									<select class="form-control" name="hora_seguimiento">
+										<option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option>									</select>
+								</div>
+								<div style="width: 25%; float: left;">
+									<select class="form-control" name="minuto_seguimiento">
+										<option value="00">00</option>
+										<option value="15">15</option>
+										<option value="30">30</option>
+										<option value="45">45</option>
+									</select>
+								</div>
+							</div>
+							
+						</div>
+
+						<div class="col-md-12 margin-top-10">
+							<label>Comentario adicional:</label>
+							<textarea class="form-control" name="comentario" id="bloquear"></textarea>
+
+							<div class="text-right margin-top-20">
+								<input type="hidden" name="id_solicitud" value="11162">
+								<button type="submit" id="SaveSeguimiento" class="btn btn-success btn-sm"><i class="fas fa-angle-double-right"></i> PROCESAR SEGUIMIENTO</button>
+							</div>
+						</div>
+					</div>
+				</form>	
+							</div>
+			
+
+
+			<div class="col-md-12 contenido-ventas">
+				<h5><i class="fas fa-caret-right"></i> Información del cliente</h5>	
+
+				<div class="alert alert-warning text-center">
+					<b>Ingreso:</b> 24 de enero 2024 a las 17:58 hrs. | <b>Origen:</b> WhatsApp				</div>
+
+				<form method="post" action="page/cartera/action/update_info_cliente">
+					<div class="row">
+						<div class="col-md-6">
+							<label><i class="far fa-check-circle"></i> Nombre:</label>
+							<input type="text" class="form-control" name="nombre_cliente" id="NombreCliente" value="Luis Aldana " autocomplete="off">
+						</div>
+						<div class="col-md-6">
+							<label><i class="far fa-check-circle"></i> Teléfono:</label>
+							<input type="text" class="form-control" name="telefono_cliente" id="TelefonoCliente" value="." autocomplete="off">
+						</div>
+						<div class="col-md-12 margin-top-10"></div>
+						<div class="col-md-6 ">
+							<label><i class="far fa-check-circle"></i> Email:</label>
+							<input type="text" class="form-control" name="email_cliente" id="EmailCliente" value="." autocomplete="off">
+						</div>
+						<div class="col-md-6">
+							<label><i class="far fa-check-circle"></i> Estado:</label>
+							<select class="form-control" name="estado_cliente" id="EstadoCliente">
+								<option value="0" selected="">En proceso de cotización</option><option value="1">Prueba de manejo</option><option value="2">Analisis de crédito</option><option value="3">Reservado</option><option value="4">Facturado</option><option value="5">Entregado</option><option value="6">Caído</option>								
+							</select>							
+
+						</div>
+
+						
+						<div id="Comentario" class="col-md-12 margin-top-10" style="display: none ">
+							<label><i class="far fa-check-circle"></i> Comentario adicional:</label>
+							<textarea class="form-control" id="ComentarioCliente" name="comentario_cliente"></textarea>
+						</div>
+						
+
+						
+												<div class="col-md-12 margin-top-20 text-right">
+							<input type="hidden" name="id_solicitud" value="11162">
+							<button type="submit" id="SaveInformacion" class="btn btn-success btn-sm"><i class="fas fa-angle-double-right"></i> PROCESAR INFORMACIÓN</button>						
+						</div>	
+											
+					</div>					
+				</form>	
+			</div>
+
+
+			
+			<div class="col-md-12 contenido-ventas margin-top-20">
+				<h5><i class="fas fa-caret-right"></i> Proceso de cierre</h5>	
+				<div class="alert alert-warning text-center">Una vez marcado como "Cerrado", el vendedor no podrá agregar nuevos vehículos a la solicitud.</div>
+
+				<form method="post" action="page/cartera/action/procesar_cierre">
+				<input type="hidden" name="nombre_cliente" value="Luis Aldana ">	
+				<input type="hidden" name="email_cliente" value=".">	
+					<div class="row">
+						<div class="col-md-5">
+							<label><i class="far fa-check-circle"></i> Estado:</label>
+							<select class="form-control" name="estado_cerrado" id="EstadoCerrado">
+								<option value="0" selected="">Abierto</option><option value="1">Cerrado</option>						
+							</select>							
+						</div>
+
+						<div class="col-md-7">
+							<label><i class="far fa-check-circle"></i> Vehículo:</label>
+							<select class="form-control" name="id_vehiculo" id="EstadoCliente">
+								<option value="362">TOYOTA HI LUX 2.8 FULL MT Cuero</option>							</select>							
+						</div>
+
+												<div class="col-md-12 margin-top-20 text-right">
+							<input type="hidden" name="id_vendedor" value="123">
+							<input type="hidden" name="id_solicitud" value="11162">
+							<button type="submit" id="SaveInformacion" class="btn btn-success btn-sm"><i class="fas fa-angle-double-right"></i> PROCESAR INFORMACIÓN</button>						
+						</div>	
+											
+					</div>					
+				</form>	
+			</div>
+			
+		</div>
+	
+	</div>
+
+	<div class="col-md-7 ">
+		<div class="row" style="margin: 0px !important;">
+			<div class="col-md-12 contenido-ventas">
+				<h5><i class="fas fa-caret-right"></i> Datos del vehículo solicitado</h5>
+
+				<div class="alert alert-info text-center">La cotización tiene valores variados respecto a los datos almacenados en el sistema. <br>Antes de continuar el proceso debe verificar la información.</div><div class="row info-vehiculo">
+	<h4>Cotización realizada:</h4>
+    <div class="col-md-2">
+        <label>Precio lista: </label>
+        <input type="text" class="form-control" name="precio_lista_crm" value="424,900.00" autocomplete="off" readonly="">
+    </div>
+
+    <div class="col-md-2">
+        <label>Precio pro: </label>
+        <input type="text" class="form-control" name="precio_crm" value="412,970.00" autocomplete="off" readonly="">
+    </div>
+
+    <div class="col-md-2">
+        <label>Placas: </label>
+        <input type="text" class="form-control" name="placas_crm" value="2,120.00" autocomplete="off" readonly="">
+    </div>
+
+
+    <div class="col-md-2">
+        <label>Modelo: </label>
+        <input type="text" class="form-control" name="precio_crm" value="2024" autocomplete="off" readonly="">
+    </div>
+
+    <div class="col-md-3">
+        <label>Colores: </label>
+        <input type="text" class="form-control" name="placas_crm" value="Plateado Metálico " autocomplete="off" readonly="">
+    </div>
+</div>
+
+<div class="row info-vehiculo">
+	<div class="col-md-10 col-md-offset-1">
+		<img src="https://superautosjack.com.gt/upload/files/medium/NUEVO-HILUX-DOBLE-CAB (1).png" class="img-responsive">
+	</div>
+	<div class="col-md-12 text-center">
+		<h3>TOYOTA HI LUX 2.8 FULL MT Cuero</h3>
+	</div>
+
+	<div class="col-md-3 text-center">
+		<b>Precio</b><br><div class="text-center"> Q. 381,492.00</div>
+	</div>
+	<div class="col-md-3 text-center">
+		<b>Enganche</b><br><div class="text-center"> Q. 0.00</div>
+	</div>
+	<div class="col-md-3 text-center">
+		<b>Plazo</b><br><div class="text-center"> 84</div>
+	</div>
+	<div class="col-md-3 text-center">
+		<b>Cuota mensual</b><br><div class="text-center"> Q. 6,336.00</div>
+	</div>
+
+	<div class="col-md-12">
+		<hr>
+	</div>
+
+	<div class="col-md-5 col-md-offset-1 info-detalle-vehiculo">
+		<div class="row">
+			<div class="col-md-6"><b>Motor</b></div>
+			<div class="col-md-6">2755</div>
+			<div class="col-md-6"><b>Cilindros</b></div>
+			<div class="col-md-6">4</div>
+			<div class="col-md-6"><b>Caballos de fuerza</b></div>
+			<div class="col-md-6">205</div>
+			<div class="col-md-6"><b>Traccion</b></div>
+			<div class="col-md-6">4x4</div>
+		</div>
+	</div>
+
+	<div class="col-md-5 col-md-offset-1 info-detalle-vehiculo">
+		<div class="row">
+			<div class="col-md-6"><b>Pasajeros</b></div>
+			<div class="col-md-6">5</div>
+			<div class="col-md-6"><b>Transmisión</b></div>
+			<div class="col-md-6">Mecánica</div>
+			<div class="col-md-6"><b>Combustible</b></div>
+			<div class="col-md-6">Diesel</div>
+			<div class="col-md-6"><b>Tapicería</b></div>
+			<div class="col-md-6">Cuero</div>
+		</div>
+	</div>
+
+
+</div>
+			</div>
+
+			<div class="col-md-12 contenido-ventas" style="margin-top: 15px;">
+				<h5><i class="fas fa-caret-right"></i> Vehículos adicionales</h5>
+								
+			</div>
+		</div>
+
+
+
+				<div class="row contenido-ventas" style="margin-top: 15px;">
+			<div class="col-md-12">
+				<h3 class="text-center">AGREGAR VEHÍCULO</h3>
+			</div>
+
+			<div class="col-md-12">
+				<br>
+				<hr>
+			</div>
+			<div class="col-md-2">
+				<h4>NUEVOS</h4>
+			</div>
+			<form method="post" action="page/cartera/action/agregar_vehiculo.php">		
+				<div class="col-md-8">
+					<select class="form-control" name="codigo" required="">
+						<option value="">-- Seleccione un vehículo --</option>
+						<option value="-22795442"> ISUZU D-MAX RG 3.0 GT AT -- TQL3036</option><option value="-1224926">BMW X1 sDrive18i Deluxe -- Deluxe2</option><option value="221306495">BMW X3 sDrive20i, xLine -- xLineV2</option><option value="221306420">CHANGAN CM10 MICROBUS -- CM10 MICROBUS</option><option value="221306337">CHANGAN CM10 PANEL -- CM10 PANEL</option><option value="221306298">CHANGAN CM5 -- CM5</option><option value="-31860057">CHANGAN CM5 MICROBUS  -- CM5 MICRO</option><option value="-21160502">CHANGAN CM5 PICK UP -- CM5P</option><option value="221306484">CHANGAN CM5 PICK UP CON FURGON -- CM5 PICK UP F</option><option value="221306365">CHANGAN CM5 PICK UP D/C -- CM5 PICK UP DC</option><option value="221306404">CHANGAN CS15 Fashion -- CS15 FASHION</option><option value="221306419">CHANGAN CS15 LUXURY AT -- CS15 LUXURY</option><option value="221306500">CHANGAN CS35 PLUS FULL -- CS35 FULL</option><option value="-23070213">CHANGAN CS35 PLUS LUXURY -- CS35 LUXURY</option><option value="221306413">CHANGAN CS55 FULL EQUIPO -- CS55 FE</option><option value="-290729">CHANGAN CS55 PLUS LUXURY -- CS55 PLUS</option><option value="221306388">CHANGAN HUNTER NIVEL 2 -- HUNTER2</option><option value="221306389">CHANGAN HUNTER NIVEL 3 -- HUNTER3</option><option value="-23051429">CHANGAN HUNTER SPORT -- HUNTERSPORT</option><option value="-22883008">CHANGAN UNI-K 2.0T -- UNI-K</option><option value="-2522111">CHANGAN UNI-T Full Equipo -- FULL EQUIPO</option><option value="-21352759">CHANGAN UNI-T Luxury -- Luxury</option><option value="-2310006">CHEVROLET BLAZER RS -- BLARS</option><option value="221306407">CHEVROLET CAPTIVA LT -- CAPLT</option><option value="221306295">CHEVROLET COLORADO AUTOMÁTICO -- COLA8Z</option><option value="221306426">CHEVROLET COLORADO LS 2.8 -- COLM8S</option><option value="221306447">CHEVROLET COLORADO LT AT 2.8T -- COLA8T</option><option value="221306465">CHEVROLET COLORADO LT Mecánico -- COLM8T</option><option value="-32130014">CHEVROLET GROOVE LT AT -- GVOALT</option><option value="221306481">CHEVROLET GROOVE LT MT -- GVOMLT</option><option value="221306480">CHEVROLET GROOVE PREMIER -- GVOAP</option><option value="221306300">CHEVROLET N400 -- N400MA</option><option value="221306301">CHEVROLET N400 -- N400M</option><option value="221306302">CHEVROLET N400 -- N400</option><option value="221306303">CHEVROLET N400 PANEL -- N400A</option><option value="221306478">CHEVROLET SILVERADO HIGH COUNTRY -- SILVHC</option><option value="-32272114">CHEVROLET SILVERADO RST -- SILVRST</option><option value="-31660849">CHEVROLET SILVERADO TRAILBOSS -- SILVZR2</option><option value="221306399">CHEVROLET SUBURBAN HIGH COUNTRY -- SUBH</option><option value="-281208">CHEVROLET SUBURBAN RST -- SUBR</option><option value="221306403">CHEVROLET TAHOE HIGH COUNTRY -- TAHOEH</option><option value="-2441645">CHEVROLET TAHOE PREMIER -- TAHOEP</option><option value="-32935620">CHEVROLET TAHOE RST -- TAHOER</option><option value="221306470">CHEVROLET TRACKER LS 1.2 Turbo -- TRACLSA</option><option value="221306498">CHEVROLET TRACKER LT 1.2 Turbo -- TRACLTA</option><option value="221306459">CHEVROLET TRACKER PREMIER 1.2 Turbo -- TRACKP</option><option value="221306299">CHEVROLET TRAVERSE -- TRAVT</option><option value="-22163720">DFSK GLORY 500 M2 -- 500 M2</option><option value="-22162619">DFSK GLORY 580 AT -- 580 AT</option><option value="-22162145">DFSK GLORY 580 MT -- 580 MT</option><option value="-22164440">DFSK GLORY M3 -- GLORY M3</option><option value="-22161149">DFSK PANEL CS35 -- PANEL CS35</option><option value="-22160129">DFSK PANEL K05S -- K05S</option><option value="-22164954">DFSK PICK UP K01S -- K01S</option><option value="-2292259">FORD EDGE SEL 2.0L AT -- EDGE SEL</option><option value="-2330415">FORD ESCAPE SEL 4WD AT -- SEL</option><option value="-22631642">FORD EVEREST Titanium 2.0L -- TTM</option><option value="-1174409">FORD EVEREST Trend 2.0  -- TREND XLT </option><option value="221306473">FORD EXPLORER LIMITED 2.3L AT 4x4 -- EXPLORER LTD</option><option value="-2120646">FORD EXPLORER XLT 4X4 -- XLT 4X4</option><option value="221306339">FORD RANGER RAPTOR 2.0 L -- RPT</option><option value="-21294812">FORD RANGER Wildtrack 2.0L -- Wildtrack</option><option value="-21060424">FORD RANGER XLT 2.0L AT -- XLT AT</option><option value="221306257">FORD RANGER XLT AT 3.2L -- XLTAT</option><option value="-32702525">FORD TERRITORY Ambiente -- Ambiente</option><option value="-32703225">FORD TERRITORY Titanium -- Titanium</option><option value="221306279">FUSO BUS ROSA 30 PAS. -- BUSROSA30</option><option value="221306280">FUSO BUS ROSA 34 PAS. -- BUSROSA34</option><option value="221306245">FUSO CANTER 5.5 TON, 16.5 PIES -- F85CG6L</option><option value="221306281">FUSO CANTER DE 3.6 TON, 4X4 -- FG83CE6L</option><option value="221306284">FUSO CANTER DE 5.5 TON, CT, 14 PIES -- FE85PE6L</option><option value="221306408">FUSO CANTER FE85 5.5 Ton 16.5 pies -- M57</option><option value="-21550016">FUSO CANTER, 3.7 TON, 10 PIES -- FE73</option><option value="221306243">FUSO CANTER, 3.7 TON, 14 PIES -- FE73CE6L</option><option value="221306244">FUSO CANTER, 5 TON, 14 PIES -- FE84CE6L</option><option value="221306239">FUSO FA 7 TON, 17 PIES -- FAV1PF1LC6A</option><option value="-2452940">FUSO FI 8 Ton 19 pies -- X43</option><option value="221306240">FUSO FI, 9 TON, 19 PIES -- FIV1PHX2LCA</option><option value="221306241">FUSO FJ, 18 TON, 24 PIES -- FJY1WN2L</option><option value="221306242">FUSO FM, 12 TON, 22 PIES  -- FJX4WL2L</option><option value="-22163745">GLORY IX5 AT -- IX5 AT</option><option value="-33121322">HAVAL H6 DELUXE -- DELUXE</option><option value="-33122147">HAVAL H6 ELITE -- ELITE</option><option value="-2190034">HAVAL JOLION Active -- Active</option><option value="-2192141">HAVAL JOLION Elite -- Elite</option><option value="-33120723">HAVAL POER COMERCIAL -- ACTIVE</option><option value="-33120755">HAVAL POER COMERCIAL -- ELITE</option><option value="-33124751">HAVAL POER PLUS -- DELUXE</option><option value="-21930118">HONDA CIVIC 1.5 EX -- EX</option><option value="221306458">HONDA CR-V EX 2WD -- CRV EX</option><option value="221306469">HONDA CRV EX-L 4WD -- CRV EX-L</option><option value="-33130610">HONDA HR-V LX -- LX</option><option value="221306441">HONDA ODYSSEY EXL -- EXL</option><option value="221306327">HONDA PILOT EXL 2wd -- EXL 2WD</option><option value="221306392">ISUZU D-MAX RG CAB DOBLE 1.9 -- TQL3023</option><option value="221306394">ISUZU D-MAX RG CAB DOBLE 1.9 FULL AT -- TQL3026</option><option value="221306393">ISUZU D-MAX RG CAB DOBLE 1.9 FULL MT -- TQL0025</option><option value="221306397">ISUZU D-MAX RG CAB DOBLE 3.0 FULL AT -- TQL3033</option><option value="221306395">ISUZU D-MAX RG CAB DOBLE 3.0 FULL MT -- TQL0031</option><option value="-21384303">ISUZU D-MAX RG CAB SENCILLA 3.0 4x4 -- TQL0010</option><option value="221306390">ISUZU D-MAX RG CAB SENCILLA 4x2 -- TQL0005</option><option value="221306396">ISUZU D-MAX RG V-CROSS 3.0 AT -- TQL3034</option><option value="221306178">ISUZU FRR 8 TN CT, 19 PIES -- FRR-2-S-01</option><option value="221306174">ISUZU FTR 10 TN CT, 21 PIES -- FTR-2-S-11</option><option value="221306175">ISUZU FVR 12 TN  21 PIES -- FVR-2-S</option><option value="-32143316">ISUZU MU-X  -- UJQL203</option><option value="221306167">ISUZU NKR 3.4 TN 10 PIES -- NKR66E2L-5HXY2</option><option value="221306168">ISUZU NKR 3.4/4.1 TN,  14 PIES -- NKR66LL-5HXY2</option><option value="221306169">ISUZU NPR71 3.4 TN / 5.25 TN, 14 PIES -- NPR71H-22</option><option value="221306170">ISUZU NPR71 5.25 TN    16 PIES -- NPR71K-22</option><option value="221306171">ISUZU NPR75 5.2CT  14 PIES -- NPR75H-22</option><option value="221306173">ISUZU NPS 4X4 14 PIES -- NPS75L-HL5VAYN</option><option value="221306172">ISUZU NQR  6T 5.2 TURBO 16 PIES -- NQR75K-22</option><option value="-32342342">ISUZU NQR 6T 4.5 DIESEL 16 PIES -- NQR71K-22</option><option value="-32093424">ISUZU QLR77L 2.75T 3.0 Turbo Diesel -- QLR77L-EE1AYN</option><option value="221306496">ISUZU QMR 3.0 TD 12 PIES -- QMR77L-FH5AYN</option><option value="221306492">ISUZU QMR 3.0 TURBO 3.4T 14 PIES -- QMR77L-HH5AY</option><option value="-32091411">ISUZU TRAVIZ 10 PIES -- TRAVIZ 1.6T</option><option value="221306342">K2700 4X4 A/C  -- SB58</option><option value="221306128">KIA  SC RIO LX AT -- D314</option><option value="221306124">KIA 2700 4x4 -- 4X4 CS</option><option value="-32123208">KIA CARENS AUTOMÁTICA -- G281</option><option value="221306402">KIA K2700 4x2 A/C -- C502</option><option value="221306123">KIA K2700 4x2 Cabina Sencilla -- 4X2 CS</option><option value="221306323">KIA K2700 4x2 DOBLE CABINA P/LARGA -- K2700 DC 4X2 PL</option><option value="221306125">KIA K2700 D/C 4x4 -- DC 4X4</option><option value="221306317">KIA K3000 A/C -- K3000 AC</option><option value="221306126">KIA K3000S -- S77</option><option value="221306451">KIA PICANTO EX1.2 AT -- G0FC</option><option value="221306418">KIA PICANTO LX 1.2 AT -- D0N9</option><option value="221306452">KIA PICANTO LX 1.2 AT -- D03B at</option><option value="221306442">KIA PICANTO LX 1.2 MT -- DAKM</option><option value="221306486">KIA PICANTO LX 1.2 MT -- D03B mt</option><option value="-32275934">KIA PICANTO S AUTOMÁTICO -- D03B_S</option><option value="221306453">KIA PICANTO S MT 1.2 -- S MT</option><option value="221306113">KIA RIO HB MT_con pantalla -- G726</option><option value="221306127">KIA RIO LX MT -- D314</option><option value="221306450">KIA RIO SEDAN EX 1.4L AT -- GABW</option><option value="221306368">KIA SELTOS EX AT -- G552</option><option value="221306331">KIA SELTOS EX MT -- SELTOS G569</option><option value="221306345">KIA SELTOS EX MT -- G425</option><option value="221306487">KIA SELTOS FULL 1.6L AT -- G782</option><option value="221306288">KIA SELTOS PREMIUM AT -- G426</option><option value="221306275">KIA SOLUTO 1.4 AT -- D114</option><option value="221306274">KIA SOLUTO 1.4 MT -- D113</option><option value="221306386">KIA SONET EX AT -- G361 at</option><option value="221306401">KIA SONET EX MT -- G361</option><option value="221306411">KIA SONET PREMIUM Bitono -- G700_BT</option><option value="221306491">KIA SORENTO EX 2.2TDI AT 4x4 -- G0PF</option><option value="221306448">KIA SORENTO EX 2.5L AT 4x2 -- G03J</option><option value="221306497">KIA SPORTAGE EX -- G0IV</option><option value="-22763924">KIA SPORTAGE LX  -- D446</option><option value="-21851948">KIA SPORTAGE X-LINE -- H04J-G</option><option value="-2672500">KIA SPORTAGE X-Line TDI 4WD -- H04J</option><option value="221306289">LEXUS - GX460 -- GX460</option><option value="221306477">LEXUS GX460 Kit Sport -- GXSP</option><option value="221306476">LEXUS LX550d -- LX50D</option><option value="221306336">LEXUS LX570 -- LX572</option><option value="221306479">LEXUS LX600 -- LX60</option><option value="-2101928">LEXUS LX600 VIP -- LX60V</option><option value="-33100316">LEXUS NX350h F-Sport -- NXH</option><option value="221306482">LEXUS NX350H Hibrido AWD -- NX2H</option><option value="-32691510">LEXUS RX350h F-Sport -- RXHV</option><option value="221306489">LEXUS RX450HL -- RX3HV</option><option value="221306425">LEXUS UX250H HIBRIDA -- UX2HV</option><option value="221306468">MAHINDRA PICK UP DC 4X4 FULL -- S6</option><option value="221306437">MAZDA 2 HB 1.5 R AUTOMATICO -- DHN2/LAB</option><option value="-2505030">MAZDA 2 HB V AT -- DEMDLAC</option><option value="-2474442">MAZDA 2 SEDAN Automático -- DENRLAM</option><option value="221306216">MAZDA 3 HATCHBACK AT, "R" -- BCRTLA1</option><option value="221306217">MAZDA 3 SEDAN 2.0 AT  -- BCPKLA4</option><option value="221306218">MAZDA 3 SEDAN 2.0 AT  -- BCPKLA3</option><option value="-2462120">MAZDA BT-50 1.9 4X4 CS -- ZR53LAH</option><option value="-32620755">MAZDA BT-50 1.9 AUTOMÁTICO -- ZR59/LAS</option><option value="-33404149">MAZDA BT-50 1.9 SEMIEQUIPADO -- ZR58/LAY</option><option value="-33403027">MAZDA BT-50 1.9 SEMIEQUIPADO AROS -- ZR58/LAX</option><option value="-2222611">MAZDA BT-50 AT 3.0 FULL -- ZR61LAF</option><option value="-32153535">MAZDA BT-50 AT 3.0 FULL PLUS -- ZR61/LAF</option><option value="-31882528">MAZDA BT-50 DOBLE CABINA 4X4 1.9T -- ZR58/LAB</option><option value="221306213">MAZDA CX-3 4x2 2.0 AT -- DLPS LAN</option><option value="221306214">MAZDA CX-3 4x2 2.0 AT -- DLPS LAR</option><option value="221306293">MAZDA CX-30 Wagon 4x2 AT -- DSACLAE</option><option value="221306343">MAZDA CX-30 WAGON 4X2 AT -- DGB2/LAF</option><option value="-2475931">MAZDA CX-5 2.0 HIGH 4X2 -- KDVJLAR</option><option value="221306471">MAZDA CX-5 4X2 AT -- KNJ1 LAK</option><option value="221306472">MAZDA CX-5 4X2 AT -- KNJ1 LAM</option><option value="221306385">MAZDA CX-5 4x4 Automática -- KNK1/LAP</option><option value="221306466">MAZDA CX-5 SPORT 4X2 AT -- KDVJLAM</option><option value="-23342403">MAZDA CX-60 Mild Hybrid -- KST8/LAM</option><option value="-22050542">MAZDA CX-9 2.5T 4X4 -- TC9F/LB1</option><option value="-33145005">MAZDA CX-9 4x2 AT -- TC9ELAM</option><option value="221306439">Mercedes Benz GLB 200 Progressive -- GLB200 Progressive</option><option value="221306338">MERCEDES-BENZ GLB 200 STYLE -- GLB200S</option><option value="221306432">MITSUBISHI  L200 GLS MID AT -- MID AT</option><option value="221306133">MITSUBISHI  L200 GLS MID MT -- MID MT</option><option value="221306255">MITSUBISHI ASX GLS CVT -- F93</option><option value="221306135">MITSUBISHI ASX GLX MT -- EB1</option><option value="221306136">MITSUBISHI ECLIPSE CROSS GLS -- G09</option><option value="221306130">MITSUBISHI L200 GL 4x4 -- J17</option><option value="221306134">MITSUBISHI L200 GLS 4x4 AT -- E51</option><option value="221306132">MITSUBISHI L200 GLS 4x4 MT -- E46</option><option value="221306129">MITSUBISHI L200 GLS High Power -- H44</option><option value="221306131">MITSUBISHI L200 GLX 4X4 -- E31</option><option value="221306412">MITSUBISHI MONTERO GLS MID -- GLS MID AT</option><option value="221306139">MITSUBISHI MONTERO SPORT GLS AT -- F37</option><option value="221306324">MITSUBISHI MONTERO SPORT GLS MID -- MONTERO MID</option><option value="221306273">MITSUBISHI MONTERO SPORT GLS PREMIUM -- PREMGLS</option><option value="221306140">MITSUBISHI MONTERO SPORT GLS PREMIUM -- F28</option><option value="221306138">MITSUBISHI MONTERO SPORT GLX MT -- F33</option><option value="-221344">MITSUBISHI OUTLANDER H-line 2WD -- G55</option><option value="-32434719">MITSUBISHI OUTLANDER P-line 4WD -- H23</option><option value="-32860438">MITSUBISHI XPANDER CROSS GLS -- XPANDER</option><option value="221306376">NISSAN FRONTIER LE AT -- NEW FRONTIER LE AT</option><option value="221306375">NISSAN FRONTIER PRO 4X4 -- FRONTIER 4-PRO</option><option value="-2712006">NISSAN FRONTIER S AT -- S AT</option><option value="-2712540">NISSAN FRONTIER SE AT -- SE AT</option><option value="-2684316">NISSAN FRONTIER SE Mecánico -- SE MT</option><option value="221306377">NISSAN FRONTIER XE AT -- NEW FRONTIER XE AT</option><option value="221306381">NISSAN FRONTIER XE MT -- NEW FRONTIER XE MT</option><option value="221306444">NISSAN KICKS ADVANCE 1.6L CVT -- KICKS ADVANCE</option><option value="221306445">NISSAN KICKS EXCLUSIVE 1.6L CVT -- KICKS EXCLUSIVE</option><option value="221306443">NISSAN KICKS SENSE 1.6L MT -- KICKS SENSE</option><option value="221306373">NISSAN NEW FRONTIER CABINA SENCILLA 4X4 -- NP300 TDI C/S 4x4</option><option value="221306372">NISSAN NEW FRONTIER S -- NP300 S </option><option value="-21274837">NISSAN QASHQAI Advance -- Qashqai Advance</option><option value="221306150">NISSAN URVAN  2.5L TDI  -- B-</option><option value="221306149">NISSAN URVAN  2.5LTDI HR WIDE 16PAX A/C -- CF-</option><option value="221306268">NISSAN URVAN 2.5L TDI Microbus 1A / C -- URVTDI</option><option value="221306499">NISSAN URVAN 2.5L TDI Panel HR Wide -- PANEL HRWide</option><option value="221306276">NISSAN VERSA ADVANCE 1.6L CVT -- VECVT</option><option value="221306154">NISSAN X-TRAIL ADVANCE  -- T32</option><option value="221306156">NISSAN X-TRAIL EXCLUSIVE 4x4 M-CVT -- 32E</option><option value="221306155">NISSAN X-TRAIL SENSE 4x2 CVT -- ZT3</option><option value="22130691">RENAULT ALASKAN FULL EQUIPO -- ALASIN2F-20</option><option value="22130682">RENAULT CAPTUR -- CAPINA</option><option value="22130676">RENAULT DOKKER -- DOKKER</option><option value="22130680">RENAULT DUSTER 1.3 TURBO -- DUSTDA3</option><option value="22130678">RENAULT DUSTER 1.6 INTENSE -- DUSTD</option><option value="221306483">RENAULT DUSTER 1.6 ZEN -- DUSTDZ</option><option value="22130679">RENAULT DUSTER CVT INTENSE -- DUSTDA</option><option value="-2224218">RENAULT DUSTER ICONIC MT 4X4 -- DUSTD4</option><option value="22130684">RENAULT KOLEOS AT -- KOLEP2</option><option value="22130685">RENAULT KOLEOS M.E -- KOLEP4</option><option value="22130674">RENAULT KWID -- KWIF</option><option value="22130675">RENAULT KWID C.C -- KWINT</option><option value="22130683">RENAULT OROCH MT -- OROZEN</option><option value="221306494">RENAULT OROCH ZEN 2.0 L AUT. -- OROZENA</option><option value="22130677">RENAULT STEPWAY -- STEPZEN</option><option value="-23094936">SUBARU CROSSTREK Gasolina 2.0 Li -- XV9</option><option value="-22351620">SUBARU CROSSTREK Gasolina Eyeseight -- XVEY3</option><option value="221306353">SUBARU CROSSTREK Hibrida Eyeseight -- XVHV2</option><option value="22130686">SUBARU FORESTER AT -- FORES6</option><option value="22130687">SUBARU FORESTER CON EYESIGHT -- FOREY1</option><option value="221306421">SUBARU FORESTER con EYESIGHT -- FOREY2</option><option value="-23092539">SUBARU OUTBACK 2.4L Turbo con Eyesight -- OBKEYT1</option><option value="22130690">SUBARU STI MT -- STI6</option><option value="22130689">SUBARU WRX AT -- WRXCC4</option><option value="22130688">SUBARU WRX MT -- WRX5</option><option value="221306352">SUBARU XV7 -- XV7</option><option value="221306351">SUBARU XVC5 -- XVC5</option><option value="221306406">SUZUKI ALTO 800 GA -- ALTO GA</option><option value="221306409">SUZUKI ALTO 800 GLX -- GLX</option><option value="221306319">SUZUKI APV A/C -- APV PA/C</option><option value="221306315">SUZUKI APV Microbús -- APV M A/C</option><option value="221306316">SUZUKI APV Panel -- APV PANEL</option><option value="221306454">SUZUKI BALENO GL AT -- GL AT</option><option value="221306380">SUZUKI CARRY 1.5 -- CARRY CAMION</option><option value="-32983518">SUZUKI CELERIO GA MT -- GA MT</option><option value="-22184830">SUZUKI EECO  -- EECO AC</option><option value="-1143844">SUZUKI GRAND VITARA GL AT 2WD Hibrida -- GL AT H</option><option value="221306335">SUZUKI JIMNY GA MT -- GA MT</option><option value="221306334">SUZUKI JIMNY GL MT -- GL MT</option><option value="221306379">SUZUKI JIMNY GLX AT -- JINMY GLX AT</option><option value="221306493">SUZUKI SPRESSO GL -- SPRESSO GL</option><option value="-23142726">SUZUKI SPRESSO GL+ AMT -- GL+ AMT</option><option value="221306485">SUZUKI SWIFT GL AT -- GL AT</option><option value="-32363056">SUZUKI SWIFT SEDAN GLX AT -- SEDAN GLX AT</option><option value="-32362420">SUZUKI SWIFT SEDAN GLX MT -- SEDAN GLX MT</option><option value="221306461">SUZUKI VITARA GL+ AT -- GL+ AT</option><option value="221306460">SUZUKI VITARA GL+ MT -- GL+ MT</option><option value="-33320938">SUZUKI XL7 GL AT -- GL AT</option><option value="-33320143">SUZUKI XL7 GLX GLX AT -- GLX AT</option><option value="221306462">TOTOYA RAIZE 1.2L Mecánico  -- MM</option><option value="22130657">TOYOTA 4RUNNER 3FL Asientos -- GR1S</option><option value="-33170405">TOYOTA 4RUNNER 3FL Asientos (CON SMART ENTRY Y PUSH START) -- GR1S N</option><option value="22130666">TOYOTA 4RUNNER EQUIPADA 2FL ASIENTOS  -- GR40</option><option value="22130659">TOYOTA 4RUNNER FULL EQUIPO 3FL ASIENTOS -- GR1E</option><option value="221306348">TOYOTA AGYA 1.0 -- ZF</option><option value="-2265137">TOYOTA AGYA 1.2L MT Bien Equipado -- 66</option><option value="221306349">TOYOTA AGYA AT Bien Equipado -- 5J</option><option value="-22792424">TOYOTA ALPHARD CVT 4x2 -- ALPHI</option><option value="22130634">TOYOTA AVANZA CON CAMBIO EQUIPADA AUTOMÁTICA -- J2</option><option value="22130633">TOYOTA AVANZA CON CAMBIO SENCILLA MECÁNICA -- X3</option><option value="221306321">TOYOTA CH-R CVT 4X2  -- CHR3</option><option value="22130629">TOYOTA COASTER -- B1</option><option value="22130630">TOYOTA COASTER BUS -- ZB1</option><option value="22130632">TOYOTA COASTER BUS CON AC -- B2</option><option value="22130631">TOYOTA COASTER BUS PJ -- B4</option><option value="221306424">TOYOTA COROLLA CROSS 2.0 Gasolina -- VX</option><option value="-21013135">TOYOTA COROLLA CROSS GAZOO RACING -- AN</option><option value="221306423">TOYOTA COROLLA CROSS HIBRIDO INT. CLARO -- T0</option><option value="221306422">TOYOTA COROLLA CROSS HIBRIDO INT. OSCURO -- YV</option><option value="-33634314">TOYOTA COROLLA CVT BIEN EQUIPADO -- CS2</option><option value="22130612">TOYOTA COROLLA Híbrido Full Equipo Con TSS -- CHV</option><option value="22130611">TOYOTA COROLLA MT EQUIPADO -- CS</option><option value="221306291">TOYOTA DYNA -- LY3</option><option value="221306355">TOYOTA FORTUNER 2.8 AT FULL -- ET</option><option value="221306387">TOYOTA FORTUNER 2.8 Mecánica -- EB-</option><option value="221306428">TOYOTA FORTUNER 4x2 Automática -- EP-</option><option value="-33060704">TOYOTA FORTUNER Full Equipo Automática -- ET</option><option value="-33061429">TOYOTA FORTUNER Full Equipo Automática + TSS -- EV</option><option value="-32784314">TOYOTA FORTUNER GAZOO -- DX-</option><option value="221306362">TOYOTA HI LUX 2.4 AT EQUIPADO -- BA-</option><option value="221306350">TOYOTA HI LUX 2.4 AT FULL -- BK-</option><option value="-1164848">TOYOTA HI LUX 2.4 AT FULL y Kit de Accesorios -- BB/</option><option value="221306354">TOYOTA HI LUX 2.4 MT FULL -- A9</option><option value="-33245051">TOYOTA HI LUX 2.8 AT FULL Cuero -- B9-</option><option value="-1162449">TOYOTA HI LUX 2.8 AT FULL Cuero y Kit de Accesorios -- B9/</option><option value="221306363">TOYOTA HI LUX 2.8 FULL MT Cuero -- BV-</option><option value="221306378">TOYOTA HI LUX EXTRA CAB MT -- EE</option><option value="22130627">TOYOTA HIACE MICROBUS BA Y ABS -- GH2C</option><option value="22130621">TOYOTA HIACE MICROBUS T-DIESEL -- KH51A</option><option value="22130623">TOYOTA HIACE MICROBUS T-DIESEL Y ABS -- GH1</option><option value="22130625">TOYOTA HIACE MICROBUS TECHO ALTO T-DIESEL -- GH2</option><option value="22130626">TOYOTA HIACE MICROBUS TECHO ALTO Y AC -- GH2A</option><option value="22130620">TOYOTA HIACE MICROBUS TECHO NORMAL -- KH51</option><option value="22130628">TOYOTA HIACE MICROBUS TECHO NORMAL DE LUJO -- GHHI</option><option value="22130624">TOYOTA HIACE MICROBUS TECHO NORMAL T-DIESEL -- GH1A</option><option value="22130613">TOYOTA HIACE PANEL -- LH54</option><option value="22130616">TOYOTA HIACE PANEL  -- GH2PV</option><option value="22130614">TOYOTA HIACE PANEL ABS -- KH54</option><option value="22130617">TOYOTA HIACE PANEL ABS CON AC -- GH2PVA</option><option value="22130618">TOYOTA HIACE PANEL ABS CON AC Y VENTANAS -- GH2GV</option><option value="22130615">TOYOTA HIACE PANEL AC -- KH54A</option><option value="22130619">TOYOTA HIACE TECHO NORMAL DIESEL -- LH51</option><option value="22130693">TOYOTA HILUX  MT EQUIPADO -- AV</option><option value="-2462812">TOYOTA HILUX 2.8 AT ADVENTURE -- CS/</option><option value="221306104">TOYOTA HILUX 4x2 MT -- B2.</option><option value="221306108">TOYOTA HILUX 4x2 MT Con AC -- CS.</option><option value="221306106">TOYOTA HILUX 4x4 MT Con AC  -- AG</option><option value="221306456">TOYOTA HILUX AT FULL GAZOO -- B8</option><option value="22130692">TOYOTA HILUX MT Con AC  -- AW</option><option value="22130635">TOYOTA INNOVA CVT 2.0L -- AF</option><option value="22130660">TOYOTA LAND CRUISER 4x4 Cabina Sencilla -- J11F</option><option value="-23331625">TOYOTA LAND CRUISER 4x4 Cabina Sencilla -- J11F N</option><option value="22130662">TOYOTA LAND CRUISER 4x4 DOBLE CABINA -- J11D</option><option value="221306455">TOYOTA LAND CRUISER CAMIONETA V8 -- J10F8</option><option value="22130661">TOYOTA LAND CRUISER DIESEL AC -- J11W</option><option value="221306341">TOYOTA LAND CRUISER DOBLE CABINA V8 -- J11D8</option><option value="-23332626">TOYOTA LAND CRUISER V8 CON WINCH -- J11W8 N</option><option value="221306366">TOYOTA LAND CRUISER V8 CON WINCH -- J11W8</option><option value="22130665">TOYOTA LAND CRUISER WAGON Diesel -- FJ02E</option><option value="-2193436">TOYOTA LAND CRUISER WAGON Gasolina -- VJ02E</option><option value="-32504510">TOYOTA LITE ACE PANEL -- NT</option><option value="-32003944">TOYOTA LITE ACE PICK UP -- UC</option><option value="22130638">TOYOTA NUEVA CH-R HÍBRIDA CVT 4x2 -- CHR2</option><option value="22130640">TOYOTA NUEVA RAV4 AT -- S2A</option><option value="22130641">TOYOTA NUEVA RAV4 AT CON TOYOTA SAFETY SENSE -- S2T</option><option value="22130642">TOYOTA NUEVA RAV4 HIBRIDA Bien Equipada -- 2HV</option><option value="22130643">TOYOTA NUEVA RAV4 HIBRIDA Full Equipo -- SHV</option><option value="22130639">TOYOTA NUEVA RAV4 MT -- S2M</option><option value="22130637">TOYOTA NUEVA RUSH AT -- JT-</option><option value="22130636">TOYOTA NUEVA RUSH MT -- HZ</option><option value="-23303754">TOYOTA NUEVO LAND CRUISER V8 Doble Cabina Winch -- J11D8 N</option><option value="-1225821">TOYOTA PRADO 2.8L Automática -- GDP</option><option value="22130652">TOYOTA PRADO 6AT TX-L -- RJ2F</option><option value="22130655">TOYOTA PRADO 6AT VX -- RJ1F</option><option value="-1181359">TOYOTA PRADO Intermedia First Edition -- GDFE</option><option value="221306449">TOYOTA PRADO TX-L 2.8L MT BIEN EQUIPADA  -- GD20</option><option value="221306367">TOYOTA PRADO TX-L AT -- GD2E</option><option value="-1235113">TOYOTA PRADO VX 2.8L -- GDVX</option><option value="221306371">TOYOTA PRADO VX DIESEL -- GD1E</option><option value="221306464">TOYOTA RAIZE 1.0L TURBO CVT -- GK</option><option value="221306463">TOYOTA RAIZE 1.2L CVT -- LC</option><option value="22130669">TOYOTA SEQUOIA Twin Turbo Híbrido  -- SEQH</option><option value="22130681">TOYOTA TUNDRA  -- USK1794</option><option value="221306475">TOYOTA TUNDRA AUTOMATICO -- VXKA01</option><option value="-32272727">TOYOTA TUNDRA HIBRIDO -- TUNHEV</option><option value="221306434">TOYOTA YARIS 1.3 AT BIEN EQUIPADO -- AC-</option><option value="221306433">TOYOTA YARIS 1.3L MT BIEN EQUIPADO -- AA-</option><option value="221306429">TOYOTA YARIS 1.5 AT FULL EQUIPO -- A3.</option><option value="-22460651">TOYOTA YARIS CROSS Automático -- AR</option><option value="-22462408">TOYOTA YARIS CROSS HIBRIDA -- BA</option><option value="-22465726">TOYOTA YARIS CROSS Mecánico -- AB-</option><option value="-32864945">TOYOTA YARIS SEDAN 1.5 AT Full Equipo -- BZ</option><option value="-32863459">TOYOTA YARIS SEDAN 1.5 MT Bien Equipado -- BV</option>					</select>
+				</div>
+				<div class="col-md-2">
+					<input type="text" name="modelo" class="form-control" placeholder="Modelo" required="" autocomplete="off">
+				</div>
+				<div class="col-md-12"></div>
+				
+				<div class="col-md-2">
+					<input type="text" name="precio_lista" class="form-control" placeholder="Precio lista" required="" autocomplete="off">
+				</div>
+				<div class="col-md-2">
+					<input type="text" name="precio" class="form-control" placeholder="Precio vehículo" required="" autocomplete="off">
+				</div>
+				<div class="col-md-2">
+					<input type="text" name="placas" class="form-control" placeholder="Placas" required="" autocomplete="off">
+				</div>
+				<div class="col-md-4">
+					<input type="text" name="colores" class="form-control" placeholder="Colores" required="" autocomplete="off">
+				</div>
+				<div class="col-md-2">
+					<input type="hidden" name="id_solicitud" value="11162">
+					<input type="hidden" name="t" value="1">
+					<input type="submit" class="btn btn-info" value="Agregar">
+				</div>
+			</form>
+		</div>
+		
+	</div>
+</div>
+
+
+
+<script type="text/javascript">
+$(document).ready(function(){  
+	
+
+    $("#SaveSeguimiento").click(function(){
+        var TipoSeguimiento = $("#TipoSeguimiento").val(); if(TipoSeguimiento == ""){document.getElementById("TipoSeguimiento").focus(); $("#TipoSeguimiento").addClass("error-dato"); return false; }else{$("#TipoSeguimiento").removeClass("error-dato"); }var FechaSeguimiento = $("#FechaSeguimiento").val(); if(FechaSeguimiento == ""){document.getElementById("FechaSeguimiento").focus(); $("#FechaSeguimiento").addClass("error-dato"); return false; }else{$("#FechaSeguimiento").removeClass("error-dato"); }    });
+
+
+    $("#SaveInformacion").click(function(){
+        var NombreCliente = $("#NombreCliente").val(); if(NombreCliente == ""){document.getElementById("NombreCliente").focus(); $("#NombreCliente").addClass("error-dato"); return false; }else{$("#NombreCliente").removeClass("error-dato"); }var TelefonoCliente = $("#TelefonoCliente").val(); if(TelefonoCliente == ""){document.getElementById("TelefonoCliente").focus(); $("#TelefonoCliente").addClass("error-dato"); return false; }else{$("#TelefonoCliente").removeClass("error-dato"); }var EmailCliente = $("#EmailCliente").val(); if(EmailCliente == ""){document.getElementById("EmailCliente").focus(); $("#EmailCliente").addClass("error-dato"); return false; }else{$("#EmailCliente").removeClass("error-dato"); }var EstadoCliente = $("#EstadoCliente").val(); if(EstadoCliente == ""){document.getElementById("EstadoCliente").focus(); $("#EstadoCliente").addClass("error-dato"); return false; }else{$("#EstadoCliente").removeClass("error-dato"); }
+        var EstadoCliente = $("#EstadoCliente").val();
+        if(EstadoCliente == '6'){
+            var ComentarioCliente = $("#ComentarioCliente").val(); if(ComentarioCliente == ""){document.getElementById("ComentarioCliente").focus(); $("#ComentarioCliente").addClass("error-dato"); return false; }else{$("#ComentarioCliente").removeClass("error-dato"); }	        return 0;
+        }
+
+    });
+
+    $("#EstadoCliente").change(function(){ 
+        var EstadoCliente = $("#EstadoCliente").val();
+        if(EstadoCliente == '6'){
+            $("#Comentario").show();
+        }else{
+            $("#Comentario").hide();
+        }                  
+    });
+});
+
+window.addEventListener("keypress", function(event){
+    if (event.keyCode == 13){
+        event.preventDefault();
+    }
+}, false);
+
+window.onload = function() {
+	var myInput = document.getElementById('bloquear');
+	myInput.onpaste = function(e) {
+		e.preventDefault();
+		AlertaBtn("info", "Las acciones de copiar y pegar fueron deshabilitadas por el administrador. Por favor utilice separadores de texto adicionales para segmentar el contenido ( / - | ) ", "Entendido");
+	}
+
+	myInput.oncopy = function(e) {
+		e.preventDefault();
+		AlertaBtn("info", "Las acciones de copiar y pegar fueron deshabilitadas por el administrador. Por favor utilice separadores de texto adicionales para segmentar el contenido ( / - | ) ", "Entendido");
+	}
+}
+</script>
+
+
+
+
+	</section>	
+</div>
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+	tabla = $('.tabla-a').DataTable( {
+        retrieve: false,
+        paging: true,
+        info: true,
+        ordering: false,
+        pageLength: 25
+    } );
+
+    tabla = $('.tabla-b').DataTable( {
+        retrieve: false,
+        paging: true,
+        info: true,
+        ordering: false,
+        pageLength: 25
+    } );
+});
+</script>
+
+
+<script src="js/dataTables/dataTables.buttons.min.js"></script>
+<script src="js/dataTables/jszip.min.js"></script>
+<script src="js/dataTables/buttons.html5.min.js"></script>
+<script src="js/dataTables/buttons.print.min.js"></script>
+
+<script type="text/javascript">
+	
+$(document).ready(function() {
+   //Buttons examples
+    var table = $('#Tabla').DataTable({
+        paging:         true,
+        lengthChange: false,
+        pageLength: 25,
+        searching: true,
+        info: false,
+        dom: 'Blfrtlip',
+    
+        buttons: [
+        {
+            extend: 'excelHtml5',
+            title: 'PARVULOS - "A"-Destrezas del Aprendizaje-Unidad 3',
+            text: '<i class="far fa-file-excel"></i> Exportar a Excel',
+            customize: function( xlsx ) { 
+                var sheet = xlsx.xl.worksheets['sheet1.xml']; 
+                $('row c[r^="M"]', sheet).attr( 's', '2' ); 
+                $('row c[r^="P"]', sheet).attr( 's', '2' ); 
+                $('row c[c^="2"]', sheet).attr( 's', '4' ); 
+            } 
+        },
+        {
+            extend: 'print',
+            title: 'PARVULOS - "A"-Destrezas del Aprendizaje-Unidad 3',
+            text: '<i class="fas fa-print"></i> Imprimir',
+            customize: function ( win ) {
+                $(win.document.body).find('h1').css('text-align', 'center');
+            }
+        },
+        ]
+    });
+} );
+</script>
+
+<footer class="text-center margin-top-20">
+	<div class="footer">
+		<div class="row">
+			<div class="col-sm-6 text-left">
+				<p>Software diseñado y desarrollado por FalconX</p>
+			</div>
+			<div class="col-sm-6 text-right">
+				<p id="Info-empresa"></p>
+			</div>
+		</div>
+	</div>
+</footer>
+
+<script>
+	const year = new Date().getFullYear();
+	const paragraph = document.querySelector("#Info-empresa");
+	paragraph.innerHTML= "Licencia " + year +" | JP Motors, Guatemala";
+
+	$(function () {
+		$('[data-toggle="popover"]').popover()
+	})
+
+	$(function () {
+  		$('[data-toggle="tooltip"]').tooltip()
+	})
+
+	$(document).ready(function(){
+    	$(".close").click(function(){
+        	$(".alerta").slideUp("close");
+    	});
+	});
+
+	$(window).bind('keydown', function(e) {            
+		if (e.charCode == 27 || e.keyCode == 27) { //ENTER
+			$("#save").fadeOut(200);
+		}    
+	});	
+		
+</script>
+
+<!-- ALERTAS EMERGENTES -->
+
+<script type="text/javascript">
+	
+
+	
+	function alerta_exito(string){
+		Swal.fire({
+		  position: 'center',
+		  type: 'success',
+		  title: string,
+		  showConfirmButton: false,
+		  timer: 1500
+		})
+	}
+
+	function cargar_imagen(){
+		Swal.fire({
+		  position: 'center',
+		  type: 'success',
+		  title: '¡La imagen ha sido cargada con éxito!',
+		  showConfirmButton: false,
+		  timer: 1500
+		})
+	}
+
+	function eliminar(string){
+        Swal.fire({
+            title: 'CONFIRMAR ELIMINACIÓN',
+            text: "¡Este proceso no puede ser revertido!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Entiendo, eliminar.',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.value) {
+                location.href = string;
+            }
+        })
+    }
+
+    function mostrar_icono(string){ 
+
+        Swal.fire({
+          imageUrl: string,
+          width: 700,
+          imageAlt: 'Imagen',
+          confirmButtonText: 'Cerrar ventana',
+          animation: true
+
+        })
+        return false;
+
+    };
+		
+</script>
+
+
+</body>
+</html>

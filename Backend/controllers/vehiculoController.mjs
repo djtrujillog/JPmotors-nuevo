@@ -9,7 +9,7 @@ vehiculosRouter.use(express.json());
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "../Frontend/Images/nuevos/");
+    cb(null, "../JpMotor/Images/nuevos/");
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + '-' + file.originalname);

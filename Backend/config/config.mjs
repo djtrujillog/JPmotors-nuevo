@@ -1,7 +1,7 @@
 import { Sequelize } from 'sequelize';
 
 const sequelize = new Sequelize('jpmotors_bd', 'jpmotors_dtrujillo', 'Sopadepollo2024.', {
-  host: '65.109.88.87',
+  host: '94.130.216.164',
   dialect: 'mysql'
 });
 

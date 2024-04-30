@@ -1,11 +1,13 @@
 import { Outlet, Navigate } from "react-router-dom";
 import useAuth from "../hook/useAuth";
 import Header from "../components/Header";
-import Sidebar from "../components/Sidebar";
+import Sidebar, { SidebarItem } from "../components/Sidebar";
+import DashboardIcon from '../assets/dashboard.png'
+
+import { Link } from 'react-router-dom';
 
 const RutaProtegida = () => {
     const { auth, cerrarSesionAuth } = useAuth();
-    console.log(auth);
     return (        
         <>
             {                
@@ -16,12 +18,19 @@ const RutaProtegida = () => {
                             auth={auth}
                         />
 
-                        <div className="md:flex md:min-h-screen">
-                            <Sidebar />
+                        <div className='flex md:min-h-screen'>
+                           <Sidebar>                                
+                                <SidebarItem icon={<img src={DashboardIcon} alt="Inicio" width={20}/>} text='Inicio' active alert/>
+                                <SidebarItem icon={<img src={DashboardIcon} alt="Calendario" width={20}/>} text='Calendario' />
+                                <SidebarItem icon={<img src={DashboardIcon} alt="Cartera" width={20}/>} text='Cartera' />
+                                <Link to="/dashboard/vehiculos">                                    
+                                    <SidebarItem icon={<img src={DashboardIcon} alt="Vehiculos" width={20}/>} text='Vehiculos' />
+                                </Link>
+                            </Sidebar>
 
-                            <main className="flex-1 p-10">
-                                <Outlet />
-                            </main>
+                           <main className='p-3 flex-1 '>
+                              <Outlet />
+                           </main>
                         </div>
                     </div>
                     

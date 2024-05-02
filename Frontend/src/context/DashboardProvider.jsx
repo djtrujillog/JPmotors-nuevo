@@ -19,7 +19,7 @@ const DashboardProvider = ({ children }) => {
         const obtenerCotizaciones = async () => {
             try {
                 const token = localStorage.getItem('token');                
-                if( !token || !auth == false ) return  navigate('/login');
+                if( !token ) return  navigate('/login');
 
                 const config = {
                     headers: {

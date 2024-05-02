@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/config.mjs';
+import db from '../config/config.mjs';
 import bcrypt from 'bcrypt';
 
 const Empleado = sequelize.define('Empleado', {

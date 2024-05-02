@@ -1,7 +1,5 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import clienteAxios from "../config/clienteAxios";
-import { Skeleton } from "primereact/skeleton";
 
 import Menu from '../assets/align-center-svgrepo-com.svg';
 import Cerrar from '../assets/close-ellipse-svgrepo-com.svg'
@@ -24,7 +22,7 @@ const Header = ({ cerrarSesionAuth, auth }) => {
                     {/* LOGO */}
                     <Link href="/">
                     <h2 className="text-4xl text-sky-600 font-black text-center mb-5 md:mb-0 items-center">
-                         JpMotors
+                         JP Motors
                      </h2>
                     </Link>
                     {/* HAMBURGER BUTTON FOR MOBILE */}
@@ -33,7 +31,7 @@ const Header = ({ cerrarSesionAuth, auth }) => {
                         className="p-2 text-gray-700 rounded-md outline-none focus:border-gray-400 focus:border"
                         onClick={() => setNavbar(!navbar)}
                         >
-                        { navbar ? (
+                        {navbar ? (
                             <img src={Cerrar} width={35} height={35} alt="logo" />
                         ) : (
                             <img
@@ -55,42 +53,28 @@ const Header = ({ cerrarSesionAuth, auth }) => {
                     }`}
                     >                    
                         {
-                            auth.esAdmin ? (
+                            auth.Cargo === "VENDEDOR" ? (
                                 <ul className="h-screen md:h-auto items-center justify-center md:flex ">
-                                    <li className="pb-6 text-xl text-blue py-2 md:px-6 text-center border-b-2 md:border-b-0 hover:bg-sky-400 hover:text-white transition-colors duration-300 rounded-lg">
+                                    <li className="pb-6 text-xl text-blue py-2 md:px-6 text-center border-b-2 md:border-b-0">
                                         <Link                        
                                             to='/dashboard/cajas'
                                             className='font-bold uppercase'
                                             onClick={() => setNavbar(!navbar)}
                                         >Cajas</Link>
                                     </li>
-                                    <li className="pb-6 text-xl text-blue py-2 md:px-6 text-center border-b-2 md:border-b-0 hover:bg-sky-400 hover:text-white transition-colors duration-300 rounded-lg">
+                                    <li className="pb-6 text-xl text-blue py-2 md:px-6 text-center border-b-2 md:border-b-0">
                                         <Link                        
                                             to='/dashboard/ventas'
                                             className='font-bold uppercase'
                                             onClick={() => setNavbar(!navbar)}
                                         >Ventas</Link>
                                     </li>
-                                    <li className="pb-6 text-xl text-blue py-2 px-6 text-center  border-b-2 md:border-b-0 hover:bg-sky-400 hover:text-white transition-colors duration-300 rounded-lg">
+                                    <li className="pb-6 text-xl text-blue py-2 px-6 text-center  border-b-2 md:border-b-0">
                                         <Link
                                             to="/dashboard"
                                             className='font-bold uppercase'
                                             onClick={() => setNavbar(!navbar)}
                                         >Inventario</Link>
-                                    </li>
-                                    <li className="pb-6 text-xl text-blue py-2 px-6 text-center  border-b-2 md:border-b-0 hover:bg-sky-400 hover:text-white transition-colors duration-300 rounded-lg">
-                                        <Link
-                                            to="/dashboard/pedidos"
-                                            className='font-bold uppercase'
-                                            onClick={() => setNavbar(!navbar)}
-                                        >Pedidos</Link>
-                                    </li>
-                                    <li className="pb-6 text-xl text-blue py-2 px-6 text-center  border-b-2 md:border-b-0 hover:bg-sky-400 hover:text-white transition-colors duration-300 rounded-lg">
-                                        <Link
-                                            to="/dashboard/vendedores"
-                                            className='font-bold uppercase'
-                                            onClick={() => setNavbar(!navbar)}
-                                        >Vendedores</Link>
                                     </li>
                                     <li className="pb-6 text-xl text-blue py-2 px-6 text-center  border-b-2 md:border-b-0">
                                         <button
@@ -102,14 +86,14 @@ const Header = ({ cerrarSesionAuth, auth }) => {
                                 </ul>
                             ) : (
                                 <ul className="h-screen md:h-auto items-center justify-center md:flex ">
-                                    {/* <li className="pb-6 text-xl text-blue py-2 px-6 text-center  border-b-2 md:border-b-0">
+                                    <li className="pb-6 text-xl text-blue py-2 px-6 text-center  border-b-2 md:border-b-0">
                                         <Link
                                             to="/dashboard"
                                             className='font-bold uppercase'
                                             onClick={() => setNavbar(!navbar)}
                                         >Inventario</Link>
-                                    </li> */}
-                                    <li className="pb-6 text-xl text-blue py-2 px-6 text-center  border-b-2 md:border-b-0">
+                                        </li>
+                                        <li className="pb-6 text-xl text-blue py-2 px-6 text-center  border-b-2 md:border-b-0">
                                         <button
                                             type="button"
                                             className='text-blue text-sm text-white bg-sky-600 p-3 rounded-lg uppercase font-bold'

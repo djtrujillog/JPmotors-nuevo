@@ -7,17 +7,8 @@ import dashboardRouters from './routes/dashboard.routes.mjs';
 import vehiculosRouter from './routes/vehiculo.routes.mjs';
 import marcasRouter from './routes/marca.routes.mjs';
 
-// Iniciar la conexión a la base de datos
-sequelize.sync({ force: false })
-  .then(() => {
-    console.log('Base de datos conectada');
-  })
-  .catch((error) => {
-    console.log('Error al conectar con la base de datos:', error);
-  });
-
 const app = express();
-const PORT = 4000;
+const PORT = 5000;
 
 // Middleware para permitir solicitudes CORS
 app.use(cors());
@@ -30,9 +21,24 @@ app.use(bodyParser.json());
 app.use('/auth', authRouters);
 app.use('/dashboard', dashboardRouters);
 app.use('/vehiculos', vehiculosRouter);
-app.use('/marcas', marcasRouter);
+app.use('/marcos', marcasRouter);
 
-// Iniciar el servidor
-app.listen(PORT, function() {
-  console.log('Servidor escuchando en el puerto ' + PORT);
-});
+// Probar la conexión a la base de datos antes de sincronizar
+sequelize.authenticate()
+  .then(() => {
+    console.log('Conexión a la base de datos establecida correctamente.');
+
+    // Iniciar la sincronización de Sequelize
+    return sequelize.sync({ force: false });
+  })
+  .then(() => {
+    console.log('Base de datos sincronizada.');
+
+    // Iniciar el servidor
+    app.listen(PORT, function() {
+      console.log('Servidor escuchando en el puerto ' + PORT);
+    });
+  })
+  .catch((error) => {
+    console.log('Error al conectar con la base de datos:', error);
+  });

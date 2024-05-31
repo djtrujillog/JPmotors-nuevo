@@ -64,6 +64,13 @@ const Header = ({ cerrarSesionAuth, auth }) => {
                                     </li>
                                     <li className="pb-6 text-xl text-blue py-2 md:px-6 text-center border-b-2 md:border-b-0">
                                         <Link                        
+                                            to='/dashboard/clientes'
+                                            className='font-bold uppercase'
+                                            onClick={() => setNavbar(!navbar)}
+                                        >Clientes</Link>
+                                    </li>
+                                    <li className="pb-6 text-xl text-blue py-2 md:px-6 text-center border-b-2 md:border-b-0">
+                                        <Link                        
                                             to='/dashboard/ventas'
                                             className='font-bold uppercase'
                                             onClick={() => setNavbar(!navbar)}

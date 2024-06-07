@@ -8,7 +8,9 @@ import vehiculosRouter from './routes/vehiculo.routes.mjs';
 import marcasRouter from './routes/marca.routes.mjs';
 
 const app = express();
-const PORT = 5000;
+
+const PORT = process.env.PORT || 4000;
+
 
 // Middleware para permitir solicitudes CORS
 app.use(cors());

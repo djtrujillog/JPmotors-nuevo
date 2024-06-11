@@ -9,8 +9,8 @@ import marcasRouter from './routes/marca.routes.mjs';
 
 const app = express();
 
-const PORT = process.env.PORT || 4000;
 
+app.set('port', process.env.PORT || 4000);
 
 // Middleware para permitir solicitudes CORS
 app.use(cors());
@@ -18,7 +18,8 @@ app.use(cors());
 // Middleware para analizar las solicitudes entrantes
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
+//ruta de prueba
+app.get('/',(req,res)=>res.json({message: 'API JP Motors Gt'}))
 // Routing
 app.use('/auth', authRouters);
 app.use('/dashboard', dashboardRouters);
@@ -37,8 +38,8 @@ sequelize.authenticate()
     console.log('Base de datos sincronizada.');
 
     // Iniciar el servidor
-    app.listen(PORT, function() {
-      console.log('Servidor escuchando en el puerto ' + PORT);
+    app.listen(app.get('port'), function() {
+      console.log('Servidor escuchando en el puerto ' +app.get('port') );
     });
   })
   .catch((error) => {

@@ -19,6 +19,44 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 const vehiculoController = {
+  post:  async (req, res) => {
+    // Extraer la información del vehículo desde la solicitud
+    const { Modelo, Marca, Anio, PrecioGerente, PresioWeb, PrecioLista, MarcaID } =
+      req.body;
+  
+    // Obtener la imagen del cuerpo de la solicitud
+    const Imagen = req.file ? req.file.filename : null;
+  
+    try {
+      // Insertar el vehículo en la base de datos
+
+      var query = "INSERT INTO Vehiculos (Modelo, Marca, Anio, PrecioGerente, PresioWeb, PrecioLista, MarcaID, Imagen, Condicion) VALUES ("+req.body.Modelo+", '"+req.body.Marca +"', " + req.body.Anio + ", " + req.body.PrecioGerente + "," + req.body.PresioWeb + "," + req.body.PrecioLista + "," + req.body.MarcaID  +",'"+ req.body.Imagen +"', '" + req.body.Condicion +"')";
+      console.log(query);
+      const result = await sequelize.query(query,
+      {
+        type: sequelize.QueryTypes.INSERT
+      });      
+  
+      // Enviar una respuesta exitosa al cliente
+      res.json({
+        message: "Vehiculo agregado con éxito",
+        vehiculo: {
+          //VehiculoID: result.insertId,
+          Modelo,
+          Marca,
+          Anio,
+          PrecioGerente,
+          PresioWeb,
+          PrecioLista,
+          MarcaID,
+          Imagen
+        },
+      });    
+    } catch (error) {
+      console.error("Error al agregar vehiculo:", error);
+      res.status(500).send("Error interno del servidor");
+    }
+  },
   getVehiculos: async (req, res) => {
     try {
       const result = await sequelize.query("SELECT * FROM Vehiculos",
@@ -103,43 +141,6 @@ const vehiculoController = {
     }
   }
 }
-
-//crear un nuevo vehiculo
-vehiculosRouter.post("/", upload.single('Imagen'), async function (req, res) {
-  // Extraer la información del vehículo desde la solicitud
-  const { Modelo, Marca, Anio, PrecioGerente, PresioWeb, PrecioLista, MarcaID } =
-    req.body;
-
-  // Obtener la imagen del cuerpo de la solicitud
-  const Imagen = req.file ? req.file.filename : null;
-
-  try {
-    // Insertar el vehículo en la base de datos
-    const results = await query(
-      "INSERT INTO Vehiculos (Modelo, Marca, Anio, PrecioGerente, PresioWeb, PrecioLista, MarcaID, Imagen) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-      [Modelo, Marca, Anio, PrecioGerente, PresioWeb, PrecioLista, MarcaID, Imagen]
-    );
-
-    // Enviar una respuesta exitosa al cliente
-    res.json({
-      message: "Vehiculo agregado con éxito",
-      vehiculo: {
-        VehiculoID: results.insertId,
-        Modelo,
-        Marca,
-        Anio,
-        PrecioGerente,
-        PresioWeb,
-        PrecioLista,
-        MarcaID,
-        Imagen,
-      },
-    });    
-  } catch (error) {
-    console.error("Error al agregar vehiculo:", error);
-    res.status(500).send("Error interno del servidor");
-  }
-});
 
 export default vehiculoController;
 

@@ -8,7 +8,7 @@ const AutoList = () => {
     const [selectedAuto, setSelectedAuto] = useState(null);
 
     useEffect(() => {
-        fetch('http://localhost:5000/vehiculos')
+        fetch('http://localhost:4000/vehiculos')
             .then(response => response.json())
             .then(data => setAutos(data))
             .catch(error => console.error('Error al cargar los autos:', error));

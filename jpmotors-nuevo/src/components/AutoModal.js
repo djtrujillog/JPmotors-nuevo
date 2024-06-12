@@ -10,14 +10,14 @@ const AutoModal = ({ auto, onClose }) => {
   const [details, setDetails] = useState(null);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/vehiculos/${auto.VehiculoID}`)
+    fetch(`http://localhost:4000/vehiculos/${auto.VehiculoID}`)
       .then((response) => response.json())
       .then((data) => setImageData(data))
       .catch((error) =>
         console.error("Error al cargar la imagen del vehículo:", error)
       );
 
-    fetch(`http://localhost:5000/vehiculos/detalle/${auto.VehiculoID}`)
+    fetch(`http://localhost:4000/vehiculos/detalle/${auto.VehiculoID}`)
       .then((response) => response.json())
       .then((data) => setDetails(data))
       .catch((error) =>

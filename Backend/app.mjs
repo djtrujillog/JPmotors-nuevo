@@ -6,7 +6,7 @@ import authRouters from './routes/auth.routes.mjs';
 import dashboardRouters from './routes/dashboard.routes.mjs';
 import vehiculosRouter from './routes/vehiculo.routes.mjs';
 import marcasRouter from './routes/marca.routes.mjs';
-
+import cotizacionRouter from './routes/cotizacion.Routes.mjs';
 const app = express();
 const PORT = 5000;
 
@@ -21,7 +21,8 @@ app.use(bodyParser.json());
 app.use('/auth', authRouters);
 app.use('/dashboard', dashboardRouters);
 app.use('/vehiculos', vehiculosRouter);
-app.use('/marcos', marcasRouter);
+app.use('/marcas', marcasRouter);
+app.use('/cotizaciones', cotizacionRouter);
 
 // Probar la conexión a la base de datos antes de sincronizar
 sequelize.authenticate()

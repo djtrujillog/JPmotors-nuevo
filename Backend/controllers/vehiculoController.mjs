@@ -104,46 +104,44 @@ const vehiculoController = {
   }
 }
 
+//crear un nuevo vehiculo
+vehiculosRouter.post("/", upload.single('Imagen'), async function (req, res) {
+  // Extraer la información del vehículo desde la solicitud
+  const { Modelo, Marca, Anio, PrecioGerente, PresioWeb, PrecioLista, MarcaID } =
+    req.body;
+
+  // Obtener la imagen del cuerpo de la solicitud
+  const Imagen = req.file ? req.file.filename : null;
+
+  try {
+    // Insertar el vehículo en la base de datos
+    const results = await query(
+      "INSERT INTO Vehiculos (Modelo, Marca, Anio, PrecioGerente, PresioWeb, PrecioLista, MarcaID, Imagen) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+      [Modelo, Marca, Anio, PrecioGerente, PresioWeb, PrecioLista, MarcaID, Imagen]
+    );
+
+    // Enviar una respuesta exitosa al cliente
+    res.json({
+      message: "Vehiculo agregado con éxito",
+      vehiculo: {
+        VehiculoID: results.insertId,
+        Modelo,
+        Marca,
+        Anio,
+        PrecioGerente,
+        PresioWeb,
+        PrecioLista,
+        MarcaID,
+        Imagen,
+      },
+    });    
+  } catch (error) {
+    console.error("Error al agregar vehiculo:", error);
+    res.status(500).send("Error interno del servidor");
+  }
+});
+
 export default vehiculoController;
-
-// //crear un nuevo vehiculo
-// vehiculosRouter.post("/", upload.single('Imagen'), async function (req, res) {
-//   // Extraer la información del vehículo desde la solicitud
-//   const { Modelo, Marca, Anio, PrecioGerente, PresioWeb, PrecioLista, MarcaID } =
-//     req.body;
-
-//   // Obtener la imagen del cuerpo de la solicitud
-//   const Imagen = req.file ? req.file.filename : null;
-
-//   try {
-//     // Insertar el vehículo en la base de datos
-//     const results = await query(
-//       "INSERT INTO Vehiculos (Modelo, Marca, Anio, PrecioGerente, PresioWeb, PrecioLista, MarcaID, Imagen) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-//       [Modelo, Marca, Anio, PrecioGerente, PresioWeb, PrecioLista, MarcaID, Imagen]
-//     );
-
-//     // Enviar una respuesta exitosa al cliente
-//     res.json({
-//       message: "Vehiculo agregado con éxito",
-//       vehiculo: {
-//         VehiculoID: results.insertId,
-//         Modelo,
-//         Marca,
-//         Anio,
-//         PrecioGerente,
-//         PresioWeb,
-//         PrecioLista,
-//         MarcaID,
-//         Imagen,
-//       },
-//     });    
-//   } catch (error) {
-//     console.error("Error al agregar vehiculo:", error);
-//     res.status(500).send("Error interno del servidor");
-//   }
-// });
-
-
 
 // // Actualizar un vehiculo existente
 // vehiculosRouter.put("/:id", upload.single('Imagen'), async function (req, res) {

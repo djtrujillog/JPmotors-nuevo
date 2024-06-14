@@ -9,4 +9,5 @@ router.get('/detalle/:id', vehiculoController.getVehiculoDetalle);
 router.get('/porMarca', vehiculoController.getVehiculosPorMarca);
 router.get('/:id', vehiculoController.getVehiculoPorID);
 router.post('/', vehiculoController.post);
+router.put('/:id', vehiculoController.put);
 export default router;

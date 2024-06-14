@@ -175,10 +175,5 @@ const vehiculoController = {
   }
 }
 
-
-
-//crear un nuevo vehiculo
-
-
 export default vehiculoController;
 

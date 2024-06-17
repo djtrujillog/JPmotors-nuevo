@@ -75,10 +75,10 @@ const vehiculoController = {
     }
   },
 
-  getVehiculoDetalle : async (req, res) => {
+  getVehiculoMotorDetalle : async (req, res) => {
       try {
         const { id } = req.params;
-        const result = await sequelize.query("CALL ConsultaCompletaPorID(:id)", 
+        const result = await sequelize.query("CALL GetMotorDescription(:id);", 
         {
           replacements: { id },
           type: sequelize.QueryTypes.SELECT
@@ -96,6 +96,90 @@ const vehiculoController = {
         res.status(500).send("Error interno del servidor");
       }
   },
+  getVehiculoSeguridadDetalle : async (req, res) => {
+    try {
+      const { id } = req.params;
+      const result = await sequelize.query("CALL GetSeguridadDescription(:id);", 
+      {
+        replacements: { id },
+        type: sequelize.QueryTypes.SELECT
+      });
+      
+      if (result.length === 0) {
+        res.status(404).send("Vehiculo no encontrado");
+        return;
+      }
+      // Ajustar la respuesta para enviar solo el objeto del vehículo
+      console.log(result);
+      res.json(result[0][0]);
+    } catch (error) {
+      console.error("Error al obtener el Vehiculo:", error);
+      res.status(500).send("Error interno del servidor");
+    }
+},
+getVehiculoInteriorDetalle : async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await sequelize.query("CALL GetInteriorDescription(:id);", 
+    {
+      replacements: { id },
+      type: sequelize.QueryTypes.SELECT
+    });
+    
+    if (result.length === 0) {
+      res.status(404).send("Vehiculo no encontrado");
+      return;
+    }
+    // Ajustar la respuesta para enviar solo el objeto del vehículo
+    console.log(result);
+    res.json(result[0][0]);
+  } catch (error) {
+    console.error("Error al obtener el Vehiculo:", error);
+    res.status(500).send("Error interno del servidor");
+  }
+},
+getVehiculoExteriorDetalle : async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await sequelize.query("CALL GetExteriorDescription(:id);", 
+    {
+      replacements: { id },
+      type: sequelize.QueryTypes.SELECT
+    });
+    
+    if (result.length === 0) {
+      res.status(404).send("Vehiculo no encontrado");
+      return;
+    }
+    // Ajustar la respuesta para enviar solo el objeto del vehículo
+    console.log(result);
+    res.json(result[0][0]);
+  } catch (error) {
+    console.error("Error al obtener el Vehiculo:", error);
+    res.status(500).send("Error interno del servidor");
+  }
+},
+getVehiculoDimensionesrDetalle : async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await sequelize.query("CALL GetDimensionesDescription(:id);", 
+    {
+      replacements: { id },
+      type: sequelize.QueryTypes.SELECT
+    });
+    
+    if (result.length === 0) {
+      res.status(404).send("Vehiculo no encontrado");
+      return;
+    }
+    // Ajustar la respuesta para enviar solo el objeto del vehículo
+    console.log(result);
+    res.json(result[0][0]);
+  } catch (error) {
+    console.error("Error al obtener el Vehiculo:", error);
+    res.status(500).send("Error interno del servidor");
+  }
+},
   getVehiculosPorMarca: async (req, res) => {
     try {
         const { marca } = req.query;

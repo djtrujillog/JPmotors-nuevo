@@ -48,7 +48,7 @@ function App() {
                   </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                  <Nav.Link as={Link} to="/usados" className="nav-link">
+                  <Nav.Link as={Link} to="/agvehiculo" className="nav-link">
                     Usados
                   </Nav.Link>
                 </Nav.Item>

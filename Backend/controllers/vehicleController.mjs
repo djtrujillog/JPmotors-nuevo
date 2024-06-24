@@ -1,42 +1,14 @@
 import express from "express";
 import multer from "multer";
 import sequelize from "../config/config.mjs";
-import path from "path";
-import fs from "fs";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { connectFTP, uploadFile } from '../controllers/ftpClient.mjs';
 
 const vehiculosRouter = express.Router();
 vehiculosRouter.use(express.urlencoded({ extended: true }));
 vehiculosRouter.use(express.json());
 
-
-// Configuración de Multer para la subida de archivos
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    // const directorio = path.join(__dirname, "../../public/images");
-    const directorio = path.resolve("C:/proyectos/jpmotors-nuevo/jpmotors-nuevo/public/images");
-
-    // Verificar si el directorio existe, si no, crearlo
-    if (!fs.existsSync(directorio)) {
-      fs.mkdirSync(directorio, { recursive: true });
-    }
-    cb(null, directorio);
-  },
-  filename: function (req, file, cb) {
-    cb(null, generarNombreArchivo(file));
-  },
-});
-
-// Función para generar un nombre de archivo único con timestamp
-const generarNombreArchivo = function (file) {
-  const timestamp = new Date().toISOString().replace(/:/g, "-");
-  return `${timestamp}-${file.originalname}`;
-};
-
-
+// Configuración de Multer para almacenar en memoria
+const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 const vehiculoController = {
@@ -263,7 +235,11 @@ const vehiculoController = {
       let imagen = null;
 
       if (req.file) {
-        imagen = req.file.filename;
+        imagen = req.file.originalname;
+
+        // Conecta al servidor FTP y sube el archivo
+        await connectFTP();
+        await uploadFile(imagen, req.file.buffer);
       }
 
       // Construir la consulta SQL para actualizar el vehículo
@@ -289,14 +265,18 @@ const vehiculoController = {
     }
   },
 
-
-
   // METODO PARA AGREGAR VEHICULO A LA BD
   post: async (req, res) => {
     const { Modelo, Marca, Anio, PrecioGerente, PrecioWeb, PrecioLista, MarcaID } = req.body;
-    const Imagen = req.file ? req.file.filename : null;
+    const Imagen = req.file ? req.file.originalname : null;
 
     try {
+      // Conecta al servidor FTP y sube el archivo
+      if (req.file) {
+        await connectFTP();
+        await uploadFile(Imagen, req.file.buffer);
+      }
+
       const query = `
         INSERT INTO Vehiculos (Modelo, Marca, Anio, PrecioGerente, PrecioWeb, PrecioLista, MarcaID, Imagen, Condicion) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -325,7 +305,53 @@ const vehiculoController = {
       res.status(500).send("Error interno del servidor");
     }
   },
+
+  delete: async (req, res) => {
+    const { VehiculoID } = req.params;
   
+    if (!VehiculoID) {
+      return res.status(400).json({ message: "VehículoID no proporcionado" });
+    }
+  
+    try {
+      // Consulta SQL directa para verificar la existencia del registro
+      const [existingVehicle] = await sequelize.query(
+        'SELECT * FROM Vehiculos WHERE VehiculoID = :VehiculoID',
+        {
+          replacements: { VehiculoID },
+          type: sequelize.QueryTypes.SELECT,
+        }
+      );
+  
+      if (!existingVehicle) {
+        return res.status(404).json({ message: `No se encontró ningún vehículo con VehiculoID ${VehiculoID}` });
+      }
+  
+      // Procede con la eliminación si el vehículo existe
+      const result = await sequelize.query(
+        'DELETE FROM Vehiculos WHERE VehiculoID = :VehiculoID',
+        {
+          replacements: { VehiculoID },
+          type: sequelize.QueryTypes.DELETE,
+        }
+      );
+  
+      // Imprimir el resultado para verificar su estructura
+      console.log('Resultado de la consulta DELETE:', result);
+  
+      // Verificar si el vehículo fue eliminado
+      if (result && result[0] && result[0].affectedRows === 0) {
+        res.status(404).json({ message: `No se encontró ningún vehículo con VehiculoID ${VehiculoID}` });
+      } else {
+        res.json({ message: "Vehículo eliminado con éxito" });
+      }
+    } catch (error) {
+      console.error("Error al eliminar el vehículo:", error);
+      res.status(500).send("Error interno del servidor");
+    }
+  }
+  
+
   // Código de Wlickez
   /*
   post: async (req, res) => {

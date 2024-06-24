@@ -1,47 +1,44 @@
 import express from "express";
 import multer from "multer";
-import fs from "fs";
+import { connectFTP, uploadFile } from './ftpClient.mjs';  // Importa la función uploadFile para subir archivos al FTP
 import sequelize from "../config/config.mjs";
 
 const vehiculosRouter = express.Router();
 vehiculosRouter.use(express.urlencoded({ extended: true }));
 vehiculosRouter.use(express.json());
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "../JpMotor/Images/nuevos/");
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname);
-  },
-});
-
+// Almacena los archivos en memoria en lugar de en disco
+const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 const vehiculoController = {
-  post:  async (req, res) => {
+  post: [upload.single('imagen'), async (req, res) => {
     // Extraer la información del vehículo desde la solicitud
-    const { Modelo, Marca, Anio, PrecioGerente, PresioWeb, PrecioLista, MarcaID } =
-      req.body;
-  
+    const { Modelo, Marca, Anio, PrecioGerente, PresioWeb, PrecioLista, MarcaID, Condicion } = req.body;
+
     // Obtener la imagen del cuerpo de la solicitud
-    const Imagen = req.file ? req.file.filename : null;
-  
+    const Imagen = req.file ? `${Date.now()}-${req.file.originalname}` : null;
+    
     try {
       // Insertar el vehículo en la base de datos
-
-      var query = "INSERT INTO Vehiculos (Modelo, Marca, Anio, PrecioGerente, PresioWeb, PrecioLista, MarcaID, Imagen, Condicion) VALUES ("+req.body.Modelo+", '"+req.body.Marca +"', " + req.body.Anio + ", " + req.body.PrecioGerente + "," + req.body.PresioWeb + "," + req.body.PrecioLista + "," + req.body.MarcaID  +",'"+ req.body.Imagen +"', '" + req.body.Condicion +"')";
+      const query = `
+        INSERT INTO Vehiculos (Modelo, Marca, Anio, PrecioGerente, PresioWeb, PrecioLista, MarcaID, Imagen, Condicion) 
+        VALUES ('${Modelo}', '${Marca}', ${Anio}, ${PrecioGerente}, ${PresioWeb}, ${PrecioLista}, ${MarcaID}, '${Imagen}', '${Condicion}')
+      `;
       console.log(query);
-      const result = await sequelize.query(query,
-      {
+      const result = await sequelize.query(query, {
         type: sequelize.QueryTypes.INSERT
-      });      
-  
+      });
+
+      // Subir la imagen al servidor FTP
+      if (req.file) {
+        await uploadFile(Imagen, req.file.buffer);
+      }
+
       // Enviar una respuesta exitosa al cliente
       res.json({
         message: "Vehiculo agregado con éxito",
         vehiculo: {
-          //VehiculoID: result.insertId,
           Modelo,
           Marca,
           Anio,
@@ -51,12 +48,12 @@ const vehiculoController = {
           MarcaID,
           Imagen
         },
-      });    
+      });
     } catch (error) {
       console.error("Error al agregar vehiculo:", error);
       res.status(500).send("Error interno del servidor");
     }
-  },
+  }],
   getVehiculos: async (req, res) => {
     try {
       const result = await sequelize.query("SELECT * FROM Vehiculos",
@@ -227,36 +224,3 @@ getVehiculoDimensionesrDetalle : async (req, res) => {
 }
 
 export default vehiculoController;
-
-// // Actualizar un vehiculo existente
-// vehiculosRouter.put("/:id", upload.single('Imagen'), async function (req, res) {
-//   // Extraer la información del vehículo desde la solicitud
-//   const { Modelo, Marca, Anio, PrecioGerente, PresioWeb, PrecioLista, MarcaID } = req.body;
-
-//   // La imagen se guarda en req.file
-//   const Imagen = req.file ? req.file.filename : null;
-
-//   try {
-//     // Si se subió una nueva imagen, actualizar la imagen en la base de datos
-//     if (Imagen) {
-//       await query(
-//         "UPDATE Vehiculos SET Modelo = ?, Marca = ?, Anio = ?, PrecioGerente = ?, PresioWeb = ?, PrecioLista = ?, MarcaID = ?, Imagen = ? WHERE VehiculoID = ?",
-//         [Modelo, Marca, Anio, PrecioGerente, PresioWeb, PrecioLista, MarcaID,  Imagen, req.params.id]
-//       );
-//     } else {
-//       // Si no se subió una nueva imagen, no actualizar la imagen en la base de datos
-//       await query(
-//         "UPDATE Vehiculos SET Modelo = ?, Marca = ?, Anio = ?, PrecioGerente = ?, PresioWeb = ?, PrecioLista = ?, MarcaID = ? WHERE VehiculoID = ?",
-//         [Modelo, Marca, Anio, PrecioGerente, PresioWeb, PrecioLista, MarcaID, req.params.id]
-//       );
-//     }
-
-//     // Enviar una respuesta exitosa al cliente
-//     res.json({
-//       message: "Vehiculo actualizado con éxito",
-//     });
-//   } catch (error) {
-//     console.error("Error al actualizar vehiculo:", error);
-//     res.status(500).send("Error interno del servidor");
-//   }
-// });

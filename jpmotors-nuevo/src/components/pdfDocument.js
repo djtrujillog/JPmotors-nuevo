@@ -59,7 +59,7 @@ const PdfDocument = ({
     <Page style={styles.page}>
       <View style={styles.section}>
         <Text style={styles.title}>{`${imageData.Marca} ${imageData.Modelo}`}</Text>
-        <Image style={styles.image} src={`/images/${imageData.Imagen}`} />
+        <Image style={styles.image} src={`/imagenes/${imageData.Imagen}`} />
       </View>
       <View style={styles.divider} />
       <View style={styles.section}>

@@ -1,4 +1,5 @@
 import React from 'react';
+import AutoImage from './AutoImage';
 
 
 const AutoItem = ({ auto, onClick }) => {
@@ -7,12 +8,15 @@ const AutoItem = ({ auto, onClick }) => {
   const marca = auto?.Marca || 'N/A';
   const modelo = auto?.Modelo || 'N/A';
   const vehiculoID = auto?.VehiculoID; // Se necesita para la lógica del clic
-
+  const longBlobData = auto?.Imagen.data;
+  
   return (
     <div className="col-md-4 mb-4">
       <div className="card" onClick={() => onClick(auto)}>
-      <img src='./imagenes/Imagen7.png' className="card-img-top" alt="asdasdf" />
-        <img ssrc={`${process.env.PUBLIC_URL}/imagenes/${imagen}`} className="card-img-top" alt={`${marca} ${modelo}`} />
+        <AutoImage
+         longBlobData={longBlobData}
+         alt = {auto.Modelo}
+        />
 
         <div className="card-body">
           <h5 className="card-title">{marca}</h5>

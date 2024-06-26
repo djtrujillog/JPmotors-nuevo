@@ -34,6 +34,7 @@ function Home() {
                   alt="Descriptive text for card 1"
                 />
               </div>
+              <div className="container-xl">
               <div className="col-md-8">
                 <div className="card-body">
                   <h5 className="card-title">
@@ -48,6 +49,7 @@ function Home() {
                     necesidades.
                   </p>
                 </div>
+              </div>
               </div>
             </div>
           </div>
@@ -64,6 +66,7 @@ function Home() {
               </div>
               <div className="col-md-8">
                 <div className="card-body">
+                  <div className="container-xl">
                   <h5 className="card-title">¿BUSCAS UN AUTO USADO?</h5>
                   <p className="card-text">
                     ¡En JP Motors tenemos las mejores opciones para ti! Nuestros
@@ -75,6 +78,7 @@ function Home() {
                     ofertas!
                   </p>
                   
+                </div>
                 </div>
               </div>
             </div>

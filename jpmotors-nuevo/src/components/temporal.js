@@ -29,7 +29,7 @@ const AutoModal = ({ auto, onClose }) => {
             </Modal.Header>
             <Modal.Body>
                 <img 
-                    src={`/images/${imageData.Imagen}`} 
+                    src={`/imagenes/${imageData.Imagen}`} 
                     className="img-fluid" 
                     alt={`${details.Marca} ${details.Modelo}`}
                 />

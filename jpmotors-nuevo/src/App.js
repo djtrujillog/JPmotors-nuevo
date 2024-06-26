@@ -9,10 +9,12 @@ import Usados from "./components/Usados";
 import Contacto from "./components/Contacto";
 import Footer from "./components/Footer"; // Asegúrate de que esta ruta sea correcta
 import AutoList from "./components/Autolist.js";
+import AgVehiculo from "./components/AgregarVehiculo";
 // import Preloader from "./components/Preloader";
 import logo from "./img/Logo-12.png";
 import "./App.css";
 import "./js/custom.js";
+
 
 function App() {
   return (
@@ -46,7 +48,7 @@ function App() {
                   </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                  <Nav.Link as={Link} to="/usados" className="nav-link">
+                  <Nav.Link as={Link} to="/agvehiculo" className="nav-link">
                     Usados
                   </Nav.Link>
                 </Nav.Item>
@@ -71,6 +73,7 @@ function App() {
           <Route path="/nuevos" element={<AutoList />} />
           <Route path="/usados" element={<Usados />} />
           <Route path="/contacto" element={<Contacto />} />
+          <Route path="/agvehiculo" element={<AgVehiculo/>}/>
           
         </Routes>
       </Router>

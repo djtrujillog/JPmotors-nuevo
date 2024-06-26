@@ -4,7 +4,7 @@ import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
 
-//Importar controladores
+// Importar controladores
 import vehiculoController from "../controllers/vehicleController.mjs";
 import detalleMotorController from "../controllers/detalleMotorController.mjs";
 import detalleDimensionesController from "../controllers/detalleDimensionesController.mjs";
@@ -17,24 +17,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Configurar multer para manejar la subida de archivos
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    // const directorio = path.join(__dirname, "../../public/images");
-    const directorio = path.resolve("C:/proyectos/jpmotors-nuevo/jpmotors-nuevo/public/images");
-
-
-    // Verificar si el directorio existe, si no, crearlo
-    if (!fs.existsSync(directorio)) {
-      fs.mkdirSync(directorio, { recursive: true });
-    }
-    
-    cb(null, directorio);
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
-
+const storage = multer.memoryStorage();  // Usar memoria para almacenar archivos temporalmente
 const upload = multer({ storage: storage });
 
 const router = Router();
@@ -50,13 +33,12 @@ router.get("/porMarca", vehiculoController.getVehiculosPorMarca);
 router.get("/:id", vehiculoController.getVehiculoPorID);
 router.post("/", upload.single("file"), vehiculoController.post);
 router.put("/:id", upload.single("file"), vehiculoController.put);
-router.delete("/:VehiculoID", vehiculoController.delete); 
+router.delete("/:VehiculoID", vehiculoController.delete);
 
 // Rutas para detalleDimensiones
 router.get("/detalleDimensiones", detalleDimensionesController.getAll);
 router.get("/detalleDimensiones/:VehiculoID", detalleDimensionesController.getByVehiculoID);
 router.post("/detalleDimensiones", detalleDimensionesController.create);
-// router.put("/detalleDimensiones/:VehiculoID", detalleDimensionesController.update);
 router.put('/detalleDimensiones/:descripcion', detalleDimensionesController.put);
 router.post('/borrarDimensiones', detalleDimensionesController.delete);
 
@@ -87,7 +69,5 @@ router.get("/detalleSeguridad/:VehiculoID", detalleSeguridadController.getByVehi
 router.post("/detalleSeguridad", detalleSeguridadController.create);
 router.put("/detalleSeguridad/:VehiculoID", detalleSeguridadController.put);
 router.post("/eliminarSeguridad", detalleSeguridadController.post);
-
-
 
 export default router;

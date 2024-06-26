@@ -1,15 +1,7 @@
-import express from "express";
-import multer from "multer";
-import sequelize from "../config/config.mjs";
-import { connectFTP, uploadFile } from '../controllers/ftpClient.mjs';
+import fs from 'fs/promises';
+import path from 'path';
+import sequelize from '../config/config.mjs'; 
 
-const vehiculosRouter = express.Router();
-vehiculosRouter.use(express.urlencoded({ extended: true }));
-vehiculosRouter.use(express.json());
-
-// Configuración de Multer para almacenar en memoria
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
 
 const vehiculoController = {
   getVehiculos: async (req, res) => {
@@ -37,17 +29,12 @@ const vehiculoController = {
         type: sequelize.QueryTypes.SELECT,
       });
 
-      //console.log(result); // Registro para depuración
-
       if (result.length === 0) {
         res.status(404).send("Vehículo no encontrado");
         return;
       }
 
-      // El primer elemento del array 'result' contiene las descripciones
       const descriptionsObject = result[0];
-
-      // Extraer las descripciones del objeto
       const motorDescriptions = Object.values(descriptionsObject).map(
         (item) => item.Descripcion
       );
@@ -59,7 +46,6 @@ const vehiculoController = {
     }
   },
 
-  // Seguridad detalle
   getVehiculoSeguridad: async (req, res) => {
     try {
       const { id } = req.params;
@@ -67,15 +53,13 @@ const vehiculoController = {
         replacements: { id },
         type: sequelize.QueryTypes.SELECT,
       });
-      //console.log(result); // Registro para depuración
+
       if (result.length === 0) {
         res.status(404).send("Detalles no encontrados");
         return;
       }
-      // El primer elemento del array 'result' contiene las descripciones
-      const descriptionsObject = result[0];
 
-      // Extraer las descripciones del objeto
+      const descriptionsObject = result[0];
       const seguridadDescriptions = Object.values(descriptionsObject).map(
         (item) => item.Descripcion
       );
@@ -87,7 +71,6 @@ const vehiculoController = {
     }
   },
 
-  // Interior detalle
   getVehiculoInterior: async (req, res) => {
     try {
       const { id } = req.params;
@@ -101,10 +84,7 @@ const vehiculoController = {
         return;
       }
 
-      // El primer elemento del array 'result' contiene las descripciones
       const descriptionsObject = result[0];
-
-      // Extraer las descripciones del objeto
       const interiorDescriptions = Object.values(descriptionsObject).map(
         (item) => item.Descripcion
       );
@@ -116,7 +96,6 @@ const vehiculoController = {
     }
   },
 
-  // Exterior detalle
   getVehiculoExterior: async (req, res) => {
     try {
       const { id } = req.params;
@@ -129,10 +108,8 @@ const vehiculoController = {
         res.status(404).send("Vehículo no encontrado");
         return;
       }
-      // El primer elemento del array 'result' contiene las descripciones
-      const descriptionsObject = result[0];
 
-      // Extraer las descripciones del objeto
+      const descriptionsObject = result[0];
       const exteriorDescriptions = Object.values(descriptionsObject).map(
         (item) => item.Descripcion
       );
@@ -144,7 +121,6 @@ const vehiculoController = {
     }
   },
 
-  // Dimensiones detalle
   getVehiculoDimensiones: async (req, res) => {
     try {
       const { id } = req.params;
@@ -160,10 +136,8 @@ const vehiculoController = {
         res.status(404).send("Vehículo no encontrado");
         return;
       }
-      // El primer elemento del array 'result' contiene las descripciones
-      const descriptionsObject = result[0];
 
-      // Extraer las descripciones del objeto
+      const descriptionsObject = result[0];
       const dimensionesDescriptions = Object.values(descriptionsObject).map(
         (item) => item.Descripcion
       );
@@ -196,202 +170,138 @@ const vehiculoController = {
       if (result.length > 0) {
         res.status(200).json(result);
       } else {
-        res.status(404).json({ message: "No hay vehículos de esa marca" });
+        res.status(404).json({ message: "No se encontraron vehículos para esta marca" });
       }
     } catch (error) {
-      console.error("Error al obtener los vehículos de la marca:", error);
+      console.error("Error al obtener vehículos:", error);
       res.status(500).send("Error interno del servidor");
     }
   },
 
   getVehiculoPorID: async (req, res) => {
+    const { id } = req.params;
+
     try {
-      const { id } = req.params;
+      // Consultar el vehículo por ID desde la base de datos
       const result = await sequelize.query(
         "SELECT * FROM Vehiculos WHERE VehiculoID = :id",
-        {
-          replacements: { id },
-          type: sequelize.QueryTypes.SELECT,
-        }
+        { replacements: { id }, type: sequelize.QueryTypes.SELECT }
       );
 
+      // Si no se encuentra el vehículo, retornar un error 404
       if (result.length === 0) {
-        res.status(404).send("Vehículo no encontrado");
-        return;
+        return res.status(404).send("Vehículo no encontrado");
       }
-      res.json(result[0]);
+
+      // Obtener la ruta completa de la imagen
+      const imagePath = path.join(__dirname, 'ruta_a_tu_directorio_de_imagenes', result[0].Imagen);
+
+      try {
+        // Leer el archivo de imagen como un Buffer
+        const imageBuffer = await fs.readFile(imagePath);
+
+        // Convertir el Buffer a base64
+        const base64Image = Buffer.from(imageBuffer).toString('base64');
+        const imageUrl = `data:image/jpeg;base64,${base64Image}`;
+
+        // Agregar la URL de la imagen al objeto del vehículo
+        result[0].ImagenURL = imageUrl;
+
+        // Enviar el vehículo con la URL de la imagen al cliente
+        res.json(result[0]);
+      } catch (error) {
+        console.error("Error al leer la imagen:", error);
+        res.status(500).send("Error interno del servidor al leer la imagen");
+      }
     } catch (error) {
       console.error("Error al obtener el vehículo:", error);
       res.status(500).send("Error interno del servidor");
     }
   },
 
-  // Actualizar un vehículo existente
-  put: async (req, res) => {
-    const { Modelo, Marca, Anio, PrecioGerente, PrecioWeb, PrecioLista, MarcaID, Condicion } = req.body;
-    const { id } = req.params;
-
+  post: async (req, res) => {
     try {
-      let imagen = null;
+      const { body, file } = req;
+      const imagenBuffer = file.buffer;  // Obtener el buffer del archivo
 
-      if (req.file) {
-        imagen = req.file.originalname;
+      // Guardar el buffer de la imagen en la base de datos junto con otros datos del vehículo
+      const result = await sequelize.query(
+        `INSERT INTO Vehiculos (Modelo, Marca, Anio, PrecioGerente, PrecioWeb, PrecioLista, Imagen, MarcaID)
+        VALUES (:Modelo, :Marca, :Anio, :PrecioGerente, :PrecioWeb, :PrecioLista, :Imagen, :MarcaID)`,
+        {
+          replacements: {
+            Modelo: body.Modelo,
+            Marca: body.Marca,
+            Anio: body.Anio,
+            PrecioGerente: body.PrecioGerente,
+            PrecioWeb: body.PrecioWeb,
+            PrecioLista: body.PrecioLista,
+            Imagen: imagenBuffer,
+            MarcaID: body.MarcaID,
+          },
+        }
+      );
 
-        // Conecta al servidor FTP y sube el archivo
-        await connectFTP();
-        await uploadFile(imagen, req.file.buffer);
-      }
+      res.status(201).json({ message: "Vehículo creado con éxito", id: result[0] });
+    } catch (error) {
+      console.error("Error al crear vehículo:", error);
+      res.status(500).send("Error interno del servidor");
+    }
+  },
 
-      // Construir la consulta SQL para actualizar el vehículo
-      const query = `
-        UPDATE Vehiculos 
-        SET Modelo = ?, Marca = ?, Anio = ?, PrecioGerente = ?, PrecioWeb = ?, PrecioLista = ?, MarcaID = ?, Condicion = ?, Imagen = ?
-        WHERE VehiculoID = ?
-      `;
+  put: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { body, file } = req;
+      const imagenBuffer = file ? file.buffer : null;
 
-      const result = await sequelize.query(query, {
-        replacements: [Modelo, Marca, Anio, PrecioGerente, PrecioWeb, PrecioLista, MarcaID, Condicion, imagen, id],
-        type: sequelize.QueryTypes.UPDATE,
-      });
+      // Actualizar los datos del vehículo en la base de datos
+      const result = await sequelize.query(
+        `UPDATE Vehiculos SET 
+          Modelo = :Modelo, 
+          Marca = :Marca, 
+          Anio = :Anio, 
+          PrecioGerente = :PrecioGerente, 
+          PrecioWeb = :PrecioWeb, 
+          PrecioLista = :PrecioLista, 
+          Imagen = IFNULL(:Imagen, Imagen), 
+          MarcaID = :MarcaID 
+        WHERE VehiculoID = :id`,
+        {
+          replacements: {
+            Modelo: body.Modelo,
+            Marca: body.Marca,
+            Anio: body.Anio,
+            PrecioGerente: body.PrecioGerente,
+            PrecioWeb: body.PrecioWeb,
+            PrecioLista: body.PrecioLista,
+            Imagen: imagenBuffer,
+            MarcaID: body.MarcaID,
+            id: id,
+          },
+        }
+      );
 
-      if (result[1] > 0) {
-        res.json({ message: "Vehículo actualizado con éxito" });
-      } else {
-        res.status(404).json({ message: `No se encontró ningún vehículo con ID ${id}` });
-      }
+      res.json({ message: "Vehículo actualizado con éxito" });
     } catch (error) {
       console.error("Error al actualizar vehículo:", error);
       res.status(500).send("Error interno del servidor");
     }
   },
 
-  // METODO PARA AGREGAR VEHICULO A LA BD
-  post: async (req, res) => {
-    const { Modelo, Marca, Anio, PrecioGerente, PrecioWeb, PrecioLista, MarcaID } = req.body;
-    const Imagen = req.file ? req.file.originalname : null;
-
-    try {
-      // Conecta al servidor FTP y sube el archivo
-      if (req.file) {
-        await connectFTP();
-        await uploadFile(Imagen, req.file.buffer);
-      }
-
-      const query = `
-        INSERT INTO Vehiculos (Modelo, Marca, Anio, PrecioGerente, PrecioWeb, PrecioLista, MarcaID, Imagen, Condicion) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `;
-
-      const result = await sequelize.query(query, {
-        replacements: [Modelo, Marca, Anio, PrecioGerente, PrecioWeb, PrecioLista, MarcaID, Imagen, req.body.Condicion],
-        type: sequelize.QueryTypes.INSERT,
-      });
-
-      res.json({
-        message: "Vehiculo agregado con éxito",
-        vehiculo: {
-          Modelo,
-          Marca,
-          Anio,
-          PrecioGerente,
-          PrecioWeb,
-          PrecioLista,
-          MarcaID,
-          Imagen
-        },
-      });
-    } catch (error) {
-      console.error("Error al agregar vehiculo:", error);
-      res.status(500).send("Error interno del servidor");
-    }
-  },
-
   delete: async (req, res) => {
-    const { VehiculoID } = req.params;
-  
-    if (!VehiculoID) {
-      return res.status(400).json({ message: "VehículoID no proporcionado" });
-    }
-  
     try {
-      // Consulta SQL directa para verificar la existencia del registro
-      const [existingVehicle] = await sequelize.query(
-        'SELECT * FROM Vehiculos WHERE VehiculoID = :VehiculoID',
-        {
-          replacements: { VehiculoID },
-          type: sequelize.QueryTypes.SELECT,
-        }
-      );
-  
-      if (!existingVehicle) {
-        return res.status(404).json({ message: `No se encontró ningún vehículo con VehiculoID ${VehiculoID}` });
-      }
-  
-      // Procede con la eliminación si el vehículo existe
-      const result = await sequelize.query(
-        'DELETE FROM Vehiculos WHERE VehiculoID = :VehiculoID',
-        {
-          replacements: { VehiculoID },
-          type: sequelize.QueryTypes.DELETE,
-        }
-      );
-  
-      // Imprimir el resultado para verificar su estructura
-      console.log('Resultado de la consulta DELETE:', result);
-  
-      // Verificar si el vehículo fue eliminado
-      if (result && result[0] && result[0].affectedRows === 0) {
-        res.status(404).json({ message: `No se encontró ningún vehículo con VehiculoID ${VehiculoID}` });
-      } else {
-        res.json({ message: "Vehículo eliminado con éxito" });
-      }
-    } catch (error) {
-      console.error("Error al eliminar el vehículo:", error);
-      res.status(500).send("Error interno del servidor");
-    }
-  }
-  
-
-  // Código de Wlickez
-  /*
-  post: async (req, res) => {
-    // Extraer la información del vehículo desde la solicitud
-    const { Modelo, Marca, Anio, PrecioGerente, PrecioWeb, PrecioLista, MarcaID } =
-      req.body;
-
-    // Obtener la imagen del cuerpo de la solicitud
-    const Imagen = req.file ? req.file.filename : null;
-
-    try {
-      // Insertar el vehículo en la base de datos
-
-      var query = "INSERT INTO Vehiculos (Modelo, Marca, Anio, PrecioGerente, PrecioWeb, PrecioLista, MarcaID, Imagen, Condicion) VALUES (" + req.body.Modelo + ", '" + req.body.Marca + "', " + req.body.Anio + ", " + req.body.PrecioGerente + "," + req.body.PrecioWeb + "," + req.body.PrecioLista + "," + req.body.MarcaID + ",'" + req.body.Imagen + "', '" + req.body.Condicion + "')";
-      console.log(query);
-      const result = await sequelize.query(query, {
-        type: sequelize.QueryTypes.INSERT
+      const { VehiculoID } = req.params;
+      await sequelize.query("DELETE FROM Vehiculos WHERE VehiculoID = :VehiculoID", {
+        replacements: { VehiculoID },
       });
 
-      // Enviar una respuesta exitosa al cliente
-      res.json({
-        message: "Vehiculo agregado con éxito",
-        vehiculo: {
-          // VehiculoID: result.insertId,
-          Modelo,
-          Marca,
-          Anio,
-          PrecioGerente,
-          PrecioWeb,
-          PrecioLista,
-          MarcaID,
-          Imagen
-        },
-      });
+      res.status(200).json({ message: "Vehículo eliminado con éxito" });
     } catch (error) {
-      console.error("Error al agregar vehiculo:", error);
+      console.error("Error al eliminar vehículo:", error);
       res.status(500).send("Error interno del servidor");
     }
   },
-  */
 };
 
 export default vehiculoController;

@@ -1,4 +1,3 @@
-// src/components/AutoImage.js
 import React, { useState, useEffect } from 'react';
 import { Buffer } from 'buffer';
 
@@ -20,13 +19,19 @@ function AutoImage({ longBlobData, alt }) {
         }
     }, [longBlobData]);
 
+    const handleImageClick = () => {
+        // Implementar aquí la lógica para mostrar un modal o overlay con zoom
+        console.log('Implementar lógica de zoom aquí');
+    };
+
     return (
-        <div>
+        <div className="text-center mb-3"> {/* Centrar la imagen */}
             {imgSrc && (
                 <img
                     src={imgSrc}
                     alt={alt}
-                    style={{ width: '200px', height: 'auto' }}
+                    style={{ maxWidth: '100%', height: 'auto', cursor: 'pointer' }}
+                    onClick={handleImageClick}
                 />
             )}
         </div>

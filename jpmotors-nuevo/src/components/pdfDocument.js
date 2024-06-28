@@ -18,9 +18,8 @@ const styles = StyleSheet.create({
   image: {
     alignSelf: 'center',
     width: '100%',
-    height: '100%',
+    height: 'auto',
     marginBottom: 5,
-    objectFit: 'contain',
   },
   subTitle: {
     fontSize: 14,
@@ -36,19 +35,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderBottomColor: '#000',
   },
-  row: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  column: {
-    flexDirection: 'column',
-    flexBasis: '50%',
-    paddingRight: 10,
-  },
 });
 
 const PdfDocument = ({
-  imageData,
+  imageUrl,
   motorDetails,
   seguridadDetails,
   interiorDetails,
@@ -58,8 +48,8 @@ const PdfDocument = ({
   <Document>
     <Page style={styles.page}>
       <View style={styles.section}>
-        <Text style={styles.title}>{`${imageData.Marca} ${imageData.Modelo}`}</Text>
-        <Image style={styles.image} src={`/imagenes/${imageData.Imagen}`} />
+        <Text style={styles.title}>Detalles del Vehículo</Text>
+        {imageUrl && <Image style={styles.image} src={imageUrl} />}
       </View>
       <View style={styles.divider} />
       <View style={styles.section}>

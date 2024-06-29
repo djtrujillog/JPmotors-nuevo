@@ -46,15 +46,18 @@ const AgregarVehiculo = () => {
   const openEditModal = (vehiculo) => {
     setEditingVehiculo(vehiculo);
     setShowEditModal(true);
+    reset();
   };
 
   const closeEditModal = () => {
     setShowEditModal(false);
     setEditingVehiculo(null);
+    reset();
   };
 
   const openAddModal = () => {
     setShowAddModal(true);
+    reset();
   };
 
   const closeAddModal = () => {
@@ -65,51 +68,61 @@ const AgregarVehiculo = () => {
   const openDetailsModal = (vehiculo) => {
     setDetailingVehiculo(vehiculo);
     setShowDetailsModal(true);
+    reset();
   };
 
   const closeDetailsModal = () => {
     setShowDetailsModal(false);
     setDetailingVehiculo(null);
+    reset();
   };
 
   const openExteriorModal = (vehiculo) => {
     setDetailingExteriorVehiculo(vehiculo);
     setShowExteriorsModal(true);
+    reset();
   };
 
   const closeExteriorModal = () => {
     setShowExteriorsModal(false);
     setDetailingExteriorVehiculo(null);
+    reset();
   };
 
   const openInteriorModal = (vehiculo) => {
     setDetailingInteriorVehiculo(vehiculo);
     setShowInteriorModal(true);
+    reset();
   };
 
   const closeInteriorModal = () => {
     setShowInteriorModal(false);
     setDetailingInteriorVehiculo(null);
+    reset();
   };
 
   const openMotorModal = (vehiculo) => {
     setDetailingMotorVehiculo(vehiculo);
     setShowMotorModal(true);
+    reset();
   };
 
   const closeMotorModal = () => {
     setShowMotorModal(false);
     setDetailingMotorVehiculo(null);
+    reset();
   };
 
   const openSeguridadModal = (vehiculo) => {
     setDetailingSeguridadVehiculo(vehiculo);
     setShowSeguridadModal(true);
+    reset();
   };
 
   const closeSeguridadModal = () => {
     setShowSeguridadModal(false);
     setDetailingSeguridadVehiculo(null);
+    reset();
   };
 
   const onSubmitAdd = async (data) => {

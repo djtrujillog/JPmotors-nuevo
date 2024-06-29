@@ -193,26 +193,8 @@ const vehiculoController = {
         return res.status(404).send("Vehículo no encontrado");
       }
 
-      // Obtener la ruta completa de la imagen
-      const imagePath = path.join(__dirname, 'ruta_a_tu_directorio_de_imagenes', result[0].Imagen);
-
-      try {
-        // Leer el archivo de imagen como un Buffer
-        const imageBuffer = await fs.readFile(imagePath);
-
-        // Convertir el Buffer a base64
-        const base64Image = Buffer.from(imageBuffer).toString('base64');
-        const imageUrl = `data:image/jpeg;base64,${base64Image}`;
-
-        // Agregar la URL de la imagen al objeto del vehículo
-        result[0].ImagenURL = imageUrl;
-
-        // Enviar el vehículo con la URL de la imagen al cliente
-        res.json(result[0]);
-      } catch (error) {
-        console.error("Error al leer la imagen:", error);
-        res.status(500).send("Error interno del servidor al leer la imagen");
-      }
+      // Enviar el vehículo en crudo al cliente
+      res.json(result[0]);
     } catch (error) {
       console.error("Error al obtener el vehículo:", error);
       res.status(500).send("Error interno del servidor");

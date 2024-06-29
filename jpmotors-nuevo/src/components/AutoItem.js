@@ -4,10 +4,10 @@ import AutoImage from './AutoImage';
 
 const AutoItem = ({ auto, onClick }) => {
   // Verifica si auto tiene las propiedades requeridas
-  const imagen = auto?.Imagen || 'defaultImage.jpg'; // Usa una imagen predeterminada si no hay imagen
+  // const imagen = auto?.Imagen || 'defaultImage.jpg'; // Usa una imagen predeterminada si no hay imagen
   const marca = auto?.Marca || 'N/A';
   const modelo = auto?.Modelo || 'N/A';
-  const vehiculoID = auto?.VehiculoID; // Se necesita para la lógica del clic
+  // const vehiculoID = auto?.VehiculoID; // Se necesita para la lógica del clic
   const longBlobData = auto?.Imagen.data;
   
   return (

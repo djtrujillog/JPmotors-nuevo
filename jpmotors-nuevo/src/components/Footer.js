@@ -1,11 +1,10 @@
-// src/components/Footer.js
 import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const Footer = () => {
   return (
-    <footer  expand="lg" variant="light" bg="light" className="no-print">
+    <footer className="footer no-print bg-light" style={footerStyle}>
       <Container className="bg-light">
         <Row>
           <Col md={6}>
@@ -104,8 +103,27 @@ const Footer = () => {
           </Row>
         </Container> */}
       </section>
+      <style jsx>{`
+        .footer {
+          position: fixed;
+          bottom: 0;
+          width: 100%;
+          background-color: #f8f9fa;
+          padding: 10px 0;
+          z-index: 1000;
+        }
+      `}</style>
     </footer>
   );
+};
+
+const footerStyle = {
+  position: "fixed",
+  bottom: 0,
+  width: "100%",
+  backgroundColor: "#f8f9fa",
+  padding: "10px 0",
+  zIndex: 1000,
 };
 
 export default Footer;

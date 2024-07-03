@@ -22,7 +22,7 @@ const DetallesVehiculoModal = ({ show, handleClose, vehiculo }) => {
   // Función para obtener los detalles existentes desde el servidor
   const fetchExistingDetalles = async (VehiculoID) => {
     try {
-      const response = await axios.get(`http://localhost:4000/vehiculos/detalleDimensiones/${VehiculoID}`);
+      const response = await axios.get(`https://jpmotorsgt.azurewebsites.net/vehiculos/detalleDimensiones/${VehiculoID}`);
       if (response.data && response.data.Dimensiones) {
         setExistingDetalles(response.data.Dimensiones.filter(detalle => detalle.trim() !== ''));
       } else {
@@ -40,7 +40,7 @@ const DetallesVehiculoModal = ({ show, handleClose, vehiculo }) => {
         VehiculoID: vehiculo.VehiculoID,
         descripcion: descripcion
       };
-      await axios.post('http://localhost:4000/vehiculos/borrarDimensiones', body);
+      await axios.post('https://jpmotorsgt.azurewebsites.net/vehiculos/borrarDimensiones', body);
       const updatedDetalles = existingDetalles.filter(detalle => detalle !== descripcion);
       setExistingDetalles(updatedDetalles);
       alert('Detalle eliminado correctamente');
@@ -72,7 +72,7 @@ const DetallesVehiculoModal = ({ show, handleClose, vehiculo }) => {
         Descripcion: editDetalle,
         originalDescripcion: originalDetalle // Enviar el valor original
       };
-      await axios.put(`http://localhost:4000/vehiculos/detalleDimensiones/${encodeURIComponent(originalDetalle)}`, body);
+      await axios.put(`https://jpmotorsgt.azurewebsites.net/vehiculos/detalleDimensiones/${encodeURIComponent(originalDetalle)}`, body);
       const updatedDetalles = existingDetalles.map(detalle => detalle === originalDetalle ? editDetalle : detalle);
       setExistingDetalles(updatedDetalles);
       alert('Detalle editado correctamente');
@@ -91,7 +91,7 @@ const DetallesVehiculoModal = ({ show, handleClose, vehiculo }) => {
         VehiculoID: vehiculo.VehiculoID,
         Descripcion: newDetalle
       };
-      const response = await axios.post('http://localhost:4000/vehiculos/detalleDimensiones', body);
+      const response = await axios.post('https://jpmotorsgt.azurewebsites.net/vehiculos/detalleDimensiones', body);
       setExistingDetalles([...existingDetalles, response.data.detalleDimensiones.Descripcion]);
       setNewDetalle('');
       alert('Detalle agregado correctamente');

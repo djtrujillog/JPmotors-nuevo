@@ -17,25 +17,53 @@ const AutoModal = ({ auto, onClose }) => {
 
     const fetchData = async () => {
       try {
-        const [imageRes, motorRes, seguridadRes, interiorRes, exteriorRes, dimensionesRes] = await Promise.all([
-          fetch(`http://localhost:4000/vehiculos/${auto.VehiculoID}`),
-          fetch(`http://localhost:4000/vehiculos/motor/${auto.VehiculoID}`),
-          fetch(`http://localhost:4000/vehiculos/seguridad/${auto.VehiculoID}`),
-          fetch(`http://localhost:4000/vehiculos/interior/${auto.VehiculoID}`),
-          fetch(`http://localhost:4000/vehiculos/exterior/${auto.VehiculoID}`),
-          fetch(`http://localhost:4000/vehiculos/dimensiones/${auto.VehiculoID}`)
+        const [
+          imageRes,
+          motorRes,
+          seguridadRes,
+          interiorRes,
+          exteriorRes,
+          dimensionesRes,
+        ] = await Promise.all([
+          fetch(
+            `https://jpmotorsgt.azurewebsites.net/vehiculos/${auto.VehiculoID}`
+          ),
+          fetch(
+            `https://jpmotorsgt.azurewebsites.net/vehiculos/motor/${auto.VehiculoID}`
+          ),
+          fetch(
+            `https://jpmotorsgt.azurewebsites.net/vehiculos/seguridad/${auto.VehiculoID}`
+          ),
+          fetch(
+            `https://jpmotorsgt.azurewebsites.net/vehiculos/interior/${auto.VehiculoID}`
+          ),
+          fetch(
+            `https://jpmotorsgt.azurewebsites.net/vehiculos/exterior/${auto.VehiculoID}`
+          ),
+          fetch(
+            `https://jpmotorsgt.azurewebsites.net/vehiculos/dimensiones/${auto.VehiculoID}`
+          ),
         ]);
 
-        const [imageData, motorData, seguridadData, interiorData, exteriorData, dimensionesData] = await Promise.all([
+        const [
+          imageData,
+          motorData,
+          seguridadData,
+          interiorData,
+          exteriorData,
+          dimensionesData,
+        ] = await Promise.all([
           imageRes.json(),
           motorRes.json(),
           seguridadRes.json(),
           interiorRes.json(),
           exteriorRes.json(),
-          dimensionesRes.json()
+          dimensionesRes.json(),
         ]);
 
-        const blob = new Blob([new Uint8Array(imageData.Imagen.data)], { type: 'image/jpeg' });
+        const blob = new Blob([new Uint8Array(imageData.Imagen.data)], {
+          type: "image/jpeg",
+        });
         setImageBlob(blob);
         setMotorDetails(motorData);
         setSeguridadDetails(seguridadData);
@@ -77,7 +105,7 @@ const AutoModal = ({ auto, onClose }) => {
           src={imageUrl}
           className="img-fluid d-block mx-auto"
           alt={`${auto.Marca} ${auto.Modelo}`}
-          style={{ maxWidth: '85%', height: 'auto' }}
+          style={{ maxWidth: "85%", height: "auto" }}
         />
         <div className="container">
           <div className="row">
@@ -125,6 +153,8 @@ const AutoModal = ({ auto, onClose }) => {
         <PDFDownloadLink
           document={
             <PdfDocument
+              marca={auto.Marca}
+              modelo={auto.Modelo}
               imageUrl={imageUrl}
               motorDetails={motorDetails}
               seguridadDetails={seguridadDetails}

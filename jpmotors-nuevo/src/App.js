@@ -18,7 +18,7 @@ import "./js/custom.js";
 
 function App() {
   return (
-    <div>
+    <div style={{ marginBottom: "60px" }}> 
       {/* <Preloader /> */}
       <br />
       <br />
@@ -49,7 +49,7 @@ function App() {
                 </Nav.Item>
                 <Nav.Item>
                   <Nav.Link as={Link} to="/agvehiculo" className="nav-link">
-                    Usados
+                    Agregar
                   </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>

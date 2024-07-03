@@ -29,7 +29,7 @@ const AgregarVehiculo = () => {
   useEffect(() => {
     const fetchVehiculos = async () => {
       try {
-        const response = await axios.get('http://localhost:4000/vehiculos');
+        const response = await axios.get('https://jpmotorsgt.azurewebsites.net/vehiculos');
         setVehiculos(response.data);
       } catch (error) {
         console.error('Error al obtener vehículos:', error);
@@ -133,7 +133,7 @@ const AgregarVehiculo = () => {
     });
 
     try {
-      const response = await axios.post('http://localhost:4000/vehiculos', formData, {
+      const response = await axios.post('https://jpmotorsgt.azurewebsites.net/vehiculos', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -153,7 +153,7 @@ const AgregarVehiculo = () => {
     });
 
     try {
-      const response = await axios.put(`http://localhost:4000/vehiculos/${editingVehiculo.VehiculoID}`, formData, {
+      const response = await axios.put(`https://jpmotorsgt.azurewebsites.net/vehiculos/${editingVehiculo.VehiculoID}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -168,7 +168,7 @@ const AgregarVehiculo = () => {
 
   const deleteVehiculo = async (VehiculoID) => {
     try {
-      await axios.delete(`http://localhost:4000/vehiculos/${VehiculoID}`);
+      await axios.delete(`https://jpmotorsgt.azurewebsites.net/vehiculos/${VehiculoID}`);
       setVehiculos(vehiculos.filter(v => v.VehiculoID !== VehiculoID));
     } catch (error) {
       console.error('Error al eliminar vehículo:', error);

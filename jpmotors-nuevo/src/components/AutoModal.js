@@ -165,7 +165,15 @@ const AutoModal = ({ auto, onClose }) => {
           }
           fileName={`${auto.Marca}_${auto.Modelo}.pdf`}
         >
-          {({ loading }) => (loading ? "Generando PDF..." : "Descargar PDF")}
+           {({ loading }) =>
+            loading ? (
+              <Button variant="primary" disabled>
+                Generando PDF...
+              </Button>
+            ) : (
+              <Button variant="primary">Descargar PDF</Button>
+            )
+          }
         </PDFDownloadLink>
       </Modal.Footer>
     </Modal>

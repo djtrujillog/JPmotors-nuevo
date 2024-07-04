@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 const Footer = () => {
   return (
-    <footer className="footer no-print bg-light" style={footerStyle}>
+    <footer className="footer no-print bg-light" >
       <Container className="bg-light">
         <Row>
           <Col md={6}>
@@ -103,27 +103,20 @@ const Footer = () => {
           </Row>
         </Container> */}
       </section>
-      <style jsx>{`
+      {/* <style jsx>{`
         .footer {
-          position: fixed;
+          position: abso;
           bottom: 0;
           width: 100%;
           background-color: #f8f9fa;
           padding: 10px 0;
           z-index: 1000;
         }
-      `}</style>
+      `}</style> */}
     </footer>
   );
 };
 
-const footerStyle = {
-  position: "fixed",
-  bottom: 0,
-  width: "100%",
-  backgroundColor: "#f8f9fa",
-  padding: "10px 0",
-  zIndex: 1000,
-};
+
 
 export default Footer;

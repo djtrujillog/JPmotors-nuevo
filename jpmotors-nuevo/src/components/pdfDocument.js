@@ -4,10 +4,10 @@ import headerImg from '../img/Logo-12.png';
 import separador1 from '../img/separador_1.png';
 import separador2 from '../img/separador_2.png';
 import separador3 from '../img/separador_3.png';
-// import separador4 from '../img/separador_4.png';
 import separador5 from '../img/separador_5.png';
 import separador6 from '../img/separador_6.png';
 
+// Estilos para el documento PDF
 const styles = StyleSheet.create({
   page: {
     padding: 10,
@@ -16,6 +16,7 @@ const styles = StyleSheet.create({
   header: {
     display: 'flex',
     flexDirection: 'row',
+    justifyContent: 'space-between', // Alineación de contenido en los extremos
     alignItems: 'center',
     marginBottom: 20,
   },
@@ -24,14 +25,17 @@ const styles = StyleSheet.create({
     height: 50,
     marginRight: 10,
   },
-  separadorImage: {
-    width: 'auto',
-    height: 50,
-    marginRight: 10,
+  headerInfo: {
+    textAlign: 'left', // Alineación del texto a la derecha
+    fontSize: 8, // Tamaño de fuente
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: 'bold',
+  },
+  headerPros:{
+    textAlign: 'center',
+    fontSize : 12
   },
   section: {
     marginBottom: 5,
@@ -39,7 +43,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     marginBottom: 8,
-    fontWeight: 'bold', // Bold font for titles
+    fontWeight: 'bold',
     textAlign: 'center',
   },
   image: {
@@ -72,6 +76,7 @@ const styles = StyleSheet.create({
   },
 });
 
+// Componente para generar el documento PDF
 const PdfDocument = ({
   imageUrl,
   marca,
@@ -85,16 +90,25 @@ const PdfDocument = ({
   <Document>
     <Page style={styles.page}>
       <View style={styles.header}>
+        {/* Imagen del encabezado */}
+        
         <Image style={styles.headerImage} src={headerImg} />
         <Text style={styles.headerTitle}>{`${marca} ${modelo}`}</Text>
+        {/* Información de contacto alineada a la derecha */}
+        <View style={styles.headerInfo}>
+          
+          <Text>Por el centro de salud, San Benito, Petén.</Text>
+          <Text>(502) 3973 - 1085</Text>
+          <Text>info@jpmotorsgt.com</Text>
+        </View>
       </View>
       <View style={styles.section}>
-        {/* <Text style={styles.title}>Detalles del Vehículo</Text> */}
+        {/* Título de la sección */}
+        <Text style={styles.headerPros}>PROSPECTO</Text>
         {imageUrl && <Image style={styles.image} src={imageUrl} />}
       </View>
       <View style={styles.divider} />
       <View style={styles.section}>
-        {/* <Text style={styles.subTitle}>Detalles del Motor</Text> */}
         <Image style={styles.separadorImage} src={separador6} />
         <View style={styles.columns}>
           <View style={styles.column}>
@@ -111,7 +125,6 @@ const PdfDocument = ({
       </View>
       <View style={styles.divider} />
       <View style={styles.section}>
-        {/* <Text style={styles.subTitle}>Detalles de Seguridad</Text> */}
         <Image style={styles.separadorImage} src={separador5} />
         <View style={styles.columns}>
           <View style={styles.column}>
@@ -128,7 +141,6 @@ const PdfDocument = ({
       </View>
       <View style={styles.divider} />
       <View style={styles.section}>
-        {/* <Text style={styles.subTitle}>Detalles de Interior</Text> */}
         <Image style={styles.separadorImage} src={separador1} />
         <View style={styles.columns}>
           <View style={styles.column}>
@@ -145,7 +157,6 @@ const PdfDocument = ({
       </View>
       <View style={styles.divider} />
       <View style={styles.section}>
-        {/* <Text style={styles.subTitle}>Detalles de Exterior</Text> */}
         <Image style={styles.separadorImage} src={separador2} />
         <View style={styles.columns}>
           <View style={styles.column}>
@@ -162,7 +173,6 @@ const PdfDocument = ({
       </View>
       <View style={styles.divider} />
       <View style={styles.section}>
-        {/* <Text style={styles.subTitle}>Dimensiones del Vehículo</Text> */}
         <Image style={styles.separadorImage} src={separador3} />
         <View style={styles.columns}>
           <View style={styles.column}>

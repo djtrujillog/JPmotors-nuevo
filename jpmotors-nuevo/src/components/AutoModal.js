@@ -5,7 +5,7 @@ import PdfDocument from "./pdfDocument";
 import "../css/AutoModal.css"; // Import custom CSS
 
 const AutoModal = ({ auto, onClose }) => {
-  const [imageData, setImageData] = useState(null);
+  const [imageBlob, setImageBlob] = useState(null);
   const [motorDetails, setMotorDetails] = useState(null);
   const [seguridadDetails, setSeguridadDetails] = useState(null);
   const [interiorDetails, setInteriorDetails] = useState(null);
@@ -15,51 +15,71 @@ const AutoModal = ({ auto, onClose }) => {
   useEffect(() => {
     if (!auto) return;
 
-    fetch(`http://localhost:4000/vehiculos/${auto.VehiculoID}`)
-      .then((response) => response.json())
-      .then((data) => setImageData(data))
-      .catch((error) =>
-        console.error("Error al cargar la imagen del vehículo:", error)
-      );
+    const fetchData = async () => {
+      try {
+        const [
+          imageRes,
+          motorRes,
+          seguridadRes,
+          interiorRes,
+          exteriorRes,
+          dimensionesRes,
+        ] = await Promise.all([
+          fetch(
+            `https://jpmotorsgt.azurewebsites.net/vehiculos/${auto.VehiculoID}`
+          ),
+          fetch(
+            `https://jpmotorsgt.azurewebsites.net/vehiculos/motor/${auto.VehiculoID}`
+          ),
+          fetch(
+            `https://jpmotorsgt.azurewebsites.net/vehiculos/seguridad/${auto.VehiculoID}`
+          ),
+          fetch(
+            `https://jpmotorsgt.azurewebsites.net/vehiculos/interior/${auto.VehiculoID}`
+          ),
+          fetch(
+            `https://jpmotorsgt.azurewebsites.net/vehiculos/exterior/${auto.VehiculoID}`
+          ),
+          fetch(
+            `https://jpmotorsgt.azurewebsites.net/vehiculos/dimensiones/${auto.VehiculoID}`
+          ),
+        ]);
 
-    fetch(`http://localhost:4000/vehiculos/motor/${auto.VehiculoID}`)
-      .then((response) => response.json())
-      .then((data) => setMotorDetails(data))
-      .catch((error) =>
-        console.error("Error al cargar los detalles del motor:", error)
-      );
+        const [
+          imageData,
+          motorData,
+          seguridadData,
+          interiorData,
+          exteriorData,
+          dimensionesData,
+        ] = await Promise.all([
+          imageRes.json(),
+          motorRes.json(),
+          seguridadRes.json(),
+          interiorRes.json(),
+          exteriorRes.json(),
+          dimensionesRes.json(),
+        ]);
 
-    fetch(`http://localhost:4000/vehiculos/seguridad/${auto.VehiculoID}`)
-      .then((response) => response.json())
-      .then((data) => setSeguridadDetails(data))
-      .catch((error) =>
-        console.error("Error al cargar los detalles de seguridad:", error)
-      );
+        const blob = new Blob([new Uint8Array(imageData.Imagen.data)], {
+          type: "image/jpeg",
+        });
+        setImageBlob(blob);
+        setMotorDetails(motorData);
+        setSeguridadDetails(seguridadData);
+        setInteriorDetails(interiorData);
+        setExteriorDetails(exteriorData);
+        setDimensionesDetails(dimensionesData);
+      } catch (error) {
+        console.error("Error al cargar los datos del vehículo:", error);
+      }
+    };
 
-    fetch(`http://localhost:4000/vehiculos/interior/${auto.VehiculoID}`)
-      .then((response) => response.json())
-      .then((data) => setInteriorDetails(data))
-      .catch((error) =>
-        console.error("Error al cargar los detalles del interior:", error)
-      );
-
-    fetch(`http://localhost:4000/vehiculos/exterior/${auto.VehiculoID}`)
-      .then((response) => response.json())
-      .then((data) => setExteriorDetails(data))
-      .catch((error) =>
-        console.error("Error al cargar los detalles del exterior:", error)
-      );
-
-    fetch(`http://localhost:4000/vehiculos/dimensiones/${auto.VehiculoID}`)
-      .then((response) => response.json())
-      .then((data) => setDimensionesDetails(data))
-      .catch((error) =>
-        console.error("Error al cargar los detalles de dimensiones:", error)
-      );
+    fetchData();
   }, [auto]);
 
   if (
-    !imageData ||
+    !imageBlob ||
     !motorDetails ||
     !seguridadDetails ||
     !interiorDetails ||
@@ -67,6 +87,8 @@ const AutoModal = ({ auto, onClose }) => {
     !dimensionesDetails
   )
     return null;
+
+  const imageUrl = URL.createObjectURL(imageBlob);
 
   return (
     <Modal
@@ -76,13 +98,14 @@ const AutoModal = ({ auto, onClose }) => {
       dialogClassName="custom-modal-width"
     >
       <Modal.Header closeButton>
-        <Modal.Title>{`${imageData.Marca} ${imageData.Modelo}`}</Modal.Title>
+        <Modal.Title>{`${auto.Marca} ${auto.Modelo}`}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <img
-          src={`/imagenes/${imageData.Imagen}`}
-          className="img-fluid"
-          alt={`${imageData.Marca} ${imageData.Modelo}`}
+          src={imageUrl}
+          className="img-fluid d-block mx-auto"
+          alt={`${auto.Marca} ${auto.Modelo}`}
+          style={{ maxWidth: "85%", height: "auto" }}
         />
         <div className="container">
           <div className="row">
@@ -130,7 +153,9 @@ const AutoModal = ({ auto, onClose }) => {
         <PDFDownloadLink
           document={
             <PdfDocument
-              imageData={imageData}
+              marca={auto.Marca}
+              modelo={auto.Modelo}
+              imageUrl={imageUrl}
               motorDetails={motorDetails}
               seguridadDetails={seguridadDetails}
               interiorDetails={interiorDetails}
@@ -138,9 +163,17 @@ const AutoModal = ({ auto, onClose }) => {
               dimensionesDetails={dimensionesDetails}
             />
           }
-          fileName={`${imageData.Marca}_${imageData.Modelo}.pdf`}
+          fileName={`${auto.Marca}_${auto.Modelo}.pdf`}
         >
-          {({ loading }) => (loading ? "Generando PDF..." : "Descargar PDF")}
+           {({ loading }) =>
+            loading ? (
+              <Button variant="primary" disabled>
+                Generando PDF...
+              </Button>
+            ) : (
+              <Button variant="primary">Descargar PDF</Button>
+            )
+          }
         </PDFDownloadLink>
       </Modal.Footer>
     </Modal>

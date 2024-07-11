@@ -34,7 +34,7 @@ function App() {
               <Nav className="ms-auto mb-2 mb-lg-0">
                 <Nav.Item>
                   <Nav.Link as={Link} to="/" className="nav-link active">
-                    Home
+                    Inicio
                   </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>

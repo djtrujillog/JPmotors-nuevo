@@ -1,3 +1,5 @@
+// src/components/AgregarVehiculo.js
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
@@ -18,23 +20,20 @@ const AgregarVehiculo = () => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [detailingVehiculo, setDetailingVehiculo] = useState(null);
   const [showExteriorsModal, setShowExteriorsModal] = useState(false);
-  const [detailingExteriorVehiculo, setDetailingExteriorVehiculo] =
-    useState(null);
+  const [detailingExteriorVehiculo, setDetailingExteriorVehiculo] = useState(null);
   const [showInteriorsModal, setShowInteriorModal] = useState(false);
-  const [detailingInteriorVehiculo, setDetailingInteriorVehiculo] =
-    useState(null);
+  const [detailingInteriorVehiculo, setDetailingInteriorVehiculo] = useState(null);
   const [showMotorModal, setShowMotorModal] = useState(false);
   const [detailingMotorVehiculo, setDetailingMotorVehiculo] = useState(null);
   const [showSeguridadModal, setShowSeguridadModal] = useState(false);
-  const [detailingSeguridadVehiculo, setDetailingSeguridadVehiculo] =
-    useState(null);
+  const [detailingSeguridadVehiculo, setDetailingSeguridadVehiculo] = useState(null);
 
   const fetchVehiculos = async () => {
     try {
       const response = await axios.get(
         "https://jpmotorsgt.azurewebsites.net/vehiculos"
       );
-      setVehiculos(response.data);
+      setVehiculos(response.data || []); // Asegurarse de que siempre es un array
     } catch (error) {
       console.error("Error al obtener vehículos:", error);
     }
@@ -204,63 +203,65 @@ const AgregarVehiculo = () => {
 
       <ListGroup className="mb-4">
         {vehiculos.map((vehiculo) => (
-          <ListGroup.Item
-            key={vehiculo.VehiculoID}
-            className="d-flex justify-content-between align-items-center"
-          >
-            {vehiculo.Modelo} - {vehiculo.Marca}
-            <div>
-              <Button
-                variant="outline-primary"
-                size="sm"
-                onClick={() => openEditModal(vehiculo)}
-              >
-                Editar
-              </Button>{" "}
-              <Button
-                variant="outline-danger"
-                size="sm"
-                onClick={() => deleteVehiculo(vehiculo.VehiculoID)}
-              >
-                Eliminar
-              </Button>{" "}
-              <Button
-                variant="outline-info"
-                size="sm"
-                onClick={() => openDetailsModal(vehiculo)}
-              >
-                Dimensiones
-              </Button>{" "}
-              <Button
-                variant="outline-info"
-                size="sm"
-                onClick={() => openExteriorModal(vehiculo)}
-              >
-                Exterior
-              </Button>{" "}
-              <Button
-                variant="outline-info"
-                size="sm"
-                onClick={() => openInteriorModal(vehiculo)}
-              >
-                Interior
-              </Button>{" "}
-              <Button
-                variant="outline-info"
-                size="sm"
-                onClick={() => openMotorModal(vehiculo)}
-              >
-                Motor
-              </Button>{" "}
-              <Button
-                variant="outline-info"
-                size="sm"
-                onClick={() => openSeguridadModal(vehiculo)}
-              >
-                Seguridad
-              </Button>{" "}
-            </div>
-          </ListGroup.Item>
+          vehiculo && vehiculo.Modelo && (
+            <ListGroup.Item
+              key={vehiculo.VehiculoID}
+              className="d-flex justify-content-between align-items-center"
+            >
+              {vehiculo.Modelo} - {vehiculo.Marca}
+              <div>
+                <Button
+                  variant="outline-primary"
+                  size="sm"
+                  onClick={() => openEditModal(vehiculo)}
+                >
+                  Editar
+                </Button>{" "}
+                <Button
+                  variant="outline-danger"
+                  size="sm"
+                  onClick={() => deleteVehiculo(vehiculo.VehiculoID)}
+                >
+                  Eliminar
+                </Button>{" "}
+                <Button
+                  variant="outline-info"
+                  size="sm"
+                  onClick={() => openDetailsModal(vehiculo)}
+                >
+                  Dimensiones
+                </Button>{" "}
+                <Button
+                  variant="outline-info"
+                  size="sm"
+                  onClick={() => openExteriorModal(vehiculo)}
+                >
+                  Exterior
+                </Button>{" "}
+                <Button
+                  variant="outline-info"
+                  size="sm"
+                  onClick={() => openInteriorModal(vehiculo)}
+                >
+                  Interior
+                </Button>{" "}
+                <Button
+                  variant="outline-info"
+                  size="sm"
+                  onClick={() => openMotorModal(vehiculo)}
+                >
+                  Motor
+                </Button>{" "}
+                <Button
+                  variant="outline-info"
+                  size="sm"
+                  onClick={() => openSeguridadModal(vehiculo)}
+                >
+                  Seguridad
+                </Button>{" "}
+              </div>
+            </ListGroup.Item>
+          )
         ))}
       </ListGroup>
 
@@ -274,17 +275,23 @@ const AgregarVehiculo = () => {
               <Form.Label>Modelo:</Form.Label>
               <Form.Control
                 type="text"
-                defaultValue={editingVehiculo?.Modelo}
+                defaultValue={editingVehiculo?.Modelo || ''}
                 {...register("Modelo", { required: true })}
               />
             </Form.Group>
             <Form.Group>
               <Form.Label>Marca:</Form.Label>
               <Form.Control
-                type="text"
+                as="select"
                 defaultValue={editingVehiculo?.Marca}
                 {...register("Marca", { required: true })}
-              />
+              >
+                <option value="NISSAN">NISSAN</option>
+                <option value="MITSUBISHI">MITSUBISHI</option>
+                <option value="FORD">FORD</option>
+                <option value="KIA">KIA</option>
+                <option value="FUSO">FUSO</option>
+              </Form.Control>
             </Form.Group>
             <Form.Group>
               <Form.Label>Año:</Form.Label>
@@ -321,18 +328,16 @@ const AgregarVehiculo = () => {
             <Form.Group>
               <Form.Label>Marca ID:</Form.Label>
               <Form.Control
-                type="text"
+                as="select"
                 defaultValue={editingVehiculo?.MarcaID}
                 {...register("MarcaID", { required: true })}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Condición:</Form.Label>
-              <Form.Control
-                type="text"
-                defaultValue={editingVehiculo?.Condicion}
-                {...register("Condicion", { required: true })}
-              />
+              >
+                <option value="1">NISSAN</option>
+                <option value="2">MITSUBISHI</option>
+                <option value="3">FORD</option>
+                <option value="4">KIA</option>
+                <option value="5">FUSO</option>
+              </Form.Control>
             </Form.Group>
             <Form.Group>
               <Form.Label>Imagen:</Form.Label>
@@ -362,8 +367,7 @@ const AgregarVehiculo = () => {
               <Form.Label>Marca:</Form.Label>
               <Form.Control
                 as="select"
-                defaultValue={editingVehiculo?.MarcaID}
-                {...register("MarcaID", { required: true })}
+                {...register("Marca", { required: true })}
               >
                 <option value="NISSAN">NISSAN</option>
                 <option value="MITSUBISHI">MITSUBISHI</option>
@@ -403,16 +407,15 @@ const AgregarVehiculo = () => {
             <Form.Group>
               <Form.Label>Marca ID:</Form.Label>
               <Form.Control
-                type="text"
+                as="select"
                 {...register("MarcaID", { required: true })}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Condición:</Form.Label>
-              <Form.Control
-                type="text"
-                {...register("Condicion", { required: true })}
-              />
+              >
+                <option value="1">NISSAN</option>
+                <option value="2">MITSUBISHI</option>
+                <option value="3">FORD</option>
+                <option value="4">KIA</option>
+                <option value="5">FUSO</option>
+              </Form.Control>
             </Form.Group>
             <Form.Group>
               <Form.Label>Imagen:</Form.Label>

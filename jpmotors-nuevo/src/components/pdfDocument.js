@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     fontSize: 8, // Tamaño de fuente
   },
   headerTitle: {
-    fontSize: 14,
+    fontSize: 10,
     fontWeight: 'bold',
   },
   headerPros:{
@@ -97,7 +97,8 @@ const PdfDocument = ({
         {/* Información de contacto alineada a la derecha */}
         <View style={styles.headerInfo}>
           
-          <Text>Por el centro de salud, San Benito, Petén.</Text>
+          <Text>Por el centro de salud, Santa Elena
+            , Petén.</Text>
           <Text>(502) 3973 - 1085</Text>
           <Text>info@jpmotorsgt.com</Text>
         </View>

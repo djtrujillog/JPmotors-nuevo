@@ -1,4 +1,4 @@
-import sequelize from "../config/config.mjs";
+import sequelize from "../../config/config.mjs";
 
 const detalleMotorController = {
   // Obtener todas las descripciones de motores

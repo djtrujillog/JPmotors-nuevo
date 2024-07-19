@@ -1,6 +1,6 @@
-import fs from 'fs/promises';
-import path from 'path';
-import sequelize from '../config/config.mjs'; 
+// import fs from 'fs/promises';
+// import path from 'path';
+import sequelize from '../../config/config.mjs'; 
 
 
 const vehiculoController = {

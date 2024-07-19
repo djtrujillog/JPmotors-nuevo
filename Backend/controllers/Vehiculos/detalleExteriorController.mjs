@@ -1,4 +1,4 @@
-import sequelize from "../config/config.mjs";
+import sequelize from "../../config/config.mjs";
 
 const detalleExteriorController = {
   // Obtener todas las descripciones de exterior

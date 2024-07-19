@@ -1,7 +1,7 @@
 import express from "express";
 import multer from "multer";
 import fs from "fs";
-import sequelize from "../config/config.mjs";
+import sequelize from "../../config/config.mjs";
 
 const vehiculosRouter = express.Router();
 vehiculosRouter.use(express.urlencoded({ extended: true }));

@@ -26,22 +26,22 @@ const AutoModal = ({ auto, onClose }) => {
           dimensionesRes,
         ] = await Promise.all([
           fetch(
-            `https://jpmotorsgt.azurewebsites.net/vehiculos/${auto.VehiculoID}`
+            `http://localhost:4000/vehiculos/${auto.VehiculoID}`
           ),
           fetch(
-            `https://jpmotorsgt.azurewebsites.net/vehiculos/motor/${auto.VehiculoID}`
+            `http://localhost:4000/vehiculos/motor/${auto.VehiculoID}`
           ),
           fetch(
-            `https://jpmotorsgt.azurewebsites.net/vehiculos/seguridad/${auto.VehiculoID}`
+            `http://localhost:4000/vehiculos/seguridad/${auto.VehiculoID}`
           ),
           fetch(
-            `https://jpmotorsgt.azurewebsites.net/vehiculos/interior/${auto.VehiculoID}`
+            `http://localhost:4000/vehiculos/interior/${auto.VehiculoID}`
           ),
           fetch(
-            `https://jpmotorsgt.azurewebsites.net/vehiculos/exterior/${auto.VehiculoID}`
+            `http://localhost:4000/vehiculos/exterior/${auto.VehiculoID}`
           ),
           fetch(
-            `https://jpmotorsgt.azurewebsites.net/vehiculos/dimensiones/${auto.VehiculoID}`
+            `http://localhost:4000/vehiculos/dimensiones/${auto.VehiculoID}`
           ),
         ]);
 

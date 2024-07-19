@@ -10,6 +10,8 @@ import Contacto from "./components/Contacto";
 import Footer from "./components/Footer"; // Asegúrate de que esta ruta sea correcta
 import AutoList from "./components/Autolist.js";
 import AgVehiculo from "./components/AgregarVehiculo";
+import Clientes from "./components/AgregarCliente.js";
+import Empleados from "./components/AgregarEmpleado.js";
 // import Preloader from "./components/Preloader";
 import logo from "./img/Logo-12.png";
 import "./App.css";
@@ -57,6 +59,16 @@ function App() {
                     Contacto
                   </Nav.Link>
                 </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link as={Link} to="/clientes" className="nav-link">
+                    Clientes
+                  </Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link as={Link} to="/empleados" className="nav-link">
+                    Empleados
+                  </Nav.Link>
+                </Nav.Item>
                 {/* <Nav.Item>
                   <Nav.Link as={Link} to="/nuevos" className="nav-link">
                     {Contacto.name}
@@ -74,6 +86,8 @@ function App() {
           <Route path="/usados" element={<Usados />} />
           <Route path="/contacto" element={<Contacto />} />
           <Route path="/agvehiculo" element={<AgVehiculo/>}/>
+          <Route path="/clientes" element={<Clientes/>}/>
+          <Route path="/empleados" element={<Empleados/>}/>
           
         </Routes>
       </Router>

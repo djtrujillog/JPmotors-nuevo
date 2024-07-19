@@ -10,7 +10,7 @@ const AutoList = () => {
   useEffect(() => {
     const fetchAutos = async () => {
       try {
-        const response = await fetch('https://jpmotorsgt.azurewebsites.net/vehiculos');
+        const response = await fetch('http://localhost:4000/vehiculos');
         const data = await response.json();
         if (response.ok) {
           setAutos(data);

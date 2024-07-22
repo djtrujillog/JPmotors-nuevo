@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
   header: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between', // Alineación de contenido en los extremos
+    justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 20,
   },
@@ -26,16 +26,16 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   headerInfo: {
-    textAlign: 'left', // Alineación del texto a la derecha
-    fontSize: 8, // Tamaño de fuente
+    textAlign: 'left',
+    fontSize: 8,
   },
   headerTitle: {
     fontSize: 10,
     fontWeight: 'bold',
   },
-  headerPros:{
+  headerPros: {
     textAlign: 'center',
-    fontSize : 12
+    fontSize: 10,
   },
   section: {
     marginBottom: 5,
@@ -53,9 +53,8 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   subTitle: {
-    fontSize: 14,
+    fontSize: 10,
     marginBottom: 8,
-    fontWeight: 'bold',
   },
   text: {
     fontSize: 10,
@@ -74,39 +73,80 @@ const styles = StyleSheet.create({
   column: {
     width: '48%',
   },
+  separadorImage: {
+    width: '100%',
+    height: 'auto',
+    marginBottom: 5,
+  },
+  priceText: {
+    fontSize: 12,
+    marginBottom: 3,
+    textAlign: 'center',
+    color: 'red', // Agregar color rojo
+    fontWeight: 'bold', // Hacer negrita
+  },
+  clientEmployeeSection: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 5,
+  },
+  clientEmployeeColumn: {
+    width: '48%',
+  },
+  clientEmployeeText: {
+    fontSize: 8,
+    marginBottom: 3,
+  },
 });
 
 // Componente para generar el documento PDF
 const PdfDocument = ({
   imageUrl,
+  cliente,
+  empleado,
+  motorDetails,
   marca,
   modelo,
-  motorDetails,
   seguridadDetails,
   interiorDetails,
   exteriorDetails,
   dimensionesDetails,
+  precioWeb,
+  precioGerente,
+  precioLista,
 }) => (
   <Document>
     <Page style={styles.page}>
       <View style={styles.header}>
-        {/* Imagen del encabezado */}
         <Image style={styles.headerImage} src={headerImg} />
-        <Text style={styles.headerTitle}>{`${marca} ${modelo}`}</Text>
-        {/* Información de contacto alineada a la derecha */}
+        <Text style={styles.headerTitle}>{marca} {modelo}</Text>
         <View style={styles.headerInfo}>
-          
-          <Text>Por el centro de salud, Santa Elena
-            , Petén.</Text>
+          <Text>Por el centro de salud, Santa Elena, Petén.</Text>
           <Text>(502) 3973 - 1085</Text>
           <Text>info@jpmotorsgt.com</Text>
         </View>
       </View>
       <View style={styles.section}>
-        {/* Título de la sección */}
-        <Text style={styles.headerPros}>PROSPECTO</Text>
+        <Text style={styles.headerPros}>Cotizacion</Text>
         {imageUrl && <Image style={styles.image} src={imageUrl} />}
       </View>
+      
+      <View style={styles.clientEmployeeSection}>
+        <View style={styles.clientEmployeeColumn}>
+          <Text style={styles.subTitle}>Cliente: </Text>
+          <Text style={styles.clientEmployeeText}>Nombre: {cliente?.Nombre} {cliente?.Apellido}</Text>
+          {/* <Text style={styles.clientEmployeeText}>Email: {cliente?.Email}</Text> */}
+          <Text style={styles.clientEmployeeText}>Teléfono: {cliente?.Telefono}</Text>
+        </View>
+        <View style={styles.clientEmployeeColumn}>
+          <Text style={styles.subTitle}>Ejectuivo/A :</Text>
+          <Text style={styles.clientEmployeeText}>Nombre: {empleado?.Nombre} {empleado?.Apellido}</Text>
+          {/* <Text style={styles.clientEmployeeText}>Email: {empleado?.Email}</Text> */}
+          <Text style={styles.clientEmployeeText}>Teléfono: {empleado?.Telefono}</Text>
+        </View>
+      </View>
+
       <View style={styles.divider} />
       <View style={styles.section}>
         <Image style={styles.separadorImage} src={separador6} />
@@ -186,6 +226,14 @@ const PdfDocument = ({
             ))}
           </View>
         </View>
+      </View>
+      
+      <View style={styles.divider} />
+      <View style={styles.section}>
+        <Text style={styles.priceText}>Precios</Text>
+        <Text style={styles.priceText}>Precio Web: {precioWeb}</Text>
+        <Text style={styles.priceText}>Precio Gerente: {precioGerente}</Text>
+        <Text style={styles.priceText}>Precio de Lista: {precioLista}</Text>
       </View>
     </Page>
   </Document>

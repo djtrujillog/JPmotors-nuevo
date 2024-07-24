@@ -25,7 +25,7 @@ const Empleados = () => {
 
   const fetchEmpleados = async () => {
     try {
-      const response = await axios.get('http://localhost:4000/empleados');
+      const response = await axios.get('https://jpmotorsgt.azurewebsites.net/empleados');
       setEmpleados(response.data);
     } catch (error) {
       console.error('Error al obtener empleados:', error);
@@ -65,7 +65,7 @@ const Empleados = () => {
 
   const addEmpleado = async () => {
     try {
-      await axios.post('http://localhost:4000/empleados', form);
+      await axios.post('https://jpmotorsgt.azurewebsites.net/empleados', form);
     } catch (error) {
       console.error('Error al agregar empleado:', error);
     }
@@ -73,7 +73,7 @@ const Empleados = () => {
 
   const updateEmpleado = async () => {
     try {
-      await axios.put(`http://localhost:4000/empleados/${currentEmpleadoId}`, form);
+      await axios.put(`https://jpmotorsgt.azurewebsites.net/empleados/${currentEmpleadoId}`, form);
     } catch (error) {
       console.error('Error al actualizar empleado:', error);
     }
@@ -88,7 +88,7 @@ const Empleados = () => {
 
   const deleteEmpleado = async (id) => {
     try {
-      await axios.delete(`http://localhost:4000/empleados/${id}`);
+      await axios.delete(`https://jpmotorsgt.azurewebsites.net/empleados/${id}`);
       fetchEmpleados();
     } catch (error) {
       console.error('Error al eliminar empleado:', error);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import AutoModal from "./AutoModalCotizar";
 import ProdItem from "./ProductoItem";
@@ -12,40 +12,43 @@ const ClienteEmpleadoProductoList = () => {
   const [selectedCliente, setSelectedCliente] = useState("");
   const [selectedEmpleado, setSelectedEmpleado] = useState("");
 
+  // Función para cargar los datos iniciales
   useEffect(() => {
     const fetchData = async () => {
       try {
         const clientesResponse = await axios.get(
-          "http://localhost:4000/clientes"
+          "https://jpmotorsgt.azurewebsites.net/clientes"
         );
         const empleadosResponse = await axios.get(
-          "http://localhost:4000/empleados"
+          "https://jpmotorsgt.azurewebsites.net/empleados"
         );
         setClientes(clientesResponse.data);
         setEmpleados(empleadosResponse.data);
-        fetchAutos();
+        fetchAutos(); // Llama a fetchAutos si es necesario
       } catch (error) {
         console.error("Error al cargar datos:", error);
       }
     };
     fetchData();
-  }, []);
+  }, []); // No es necesario incluir fetchAutos aquí
 
-  useEffect(() => {
-    fetchAutos();
-  }, [selectedCliente, selectedEmpleado]);
-
-  const fetchAutos = async () => {
+  // Define fetchAutos con useCallback para que sea estable
+  const fetchAutos = useCallback(async () => {
     try {
       const params = { cliente: selectedCliente, empleado: selectedEmpleado };
-      const response = await axios.get("http://localhost:4000/vehiculos", {
+      const response = await axios.get("https://jpmotorsgt.azurewebsites.net/vehiculos", {
         params,
       });
       setAutos(response.data);
     } catch (error) {
       console.error("Error en la consulta a la API:", error);
     }
-  };
+  }, [selectedCliente, selectedEmpleado]); // Dependencias de fetchAutos
+
+  // Usa useEffect con fetchAutos en el array de dependencias
+  useEffect(() => {
+    fetchAutos();
+  }, [fetchAutos]); // Incluye fetchAutos aquí
 
   const handleItemClick = (auto) => {
     setSelectedAuto(auto);

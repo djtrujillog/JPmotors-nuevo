@@ -31,7 +31,7 @@ const AgregarVehiculo = () => {
   const fetchVehiculos = async () => {
     try {
       const response = await axios.get(
-        "https://jpmotorsgt.azurewebsites.net/vehiculos"
+        "http://localhost:4000/vehiculos"
       );
       setVehiculos(response.data || []); // Asegurarse de que siempre es un array
     } catch (error) {
@@ -140,7 +140,7 @@ const AgregarVehiculo = () => {
 
     try {
       const response = await axios.post(
-        "https://jpmotorsgt.azurewebsites.net/vehiculos",
+        "http://localhost:4000/vehiculos",
         formData,
         {
           headers: {
@@ -164,7 +164,7 @@ const AgregarVehiculo = () => {
 
     try {
       const response = await axios.put(
-        `https://jpmotorsgt.azurewebsites.net/vehiculos/${editingVehiculo.VehiculoID}`,
+        `http://localhost:4000/vehiculos/${editingVehiculo.VehiculoID}`,
         formData,
         {
           headers: {
@@ -185,7 +185,7 @@ const AgregarVehiculo = () => {
   const deleteVehiculo = async (VehiculoID) => {
     try {
       await axios.delete(
-        `https://jpmotorsgt.azurewebsites.net/vehiculos/${VehiculoID}`
+        `http://localhost:4000/vehiculos/${VehiculoID}`
       );
       setVehiculos(vehiculos.filter((v) => v.VehiculoID !== VehiculoID));
     } catch (error) {

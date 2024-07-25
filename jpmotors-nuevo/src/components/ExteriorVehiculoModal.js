@@ -19,7 +19,7 @@ const DetallesVehiculoExteriorModal = ({ show, handleClose, vehiculo }) => {
 
   const fetchExistingDetalles = async (VehiculoID) => {
     try {
-      const response = await axios.get(`https://jpmotorsgt.azurewebsites.net/vehiculos/detalleExterior/${VehiculoID}`);
+      const response = await axios.get(`http://localhost:4000/vehiculos/detalleExterior/${VehiculoID}`);
       if (response.data) {
         setExistingDetalles(response.data.filter(detalle => detalle.Descripcion.trim() !== ''));
       } else {
@@ -36,7 +36,7 @@ const DetallesVehiculoExteriorModal = ({ show, handleClose, vehiculo }) => {
         VehiculoID: vehiculo.VehiculoID,
         descripcion: descripcion
       };
-      await axios.post('https://jpmotorsgt.azurewebsites.net/vehiculos/eliminarExterior', body);
+      await axios.post('http://localhost:4000/vehiculos/eliminarExterior', body);
       const updatedDetalles = existingDetalles.filter(detalle => detalle.Descripcion !== descripcion);
       setExistingDetalles(updatedDetalles);
       alert('Detalle de exterior eliminado correctamente');
@@ -65,7 +65,7 @@ const DetallesVehiculoExteriorModal = ({ show, handleClose, vehiculo }) => {
         Descripcion: editDetalle,
         originalDescripcion: originalDetalle
       };
-      await axios.put(`https://jpmotorsgt.azurewebsites.net/vehiculos/detalleExterior/${encodeURIComponent(originalDetalle)}`, body);
+      await axios.put(`http://localhost:4000/vehiculos/detalleExterior/${encodeURIComponent(originalDetalle)}`, body);
       const updatedDetalles = existingDetalles.map(detalle => detalle.Descripcion === originalDetalle ? { ...detalle, Descripcion: editDetalle } : detalle);
       setExistingDetalles(updatedDetalles);
       alert('Detalle de exterior editado correctamente');
@@ -83,7 +83,7 @@ const DetallesVehiculoExteriorModal = ({ show, handleClose, vehiculo }) => {
         VehiculoID: vehiculo.VehiculoID,
         Descripcion: newDetalle
       };
-      const response = await axios.post('https://jpmotorsgt.azurewebsites.net/vehiculos/detalleExterior', body);
+      const response = await axios.post('http://localhost:4000/vehiculos/detalleExterior', body);
       setExistingDetalles([...existingDetalles, response.data.detalleExterior]);
       setNewDetalle('');
       alert('Detalle de exterior agregado correctamente');

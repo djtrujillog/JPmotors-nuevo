@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { PDFDownloadLink } from "@react-pdf/renderer";
-import PdfDocument from "./pdfDocument";
-import "../css/AutoModal.css"; // Import custom CSS
+import PdfCotizar from "./PdfCotizar";
+import "../css/AutoModal.css";
 
-const AutoModal = ({ auto, onClose }) => {
+const AutoModalCotizar = ({ auto, cliente, empleado, onClose }) => {
   const [imageBlob, setImageBlob] = useState(null);
   const [motorDetails, setMotorDetails] = useState(null);
   const [seguridadDetails, setSeguridadDetails] = useState(null);
@@ -25,24 +25,12 @@ const AutoModal = ({ auto, onClose }) => {
           exteriorRes,
           dimensionesRes,
         ] = await Promise.all([
-          fetch(
-            `http://localhost:4000/vehiculos/${auto.VehiculoID}`
-          ),
-          fetch(
-            `http://localhost:4000/vehiculos/motor/${auto.VehiculoID}`
-          ),
-          fetch(
-            `http://localhost:4000/vehiculos/seguridad/${auto.VehiculoID}`
-          ),
-          fetch(
-            `http://localhost:4000/vehiculos/interior/${auto.VehiculoID}`
-          ),
-          fetch(
-            `http://localhost:4000/vehiculos/exterior/${auto.VehiculoID}`
-          ),
-          fetch(
-            `http://localhost:4000/vehiculos/dimensiones/${auto.VehiculoID}`
-          ),
+          fetch(`http://localhost:4000/vehiculos/${auto.VehiculoID}`),
+          fetch(`http://localhost:4000/vehiculos/motor/${auto.VehiculoID}`),
+          fetch(`http://localhost:4000/vehiculos/seguridad/${auto.VehiculoID}`),
+          fetch(`http://localhost:4000/vehiculos/interior/${auto.VehiculoID}`),
+          fetch(`http://localhost:4000/vehiculos/exterior/${auto.VehiculoID}`),
+          fetch(`http://localhost:4000/vehiculos/dimensiones/${auto.VehiculoID}`),
         ]);
 
         const [
@@ -116,29 +104,39 @@ const AutoModal = ({ auto, onClose }) => {
                   <li key={index}>{detail}</li>
                 ))}
               </ul>
+            </div>
+            <div className="col-md-6">
               <h4>Detalles de Seguridad</h4>
               <ul>
                 {seguridadDetails.Seguridad.map((detail, index) => (
                   <li key={index}>{detail}</li>
                 ))}
               </ul>
-              <h4>Dimensiones del Vehiculo</h4>
-              <ul>
-                {dimensionesDetails.Dimensiones.map((detail, index) => (
-                  <li key={index}>{detail}</li>
-                ))}
-              </ul>
             </div>
+          </div>
+          <div className="row">
             <div className="col-md-6">
-              <h4>Detalles de Interior</h4>
+              <h4>Detalles del Interior</h4>
               <ul>
                 {interiorDetails.Interior.map((detail, index) => (
                   <li key={index}>{detail}</li>
                 ))}
               </ul>
-              <h4>Detalles de Exterior</h4>
+            </div>
+            <div className="col-md-6">
+              <h4>Detalles del Exterior</h4>
               <ul>
                 {exteriorDetails.Exterior.map((detail, index) => (
+                  <li key={index}>{detail}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-md-6">
+              <h4>Dimensiones</h4>
+              <ul>
+                {dimensionesDetails.Dimensiones.map((detail, index) => (
                   <li key={index}>{detail}</li>
                 ))}
               </ul>
@@ -152,27 +150,28 @@ const AutoModal = ({ auto, onClose }) => {
         </Button>
         <PDFDownloadLink
           document={
-            <PdfDocument
+            <PdfCotizar
+              auto={auto}
+              cliente={cliente}
+              empleado={empleado}
+              imageUrl={imageUrl}
               marca={auto.Marca}
               modelo={auto.Modelo}
-              imageUrl={imageUrl}
               motorDetails={motorDetails}
               seguridadDetails={seguridadDetails}
               interiorDetails={interiorDetails}
               exteriorDetails={exteriorDetails}
               dimensionesDetails={dimensionesDetails}
+              precioWeb={auto.PrecioWeb} // Asegúrate de pasar estos valores
+              precioGerente={auto.PrecioGerente}
+              precioLista={auto.PrecioLista}
+
             />
           }
-          fileName={`${auto.Marca}_${auto.Modelo}.pdf`}
+          fileName={`Cotización_${auto.Marca}_${auto.Modelo}.pdf`}
         >
-           {({ loading }) =>
-            loading ? (
-              <Button variant="primary" disabled>
-                Generando PDF...
-              </Button>
-            ) : (
-              <Button variant="primary">Descargar PDF</Button>
-            )
+          {({ loading }) =>
+            loading ? "Generando Cotización..." : "Descargar Cotización"
           }
         </PDFDownloadLink>
       </Modal.Footer>
@@ -180,4 +179,4 @@ const AutoModal = ({ auto, onClose }) => {
   );
 };
 
-export default AutoModal;
+export default AutoModalCotizar;

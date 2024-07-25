@@ -10,7 +10,7 @@ import separador6 from '../img/separador_6.png';
 // Estilos para el documento PDF
 const styles = StyleSheet.create({
   page: {
-    padding: 10,
+    padding: 20, // Ajustar el margen del documento aquí
     fontFamily: 'Helvetica',
   },
   header: {
@@ -33,9 +33,9 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: 'bold',
   },
-  headerPros:{
+  headerPros: {
     textAlign: 'center',
-    fontSize : 12
+    fontSize: 12,
   },
   section: {
     marginBottom: 5,
@@ -60,6 +60,11 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 10,
     marginBottom: 5,
+  },
+  bulletPoint: {
+    fontSize: 10,
+    marginBottom: 5,
+    marginLeft: 10, // Ajustar la sangría de las viñetas aquí
   },
   divider: {
     marginBottom: 2,
@@ -95,10 +100,8 @@ const PdfDocument = ({
         <Text style={styles.headerTitle}>{`${marca} ${modelo}`}</Text>
         {/* Información de contacto alineada a la derecha */}
         <View style={styles.headerInfo}>
-          
-          <Text>Por el centro de salud, Santa Elena
-            , Petén.</Text>
-          <Text>(502) 3973 - 1085</Text>
+          <Text>Por el centro de salud, Santa Elena, Petén.</Text>
+          <Text>(502) 7927 7733</Text>
           <Text>info@jpmotorsgt.com</Text>
         </View>
       </View>
@@ -113,12 +116,12 @@ const PdfDocument = ({
         <View style={styles.columns}>
           <View style={styles.column}>
             {motorDetails.Motor.slice(0, Math.ceil(motorDetails.Motor.length / 2)).map((detail, index) => (
-              <Text key={index} style={styles.text}>{detail}</Text>
+              <Text key={index} style={styles.bulletPoint}>• {detail}</Text>
             ))}
           </View>
           <View style={styles.column}>
             {motorDetails.Motor.slice(Math.ceil(motorDetails.Motor.length / 2)).map((detail, index) => (
-              <Text key={index} style={styles.text}>{detail}</Text>
+              <Text key={index} style={styles.bulletPoint}>• {detail}</Text>
             ))}
           </View>
         </View>
@@ -129,12 +132,12 @@ const PdfDocument = ({
         <View style={styles.columns}>
           <View style={styles.column}>
             {seguridadDetails.Seguridad.slice(0, Math.ceil(seguridadDetails.Seguridad.length / 2)).map((detail, index) => (
-              <Text key={index} style={styles.text}>{detail}</Text>
+              <Text key={index} style={styles.bulletPoint}>• {detail}</Text>
             ))}
           </View>
           <View style={styles.column}>
             {seguridadDetails.Seguridad.slice(Math.ceil(seguridadDetails.Seguridad.length / 2)).map((detail, index) => (
-              <Text key={index} style={styles.text}>{detail}</Text>
+              <Text key={index} style={styles.bulletPoint}>• {detail}</Text>
             ))}
           </View>
         </View>
@@ -145,12 +148,12 @@ const PdfDocument = ({
         <View style={styles.columns}>
           <View style={styles.column}>
             {interiorDetails.Interior.slice(0, Math.ceil(interiorDetails.Interior.length / 2)).map((detail, index) => (
-              <Text key={index} style={styles.text}>{detail}</Text>
+              <Text key={index} style={styles.bulletPoint}>• {detail}</Text>
             ))}
           </View>
           <View style={styles.column}>
             {interiorDetails.Interior.slice(Math.ceil(interiorDetails.Interior.length / 2)).map((detail, index) => (
-              <Text key={index} style={styles.text}>{detail}</Text>
+              <Text key={index} style={styles.bulletPoint}>• {detail}</Text>
             ))}
           </View>
         </View>
@@ -161,12 +164,12 @@ const PdfDocument = ({
         <View style={styles.columns}>
           <View style={styles.column}>
             {exteriorDetails.Exterior.slice(0, Math.ceil(exteriorDetails.Exterior.length / 2)).map((detail, index) => (
-              <Text key={index} style={styles.text}>{detail}</Text>
+              <Text key={index} style={styles.bulletPoint}>• {detail}</Text>
             ))}
           </View>
           <View style={styles.column}>
             {exteriorDetails.Exterior.slice(Math.ceil(exteriorDetails.Exterior.length / 2)).map((detail, index) => (
-              <Text key={index} style={styles.text}>{detail}</Text>
+              <Text key={index} style={styles.bulletPoint}>• {detail}</Text>
             ))}
           </View>
         </View>
@@ -177,12 +180,12 @@ const PdfDocument = ({
         <View style={styles.columns}>
           <View style={styles.column}>
             {dimensionesDetails.Dimensiones.slice(0, Math.ceil(dimensionesDetails.Dimensiones.length / 2)).map((detail, index) => (
-              <Text key={index} style={styles.text}>{detail}</Text>
+              <Text key={index} style={styles.bulletPoint}>• {detail}</Text>
             ))}
           </View>
           <View style={styles.column}>
             {dimensionesDetails.Dimensiones.slice(Math.ceil(dimensionesDetails.Dimensiones.length / 2)).map((detail, index) => (
-              <Text key={index} style={styles.text}>{detail}</Text>
+              <Text key={index} style={styles.bulletPoint}>• {detail}</Text>
             ))}
           </View>
         </View>

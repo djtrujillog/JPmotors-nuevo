@@ -3,8 +3,9 @@ import axios from 'axios';
 import { Button, Modal, Form } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const Empleados = () => {
+const AgregarEmpleado = () => {
   const [empleados, setEmpleados] = useState([]);
+  const [rolesDisponibles, setRolesDisponibles] = useState([]);
   const [form, setForm] = useState({
     Usuario: '',
     Contrasena: '',
@@ -13,7 +14,8 @@ const Empleados = () => {
     Cargo: '',
     Telefono: '',
     CorreoElectronico: '',
-    Estado: ''
+    Estado: '',
+    RolID: ''
   });
   const [isEditing, setIsEditing] = useState(false);
   const [currentEmpleadoId, setCurrentEmpleadoId] = useState(null);
@@ -21,14 +23,34 @@ const Empleados = () => {
 
   useEffect(() => {
     fetchEmpleados();
+    fetchRolesDisponibles();
   }, []);
 
   const fetchEmpleados = async () => {
     try {
-      const response = await axios.get('https://jpmotorsgt.azurewebsites.net/empleados');
+      const response = await axios.get('http://localhost:4000/empleados');
       setEmpleados(response.data);
     } catch (error) {
       console.error('Error al obtener empleados:', error);
+    }
+  };
+
+  const fetchRolesDisponibles = async () => {
+    try {
+      const response = await axios.get('http://localhost:4000/empleados/roles');
+      setRolesDisponibles(response.data);
+    } catch (error) {
+      console.error('Error al obtener roles:', error);
+    }
+  };
+
+  const fetchRolesDeEmpleado = async (empleadoId) => {
+    try {
+      const response = await axios.get(`http://localhost:4000/empleados/${empleadoId}/roles`);
+      return response.data.length > 0 ? response.data[0].RolID : '';
+    } catch (error) {
+      console.error('Error al obtener roles del empleado:', error);
+      return '';
     }
   };
 
@@ -42,30 +64,26 @@ const Empleados = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isEditing) {
-      await updateEmpleado();
-    } else {
-      await addEmpleado();
+    try {
+      if (isEditing) {
+        await updateEmpleado();
+      } else {
+        await addEmpleado();
+      }
+      resetForm();
+      fetchEmpleados();
+      setShowModal(false);
+    } catch (error) {
+      console.error('Error al procesar formulario:', error);
     }
-    setForm({
-      Usuario: '',
-      Contrasena: '',
-      Nombre: '',
-      Apellido: '',
-      Cargo: '',
-      Telefono: '',
-      CorreoElectronico: '',
-      Estado: ''
-    });
-    setIsEditing(false);
-    setCurrentEmpleadoId(null);
-    fetchEmpleados();
-    setShowModal(false);
   };
 
   const addEmpleado = async () => {
     try {
-      await axios.post('https://jpmotorsgt.azurewebsites.net/empleados', form);
+      const response = await axios.post('http://localhost:4000/empleados', form);
+      if (form.RolID) {
+        await asignarRol(response.data.results.insertId, form.RolID);
+      }
     } catch (error) {
       console.error('Error al agregar empleado:', error);
     }
@@ -73,14 +91,26 @@ const Empleados = () => {
 
   const updateEmpleado = async () => {
     try {
-      await axios.put(`https://jpmotorsgt.azurewebsites.net/empleados/${currentEmpleadoId}`, form);
+      await axios.put(`http://localhost:4000/empleados/${currentEmpleadoId}`, form);
+      await asignarRol(currentEmpleadoId, form.RolID);
     } catch (error) {
       console.error('Error al actualizar empleado:', error);
     }
   };
 
-  const editEmpleado = (empleado) => {
-    setForm(empleado);
+  const asignarRol = async (EmpleadoID, RolID) => {
+    try {
+      await axios.post('http://localhost:4000/empleados/asignar-rol', { EmpleadoID, RolID });
+    } catch (error) {
+      console.error('Error al asignar rol:', error);
+    }
+  };
+
+
+
+  const editEmpleado = async (empleado) => {
+    const rolID = await fetchRolesDeEmpleado(empleado.EmpleadoID);
+    setForm({ ...empleado, RolID: rolID });
     setIsEditing(true);
     setCurrentEmpleadoId(empleado.EmpleadoID);
     setShowModal(true);
@@ -88,7 +118,7 @@ const Empleados = () => {
 
   const deleteEmpleado = async (id) => {
     try {
-      await axios.delete(`https://jpmotorsgt.azurewebsites.net/empleados/${id}`);
+      await axios.delete(`http://localhost:4000/empleados/${id}`);
       fetchEmpleados();
     } catch (error) {
       console.error('Error al eliminar empleado:', error);
@@ -97,8 +127,12 @@ const Empleados = () => {
 
   const handleClose = () => {
     setShowModal(false);
-    setIsEditing(false);
-    setCurrentEmpleadoId(null);
+    resetForm();
+  };
+
+  const handleShow = () => setShowModal(true);
+
+  const resetForm = () => {
     setForm({
       Usuario: '',
       Contrasena: '',
@@ -107,11 +141,12 @@ const Empleados = () => {
       Cargo: '',
       Telefono: '',
       CorreoElectronico: '',
-      Estado: ''
+      Estado: '',
+      RolID: ''
     });
+    setIsEditing(false);
+    setCurrentEmpleadoId(null);
   };
-
-  const handleShow = () => setShowModal(true);
 
   return (
     <div className="container">
@@ -156,7 +191,20 @@ const Empleados = () => {
             </Form.Group>
             <Form.Group>
               <Form.Label>Estado</Form.Label>
-              <Form.Control type="text" name="Estado" value={form.Estado} onChange={handleInputChange} />
+              <Form.Control as="select" name="Estado" value={form.Estado} onChange={handleInputChange}>
+                <option value="">Seleccionar Estado</option>
+                <option value="1">Activo</option>
+                <option value="2">Inactivo</option>
+              </Form.Control>
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Rol</Form.Label>
+              <Form.Control as="select" name="RolID" value={form.RolID} onChange={handleInputChange}>
+                <option value="">Seleccionar Rol</option>
+                {rolesDisponibles.map(rol => (
+                  <option key={rol.RolID} value={rol.RolID}>{rol.Nombre}</option>
+                ))}
+              </Form.Control>
             </Form.Group>
             <Button variant="primary" type="submit">
               {isEditing ? 'Actualizar' : 'Agregar'} Empleado
@@ -180,4 +228,4 @@ const Empleados = () => {
   );
 };
 
-export default Empleados;
+export default AgregarEmpleado;

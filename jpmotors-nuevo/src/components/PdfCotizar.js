@@ -10,7 +10,7 @@ import separador6 from '../img/separador_6.png';
 // Estilos para el documento PDF
 const styles = StyleSheet.create({
   page: {
-    padding: 10,
+    padding: 20, // Ajusta este valor para aumentar o reducir el margen del documento
     fontFamily: 'Helvetica',
   },
   header: {
@@ -60,6 +60,11 @@ const styles = StyleSheet.create({
     fontSize: 10,
     marginBottom: 5,
   },
+  bulletText: {
+    fontSize: 10,
+    marginBottom: 5,
+    marginLeft: 5,
+  },
   divider: {
     marginBottom: 2,
     borderBottomWidth: 0,
@@ -82,8 +87,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginBottom: 3,
     textAlign: 'center',
-    color: 'red', // Agregar color rojo
-    fontWeight: 'bold', // Hacer negrita
+    color: 'red',
+    fontWeight: 'bold',
   },
   clientEmployeeSection: {
     display: 'flex',
@@ -123,7 +128,7 @@ const PdfDocument = ({
         <Text style={styles.headerTitle}>{marca} {modelo}</Text>
         <View style={styles.headerInfo}>
           <Text>Por el centro de salud, Santa Elena, Petén.</Text>
-          <Text>(502) 3973 - 1085</Text>
+          <Text>(502) 7927 7733</Text>
           <Text>info@jpmotorsgt.com</Text>
         </View>
       </View>
@@ -136,13 +141,11 @@ const PdfDocument = ({
         <View style={styles.clientEmployeeColumn}>
           <Text style={styles.subTitle}>Cliente: </Text>
           <Text style={styles.clientEmployeeText}>Nombre: {cliente?.Nombre} {cliente?.Apellido}</Text>
-          {/* <Text style={styles.clientEmployeeText}>Email: {cliente?.Email}</Text> */}
           <Text style={styles.clientEmployeeText}>Teléfono: {cliente?.Telefono}</Text>
         </View>
         <View style={styles.clientEmployeeColumn}>
-          <Text style={styles.subTitle}>Ejectuivo/A :</Text>
+          <Text style={styles.subTitle}>Ejecutivo/A:</Text>
           <Text style={styles.clientEmployeeText}>Nombre: {empleado?.Nombre} {empleado?.Apellido}</Text>
-          {/* <Text style={styles.clientEmployeeText}>Email: {empleado?.Email}</Text> */}
           <Text style={styles.clientEmployeeText}>Teléfono: {empleado?.Telefono}</Text>
         </View>
       </View>
@@ -153,12 +156,12 @@ const PdfDocument = ({
         <View style={styles.columns}>
           <View style={styles.column}>
             {motorDetails.Motor.slice(0, Math.ceil(motorDetails.Motor.length / 2)).map((detail, index) => (
-              <Text key={index} style={styles.text}>{detail}</Text>
+              <Text key={index} style={styles.bulletText}>• {detail}</Text>
             ))}
           </View>
           <View style={styles.column}>
             {motorDetails.Motor.slice(Math.ceil(motorDetails.Motor.length / 2)).map((detail, index) => (
-              <Text key={index} style={styles.text}>{detail}</Text>
+              <Text key={index} style={styles.bulletText}>• {detail}</Text>
             ))}
           </View>
         </View>
@@ -169,12 +172,12 @@ const PdfDocument = ({
         <View style={styles.columns}>
           <View style={styles.column}>
             {seguridadDetails.Seguridad.slice(0, Math.ceil(seguridadDetails.Seguridad.length / 2)).map((detail, index) => (
-              <Text key={index} style={styles.text}>{detail}</Text>
+              <Text key={index} style={styles.bulletText}>• {detail}</Text>
             ))}
           </View>
           <View style={styles.column}>
             {seguridadDetails.Seguridad.slice(Math.ceil(seguridadDetails.Seguridad.length / 2)).map((detail, index) => (
-              <Text key={index} style={styles.text}>{detail}</Text>
+              <Text key={index} style={styles.bulletText}>• {detail}</Text>
             ))}
           </View>
         </View>
@@ -185,12 +188,12 @@ const PdfDocument = ({
         <View style={styles.columns}>
           <View style={styles.column}>
             {interiorDetails.Interior.slice(0, Math.ceil(interiorDetails.Interior.length / 2)).map((detail, index) => (
-              <Text key={index} style={styles.text}>{detail}</Text>
+              <Text key={index} style={styles.bulletText}>• {detail}</Text>
             ))}
           </View>
           <View style={styles.column}>
             {interiorDetails.Interior.slice(Math.ceil(interiorDetails.Interior.length / 2)).map((detail, index) => (
-              <Text key={index} style={styles.text}>{detail}</Text>
+              <Text key={index} style={styles.bulletText}>• {detail}</Text>
             ))}
           </View>
         </View>
@@ -201,12 +204,12 @@ const PdfDocument = ({
         <View style={styles.columns}>
           <View style={styles.column}>
             {exteriorDetails.Exterior.slice(0, Math.ceil(exteriorDetails.Exterior.length / 2)).map((detail, index) => (
-              <Text key={index} style={styles.text}>{detail}</Text>
+              <Text key={index} style={styles.bulletText}>• {detail}</Text>
             ))}
           </View>
           <View style={styles.column}>
             {exteriorDetails.Exterior.slice(Math.ceil(exteriorDetails.Exterior.length / 2)).map((detail, index) => (
-              <Text key={index} style={styles.text}>{detail}</Text>
+              <Text key={index} style={styles.bulletText}>• {detail}</Text>
             ))}
           </View>
         </View>
@@ -217,12 +220,12 @@ const PdfDocument = ({
         <View style={styles.columns}>
           <View style={styles.column}>
             {dimensionesDetails.Dimensiones.slice(0, Math.ceil(dimensionesDetails.Dimensiones.length / 2)).map((detail, index) => (
-              <Text key={index} style={styles.text}>{detail}</Text>
+              <Text key={index} style={styles.bulletText}>• {detail}</Text>
             ))}
           </View>
           <View style={styles.column}>
             {dimensionesDetails.Dimensiones.slice(Math.ceil(dimensionesDetails.Dimensiones.length / 2)).map((detail, index) => (
-              <Text key={index} style={styles.text}>{detail}</Text>
+              <Text key={index} style={styles.bulletText}>• {detail}</Text>
             ))}
           </View>
         </View>

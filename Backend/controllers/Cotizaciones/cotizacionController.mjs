@@ -1,4 +1,4 @@
-import sequelize from "../config/config.mjs";
+import sequelize from "../../config/config.mjs";
 
 const cotizacionController = {
     getCotizacionesByEstado: async (req, res) =>{

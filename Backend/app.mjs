@@ -7,7 +7,7 @@ import authRouters from './routes/auth.routes.mjs';
 import dashboardRouters from './routes/dashboard.routes.mjs';
 import vehiculosRouter from './routes/vehiculo.routes.mjs';
 import marcasRouter from './routes/marca.routes.mjs';
-import cotizacionRouter from './routes/cotizacion.routes.mjs';
+import cotizacionRouter from './routes/cotizacion.Routes.mjs';
 import empleadosRouter from './routes/empleados.routes.mjs';
 import clienteRouter from './routes/cliente.routes.mjs';
 

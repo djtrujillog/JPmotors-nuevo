@@ -1,346 +1,227 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import AutoModal from "./AutoModalCotizar";
-import ProdItem from "./ProductoItem";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Button, Modal, Form } from "react-bootstrap";
+import { Button, Modal, Form, Table } from "react-bootstrap";
 
 const ClienteEmpleadoProductoList = () => {
-  const [autos, setAutos] = useState([]);
   const [clientes, setClientes] = useState([]);
-  const [empleados, setEmpleados] = useState([]);
-  const [marcas, setMarcas] = useState([]);
-  const [modelos, setModelos] = useState([]);
-  const [selectedAuto, setSelectedAuto] = useState(null);
-  const [selectedCliente, setSelectedCliente] = useState("");
-  const [selectedEmpleado, setSelectedEmpleado] = useState("");
-  const [selectedMarca, setSelectedMarca] = useState("");
-  const [selectedModelo, setSelectedModelo] = useState("");
-
-  // Estado para el modal de agregar cliente
-  const [showAddClientModal, setShowAddClientModal] = useState(false);
-  const [newClientForm, setNewClientForm] = useState({
-    Nombre: '',
-    Apellido: '',
-    Direccion: '',
-    Telefono: '',
-    CorreoElectronico: '',
-    Estado: '',
-    Documento: '',
-    Nit: ''
+  const [cotizaciones, setCotizaciones] = useState([]);
+  const [vehiculos, setVehiculos] = useState([]);
+  const [empleado, setEmpleado] = useState({
+    nombre: "",
+    apellido: "",
+    id: ""
   });
+  const [selectedCotizacion, setSelectedCotizacion] = useState(null);
+  const [formCotizacion, setFormCotizacion] = useState({
+    ClienteID: "",
+    VehiculoID: "",
+    EstadoCotizacion: "Media", // Valor por defecto "Media"
+    FechaSeguimiento: ""
+  });
+  const [showCotizacionModal, setShowCotizacionModal] = useState(false);
 
-  // Función para cargar los datos iniciales
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const clientesResponse = await axios.get(
-          "http://localhost:4000/clientes"
-        );
-        const empleadosResponse = await axios.get(
-          "http://localhost:4000/empleados"
-        );
+        const clientesResponse = await axios.get("http://localhost:4000/clientes");
         setClientes(clientesResponse.data);
-        setEmpleados(empleadosResponse.data);
-        fetchAutos(); // Llama a fetchAutos si es necesario
+
+        const nombre = localStorage.getItem("nombre");
+        const apellido = localStorage.getItem("apellido");
+        const id = localStorage.getItem("userId");
+
+        if (nombre && apellido && id) {
+          setEmpleado({ nombre, apellido, id });
+          fetchCotizaciones(id);
+        } else {
+          console.error("Datos del empleado no encontrados en el localStorage");
+        }
+
+        fetchVehiculos();
+
       } catch (error) {
         console.error("Error al cargar datos:", error);
       }
     };
     fetchData();
-  }, []); // No es necesario incluir fetchAutos aquí
+  }, []);
 
-  // Define fetchAutos con useCallback para que sea estable
-  const fetchAutos = useCallback(async () => {
+  const fetchCotizaciones = async (empleadoId) => {
     try {
-      const params = {
-        cliente: selectedCliente,
-        empleado: selectedEmpleado,
-      };
-      const response = await axios.get("http://localhost:4000/vehiculos", {
-        params,
-      });
-      setAutos(response.data);
-
-      // Extraer marcas únicas
-      const uniqueMarcas = [...new Set(response.data.map(auto => auto.Marca))];
-      setMarcas(uniqueMarcas);
-
-      // Si no hay marca seleccionada, extraer todos los modelos únicos
-      if (!selectedMarca) {
-        const uniqueModelos = [...new Set(response.data.map(auto => auto.Modelo))];
-        setModelos(uniqueModelos);
-      } else {
-        // Si hay una marca seleccionada, extraer modelos de esa marca
-        const filteredModelos = [...new Set(response.data
-          .filter(auto => auto.Marca === selectedMarca)
-          .map(auto => auto.Modelo))];
-        setModelos(filteredModelos);
-      }
-
+      const response = await axios.get(`http://localhost:4000/cotizaciones/byEmpleadoId/${empleadoId}`);
+      setCotizaciones(response.data);
     } catch (error) {
-      console.error("Error en la consulta a la API:", error);
+      console.error("Error al obtener cotizaciones:", error);
     }
-  }, [selectedCliente, selectedEmpleado, selectedMarca]); // Dependencias de fetchAutos
-
-  // Usa useEffect con fetchAutos en el array de dependencias
-  useEffect(() => {
-    fetchAutos();
-  }, [fetchAutos]); // Incluye fetchAutos aquí
-
-  // Filtrado de autos por marca y modelo
-  const filteredAutos = autos.filter(auto => {
-    return (
-      (selectedMarca === '' || auto.Marca === selectedMarca) &&
-      (selectedModelo === '' || auto.Modelo === selectedModelo)
-    );
-  });
-
-  const handleItemClick = (auto) => {
-    setSelectedAuto(auto);
   };
 
-  const handleGenerateQuote = (auto) => {
-    setSelectedAuto(auto);
-  };
-
-  const handleClienteChange = (event) => {
-    setSelectedCliente(event.target.value);
-  };
-
-  const handleEmpleadoChange = (event) => {
-    setSelectedEmpleado(event.target.value);
-  };
-
-  const handleMarcaChange = (event) => {
-    setSelectedMarca(event.target.value);
-    setSelectedModelo(""); // Resetear modelo seleccionado al cambiar la marca
-  };
-
-  const handleModeloChange = (event) => {
-    setSelectedModelo(event.target.value);
-  };
-
-  const handleNewClientFormChange = (e) => {
-    const { name, value } = e.target;
-    setNewClientForm({
-      ...newClientForm,
-      [name]: value
-    });
-  };
-
-  const handleAddClient = async () => {
+  const fetchVehiculos = async () => {
     try {
-      await axios.post('http://localhost:4000/clientes', newClientForm);
-      // Actualiza la lista de clientes después de agregar uno nuevo
-      const response = await axios.get("http://localhost:4000/clientes");
-      setClientes(response.data);
-      // Resetea el formulario y cierra el modal
-      setNewClientForm({
-        Nombre: '',
-        Apellido: '',
-        Direccion: '',
-        Telefono: '',
-        CorreoElectronico: '',
-        Estado: '',
-        Documento: '',
-        Nit: ''
-      });
-      setShowAddClientModal(false);
+      const response = await axios.get("http://localhost:4000/vehiculos");
+      setVehiculos(response.data);
     } catch (error) {
-      console.error('Error al agregar cliente:', error);
+      console.error("Error al obtener vehículos:", error);
+    }
+  };
+
+  const handleCotizacionSelect = (cotizacion) => {
+    setSelectedCotizacion(cotizacion);
+    setFormCotizacion({
+      ClienteID: cotizacion.ClienteID,
+      VehiculoID: cotizacion.VehiculoID,
+      EstadoCotizacion: cotizacion.EstadoCotizacion || "Media",  // Valor por defecto "Media"
+      FechaSeguimiento: cotizacion.FechaSeguimiento
+    });
+    setShowCotizacionModal(true);
+  };
+
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setFormCotizacion({ ...formCotizacion, [name]: value });
+  };
+
+  const handleAddEditCotizacion = async () => {
+    try {
+      if (selectedCotizacion) {
+        await axios.put("http://localhost:4000/cotizaciones", {
+          CotizacionID: selectedCotizacion.CotizacionID,
+          ...formCotizacion,
+          EmpleadoID: empleado.id
+        });
+      } else {
+        await axios.post("http://localhost:4000/cotizaciones", {
+          ...formCotizacion,
+          EmpleadoID: empleado.id,
+          FechaCotizacion: new Date().toISOString().slice(0, 10)
+        });
+      }
+      fetchCotizaciones(empleado.id);
+      setShowCotizacionModal(false);
+      setSelectedCotizacion(null);
+      setFormCotizacion({
+        ClienteID: "",
+        VehiculoID: "",
+        EstadoCotizacion: "Media",  // Valor por defecto "Media"
+        FechaSeguimiento: ""
+      });
+    } catch (error) {
+      console.error("Error al guardar la cotización:", error);
     }
   };
 
   return (
     <div className="container-xl">
-      <h1 className="my-4">Lista de Autos</h1>
-      <div className="row my-4">
-        <div className="col-md-6">
-          <Button variant="primary" onClick={() => setShowAddClientModal(true)}>
-            Agregar Cliente
-          </Button>
+      {empleado.nombre && (
+        <div className="empleado-info">
+          <h2>Ejecutivo/a</h2>
+          <p>{empleado.nombre} {empleado.apellido}</p>
         </div>
-        <div className="col-md-6">
-          <h2>Clientes</h2>
-          <select
-            className="form-select"
-            value={selectedCliente}
-            onChange={handleClienteChange}
-          >
-            <option value="">Seleccione un cliente</option>
-            {clientes.map((cliente) => (
-              <option key={cliente.ClienteID} value={cliente.ClienteID}>
-                {cliente.Nombre} {cliente.Apellido}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-      <div className="row my-4">
-        <div className="col-md-6">
-          <h2>Empleados</h2>
-          <select
-            className="form-select"
-            value={selectedEmpleado}
-            onChange={handleEmpleadoChange}
-          >
-            <option value="">Seleccione un empleado</option>
-            {empleados.map((empleado) => (
-              <option key={empleado.EmpleadoID} value={empleado.EmpleadoID}>
-                {empleado.Nombre} {empleado.Apellido}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-      <div className="row my-4">
-        <div className="col-md-6">
-          <h2>Marca</h2>
-          <select
-            className="form-select"
-            value={selectedMarca}
-            onChange={handleMarcaChange}
-          >
-            <option value="">Filtrar por Marca</option>
-            {marcas.map(marca => (
-              <option key={marca} value={marca}>{marca}</option>
-            ))}
-          </select>
-        </div>
-        <div className="col-md-6">
-          <h2>Modelo</h2>
-          <select
-            className="form-select"
-            value={selectedModelo}
-            onChange={handleModeloChange}
-            disabled={!selectedMarca} // Deshabilitar si no hay marca seleccionada
-          >
-            <option value="">Filtrar por Modelo</option>
-            {modelos.map(modelo => (
-              <option key={modelo} value={modelo}>{modelo}</option>
-            ))}
-          </select>
-        </div>
-      </div>
-      <div className="row">
-        {filteredAutos.map((auto) => (
-          <ProdItem
-            key={auto.VehiculoID}
-            auto={auto}
-            onClick={handleItemClick}
-            onCotizacionClick={handleGenerateQuote}
-          />
-        ))}
-      </div>
-      {selectedAuto && (
-        <AutoModal
-          auto={selectedAuto}
-          cliente={clientes.find(
-            (cliente) => cliente.ClienteID === parseInt(selectedCliente)
-          )}
-          empleado={empleados.find(
-            (empleado) => empleado.EmpleadoID === parseInt(selectedEmpleado)
-          )}
-          onClose={() => setSelectedAuto(null)}
-        />
       )}
+      <h1 className="my-4">Cotizaciones del Empleado</h1>
+      <Button variant="primary" onClick={() => setShowCotizacionModal(true)}>
+        Agregar Cotización
+      </Button>
+      <Table striped bordered hover className="my-4">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Cliente</th>
+            <th>Vehículo</th>
+            <th>Fecha Cotización</th>
+            <th>Estado</th>
+            <th>Fecha Seguimiento</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {cotizaciones.map((cotizacion, index) => (
+            <tr key={cotizacion.CotizacionID}>
+              <td>{index + 1}</td>
+              <td>{cotizacion.NombreCliente}</td>
+              <td>{cotizacion.VehiculoDescripcion}</td>
+              <td>{cotizacion.FechaCotizacion}</td>
+              <td>{cotizacion.EstadoCotizacion}</td>
+              <td>{cotizacion.FechaSeguimiento}</td>
+              <td>
+                <Button variant="warning" onClick={() => handleCotizacionSelect(cotizacion)}>
+                  Editar
+                </Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
 
-      {/* Modal para agregar cliente */}
-      <Modal show={showAddClientModal} onHide={() => setShowAddClientModal(false)}>
+      {/* Modal para agregar/editar cotización */}
+      <Modal show={showCotizacionModal} onHide={() => setShowCotizacionModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Agregar Nuevo Cliente</Modal.Title>
+          <Modal.Title>{selectedCotizacion ? "Editar Cotización" : "Agregar Cotización"}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Form.Group controlId="formClienteNombre">
-              <Form.Label>Nombre</Form.Label>
+            <Form.Group controlId="formCotizacionCliente">
+              <Form.Label>Cliente</Form.Label>
               <Form.Control
-                type="text"
-                placeholder="Ingrese el nombre"
-                name="Nombre"
-                value={newClientForm.Nombre}
-                onChange={handleNewClientFormChange}
-              />
+                as="select"
+                name="ClienteID"
+                value={formCotizacion.ClienteID}
+                onChange={handleFormChange}
+              >
+                <option value="">Seleccione un cliente</option>
+                {clientes.map(cliente => (
+                  <option key={cliente.ClienteID} value={cliente.ClienteID}>
+                    {cliente.Nombre} {cliente.Apellido}
+                  </option>
+                ))}
+              </Form.Control>
             </Form.Group>
-            <Form.Group controlId="formClienteApellido">
-              <Form.Label>Apellido</Form.Label>
+            <Form.Group controlId="formCotizacionVehiculo">
+              <Form.Label>Vehículo</Form.Label>
               <Form.Control
-                type="text"
-                placeholder="Ingrese el apellido"
-                name="Apellido"
-                value={newClientForm.Apellido}
-                onChange={handleNewClientFormChange}
-              />
+                as="select"
+                name="VehiculoID"
+                value={formCotizacion.VehiculoID}
+                onChange={handleFormChange}
+              >
+                <option value="">Seleccione un vehículo</option>
+                {vehiculos.map(vehiculo => (
+                  <option key={vehiculo.VehiculoID} value={vehiculo.VehiculoID}>
+                    {vehiculo.Modelo} {vehiculo.Marca} {vehiculo.Anio}
+                  </option>
+                ))}
+              </Form.Control>
             </Form.Group>
-            <Form.Group controlId="formClienteDireccion">
-              <Form.Label>Dirección</Form.Label>
+            <Form.Group controlId="formCotizacionEstado">
+              <Form.Label>Estado de la Cotización</Form.Label>
               <Form.Control
-                type="text"
-                placeholder="Ingrese la dirección"
-                name="Direccion"
-                value={newClientForm.Direccion}
-                onChange={handleNewClientFormChange}
-              />
+                as="select"
+                name="EstadoCotizacion"
+                value={formCotizacion.EstadoCotizacion}
+                onChange={handleFormChange}
+              >
+                <option value="Alta">Alta</option>
+                <option value="Media">Media</option>
+                <option value="Baja">Baja</option>
+              </Form.Control>
             </Form.Group>
-            <Form.Group controlId="formClienteTelefono">
-              <Form.Label>Teléfono</Form.Label>
+            <Form.Group controlId="formCotizacionSeguimiento">
+              <Form.Label>Fecha de Seguimiento</Form.Label>
               <Form.Control
-                type="text"
-                placeholder="Ingrese el teléfono"
-                name="Telefono"
-                value={newClientForm.Telefono}
-                onChange={handleNewClientFormChange}
-              />
-            </Form.Group>
-            <Form.Group controlId="formClienteCorreoElectronico">
-              <Form.Label>Correo Electrónico</Form.Label>
-              <Form.Control
-                type="email"
-                placeholder="Ingrese el correo electrónico"
-                name="CorreoElectronico"
-                value={newClientForm.CorreoElectronico}
-                onChange={handleNewClientFormChange}
-              />
-            </Form.Group>
-            <Form.Group controlId="formClienteEstado">
-              <Form.Label>Estado</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Ingrese el estado"
-                name="Estado"
-                value={newClientForm.Estado}
-                onChange={handleNewClientFormChange}
-              />
-            </Form.Group>
-            <Form.Group controlId="formClienteDocumento">
-              <Form.Label>Documento</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Ingrese el documento"
-                name="Documento"
-                value={newClientForm.Documento}
-                onChange={handleNewClientFormChange}
-              />
-            </Form.Group>
-            <Form.Group controlId="formClienteNit">
-              <Form.Label>NIT</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Ingrese el NIT"
-                name="Nit"
-                value={newClientForm.Nit}
-                onChange={handleNewClientFormChange}
+                type="date"
+                name="FechaSeguimiento"
+                value={formCotizacion.FechaSeguimiento}
+                onChange={handleFormChange}
               />
             </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowAddClientModal(false)}>
-            Cerrar
+          <Button variant="secondary" onClick={() => setShowCotizacionModal(false)}>
+            Cancelar
           </Button>
-          <Button variant="primary" onClick={handleAddClient}>
-            Agregar Cliente
+          <Button variant="primary" onClick={handleAddEditCotizacion}>
+            {selectedCotizacion ? "Guardar Cambios" : "Agregar Cotización"}
           </Button>
         </Modal.Footer>
       </Modal>

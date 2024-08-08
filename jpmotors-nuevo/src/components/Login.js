@@ -1,4 +1,3 @@
-// src/components/Login.js
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Modal, Button, Form, Container, Row, Col, Alert } from 'react-bootstrap';
@@ -13,11 +12,19 @@ const Login = ({ setAuth, handleClose }) => {
   const handleLogin = () => {
     axios.post('http://localhost:4000/auth/signin', { usuario, contrasena })
       .then(res => {
+        // Almacenar la información en el localStorage
         localStorage.setItem('token', res.data.token);
         localStorage.setItem('roles', JSON.stringify(res.data.roles));
+        localStorage.setItem('userId', res.data.id);
+        localStorage.setItem('nombre', res.data.nombre);
+        localStorage.setItem('apellido', res.data.apellido);
+
+        // Actualizar el estado de autenticación y cerrar el modal
         setAuth(true);
         handleClose();
-        navigate('/');  // Redirigir a la página de inicio después de iniciar sesión
+        
+        // Redirigir a la página de inicio después de iniciar sesión
+        navigate('/');
       })
       .catch(err => {
         console.error(err);

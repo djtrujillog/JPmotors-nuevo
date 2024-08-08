@@ -162,10 +162,9 @@ const AutoModalCotizar = ({ auto, cliente, empleado, onClose }) => {
               interiorDetails={interiorDetails}
               exteriorDetails={exteriorDetails}
               dimensionesDetails={dimensionesDetails}
-              precioWeb={auto.PrecioWeb} // Asegúrate de pasar estos valores
+              precioWeb={auto.PrecioWeb}
               precioGerente={auto.PrecioGerente}
               precioLista={auto.PrecioLista}
-
             />
           }
           fileName={`Cotización_${auto.Marca}_${auto.Modelo}.pdf`}

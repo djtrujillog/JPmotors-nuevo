@@ -161,8 +161,8 @@ const cotizacionController = {
         try {
             const { CotizacionID, EmpleadoID, ClienteID, VehiculoID, FechaCotizacion, EstadoCotizacion, FechaSeguimiento } = req.body;
             // Example SQL query, replace with your actual query
-            var query = "UPDATE Cotizaciones SET EmpleadoID = " + EmpleadoID + ", EstadoCotizacion = '" + EstadoCotizacion + "', FechaSeguimiento = '" + FechaSeguimiento + "'";
-            query = query + ' WHERE CotizacionID =' + CotizacionID;
+            var query = "UPDATE Cotizaciones SET EmpleadoID = " + EmpleadoID + ", VehiculoID = " + VehiculoID + ", EstadoCotizacion = '" + EstadoCotizacion + "', FechaSeguimiento = '" + FechaSeguimiento + "'";
+            query = query + ' WHERE CotizacionID =' + CotizacionID;            
             console.log(query);
             const result = await sequelize.query(query, { type: sequelize.QueryTypes.UPDATE });
             res.status(200).json({ message: 'Cotización actualizada correctamente', result });

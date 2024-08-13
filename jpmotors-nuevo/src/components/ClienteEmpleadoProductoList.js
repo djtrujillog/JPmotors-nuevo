@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Modal, Form, Table } from "react-bootstrap";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import PdfCotizar from "./PdfCotizar";
 
 const ClienteEmpleadoProductoList = () => {
   const [clientes, setClientes] = useState([]);
@@ -20,6 +22,7 @@ const ClienteEmpleadoProductoList = () => {
     FechaSeguimiento: ""
   });
   const [showCotizacionModal, setShowCotizacionModal] = useState(false);
+  const [cotizacionData, setCotizacionData] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,24 +31,23 @@ const ClienteEmpleadoProductoList = () => {
         setClientes(clientesResponse.data);
 
         const nombre = localStorage.getItem("nombre");
-        const apellido = localStorage.getItem("apellido");
-        const id = localStorage.getItem("userId");
+      const apellido = localStorage.getItem("apellido");
+      const id = localStorage.getItem("userId");
 
-        if (nombre && apellido && id) {
-          setEmpleado({ nombre, apellido, id });
-          fetchCotizaciones(id);
-        } else {
-          console.error("Datos del empleado no encontrados en el localStorage");
-        }
-
-        fetchVehiculos();
-
-      } catch (error) {
-        console.error("Error al cargar datos:", error);
+      if (nombre && apellido && id) {
+        setEmpleado({ nombre, apellido, id });
+        fetchCotizaciones(id);
+      } else {
+        console.error("Datos del empleado no encontrados en el localStorage");
       }
-    };
-    fetchData();
-  }, []);
+
+      fetchVehiculos();
+    } catch (error) {
+      console.error("Error al cargar datos:", error);
+    }
+  };
+  fetchData();
+}, []);
 
   const fetchCotizaciones = async (empleadoId) => {
     try {
@@ -110,6 +112,61 @@ const ClienteEmpleadoProductoList = () => {
     }
   };
 
+  const handleGeneratePdf = async (cotizacion) => {
+    try {
+      const [
+        imageRes,
+        motorRes,
+        seguridadRes,
+        interiorRes,
+        exteriorRes,
+        dimensionesRes,
+      ] = await Promise.all([
+        fetch(`http://localhost:4000/vehiculos/${cotizacion.VehiculoID}`),
+        fetch(`http://localhost:4000/vehiculos/motor/${cotizacion.VehiculoID}`),
+        fetch(`http://localhost:4000/vehiculos/seguridad/${cotizacion.VehiculoID}`),
+        fetch(`http://localhost:4000/vehiculos/interior/${cotizacion.VehiculoID}`),
+        fetch(`http://localhost:4000/vehiculos/exterior/${cotizacion.VehiculoID}`),
+        fetch(`http://localhost:4000/vehiculos/dimensiones/${cotizacion.VehiculoID}`),
+      ]);
+
+      const [
+        imageData,
+        motorData,
+        seguridadData,
+        interiorData,
+        exteriorData,
+        dimensionesData,
+      ] = await Promise.all([
+        imageRes.json(),
+        motorRes.json(),
+        seguridadRes.json(),
+        interiorRes.json(),
+        exteriorRes.json(),
+        dimensionesRes.json(),
+      ]);
+
+      const blob = new Blob([new Uint8Array(imageData.Imagen.data)], {
+        type: "image/jpeg",
+      });
+      const imageUrl = URL.createObjectURL(blob);
+
+      setCotizacionData({
+        auto: cotizacion,
+        cliente: clientes.find(c => c.ClienteID === cotizacion.ClienteID),
+        empleado,
+        imageUrl,
+        motorDetails: motorData,
+        seguridadDetails: seguridadData,
+        interiorDetails: interiorData,
+        exteriorDetails: exteriorData,
+        dimensionesDetails: dimensionesData,
+      });
+    } catch (error) {
+      console.error("Error al generar el PDF:", error);
+    }
+  };
+
   return (
     <div className="container-xl">
       {empleado.nombre && (
@@ -132,6 +189,7 @@ const ClienteEmpleadoProductoList = () => {
             <th>Estado</th>
             <th>Fecha Seguimiento</th>
             <th>Acciones</th>
+            <th>Cotización</th> {/* Nueva columna para el botón de generar PDF */}
           </tr>
         </thead>
         <tbody>
@@ -147,6 +205,37 @@ const ClienteEmpleadoProductoList = () => {
                 <Button variant="warning" onClick={() => handleCotizacionSelect(cotizacion)}>
                   Editar
                 </Button>
+              </td>
+              <td>
+                <Button variant="info" onClick={() => handleGeneratePdf(cotizacion)}>
+                  Generar PDF
+                </Button>
+                {cotizacionData && cotizacionData.auto.CotizacionID === cotizacion.CotizacionID && (
+                  <PDFDownloadLink
+                  document={
+                    <PdfCotizar
+                      auto={cotizacionData.auto}
+                      cliente={cotizacionData.cliente}
+                      empleado={empleado}
+                      imageUrl={cotizacionData.imageUrl}
+                      motorDetails={cotizacionData.motorDetails}
+                      seguridadDetails={cotizacionData.seguridadDetails}
+                      interiorDetails={cotizacionData.interiorDetails}
+                      exteriorDetails={cotizacionData.exteriorDetails}
+                      dimensionesDetails={cotizacionData.dimensionesDetails}
+                      precioWeb={cotizacion.PrecioWeb}
+                      precioGerente={cotizacion.PrecioGerente}
+                      precioLista={cotizacion.PrecioLista}
+                    />
+                  }
+                  fileName={`Cotización_${cotizacion.Marca}_${cotizacion.Modelo}.pdf`}
+                >
+                  {({ loading }) => 
+                    loading ? "Generando PDF..." : "Descargar PDF"
+                  }
+                </PDFDownloadLink>
+                
+                )}
               </td>
             </tr>
           ))}

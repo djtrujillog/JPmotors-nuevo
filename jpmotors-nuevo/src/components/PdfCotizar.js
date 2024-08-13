@@ -145,8 +145,8 @@ const PdfDocument = ({
         </View>
         <View style={styles.clientEmployeeColumn}>
           <Text style={styles.subTitle}>Ejecutivo/A:</Text>
-          <Text style={styles.clientEmployeeText}>Nombre: {empleado?.Nombre} {empleado?.Apellido}</Text>
-          <Text style={styles.clientEmployeeText}>Teléfono: {empleado?.Telefono}</Text>
+          <Text style={styles.clientEmployeeText}>Nombre: {empleado?.nombre} {empleado?.apellido}</Text> {/* Make sure these match */}
+          <Text style={styles.clientEmployeeText}>Teléfono: {empleado?.Telefono}</Text> {/* If available */}
         </View>
       </View>
 

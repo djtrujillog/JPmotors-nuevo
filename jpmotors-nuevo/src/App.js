@@ -11,6 +11,7 @@ import AutoList from "./components/Autolist.js";
 import AgVehiculo from "./components/AgregarVehiculo";
 import Clientes from "./components/AgregarCliente.js";
 import Empleados from "./components/AgregarEmpleado.js";
+import Calendario from "./components/Calendario.js";
 import ClienteEmpleadoProductoList from "./components/ClienteEmpleadoProductoList.js";
 import Login from "./components/Login";
 import logo from "./img/Logo-12.png";
@@ -98,6 +99,7 @@ function App() {
                         </Nav.Item>
                       </>
                     )}
+                    
                     {(roles.includes('Admin') || roles.includes('User')) && (
                       <>
                         <Nav.Item>
@@ -107,7 +109,12 @@ function App() {
                         </Nav.Item>
                         <Nav.Item>
                           <Nav.Link as={Link} to="/cotizar" className="nav-link">
-                            Cotizar
+                            Cartera
+                          </Nav.Link>
+                        </Nav.Item>
+                        <Nav.Item>
+                          <Nav.Link as={Link} to="/calendario" className="nav-link">
+                            Calendario
                           </Nav.Link>
                         </Nav.Item>
                       </>
@@ -149,6 +156,7 @@ function App() {
                 <>
                   <Route path="/clientes" element={<Clientes />} />
                   <Route path="/cotizar" element={<ClienteEmpleadoProductoList />} />
+                  <Route path="/calendario" element={<Calendario />} />
                 </>
               )}
             </>

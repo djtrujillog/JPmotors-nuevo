@@ -1,0 +1,30 @@
+.calendar-table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.day-cell {
+  height: 100px;
+  vertical-align: top;
+  padding: 5px;
+  position: relative;
+}
+
+.day-number {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.cotizaciones-del-dia {
+  margin-top: 5px;
+}
+
+.empty-day {
+  background-color: #f8f9fa;
+}
+
+.cotizacion-item {
+  margin: 2px 0;
+  font-size: 0.85em;
+  line-height: 1.2;
+}

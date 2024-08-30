@@ -3,6 +3,7 @@ import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Modal, Form, Table } from "react-bootstrap";
 import { PDFDocument, pdf } from "@react-pdf/renderer";
+import Select from "react-select";  // Importa react-select
 import PdfCotizar from "./PdfCotizar";
 import CotizacionDetallesModal from "./CotizacionDetallesModal";
 
@@ -14,7 +15,7 @@ const ClienteEmpleadoProductoList = () => {
     nombre: "",
     apellido: "",
     id: "",
-    rol: "", // Se agrega el rol al estado del empleado
+    rol: "",
   });
   const [selectedCotizacion, setSelectedCotizacion] = useState(null);
   const [formCotizacion, setFormCotizacion] = useState({
@@ -25,13 +26,12 @@ const ClienteEmpleadoProductoList = () => {
   });
   const [showCotizacionModal, setShowCotizacionModal] = useState(false);
   const [showDetallesModal, setShowDetallesModal] = useState(false);
+  const [vehiculosLoaded, setVehiculosLoaded] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Primero cargamos los vehículos
         await fetchVehiculos();
-
         const clientesResponse = await axios.get(
           "http://localhost:4000/clientes"
         );
@@ -45,7 +45,10 @@ const ClienteEmpleadoProductoList = () => {
         if (nombre && apellido && id && roles) {
           const rol = roles.includes("Admin") ? "Admin" : "User";
           setEmpleado({ nombre, apellido, id, rol });
-          fetchCotizaciones(id, rol);
+
+          if (vehiculosLoaded) {
+            fetchCotizaciones(id, rol);
+          }
         } else {
           console.error("Datos del empleado no encontrados en el localStorage");
         }
@@ -53,8 +56,9 @@ const ClienteEmpleadoProductoList = () => {
         console.error("Error al cargar datos:", error);
       }
     };
+
     fetchData();
-  }, []);
+  }, [vehiculosLoaded]);
 
   const fetchCotizaciones = async (empleadoId, rol) => {
     try {
@@ -69,16 +73,17 @@ const ClienteEmpleadoProductoList = () => {
         );
       }
 
-      // Asociar los precios desde el estado de vehículos a la cotización correspondiente
-      cotizacionesData = cotizacionesData.map(cotizacion => {
-        const vehiculo = vehiculos.find(v => v.VehiculoID === cotizacion.VehiculoID);
+      cotizacionesData = cotizacionesData.map((cotizacion) => {
+        const vehiculo = vehiculos.find(
+          (v) => v.VehiculoID === cotizacion.VehiculoID
+        );
         return {
           ...cotizacion,
           PrecioWeb: vehiculo?.PrecioWeb,
           PrecioGerente: vehiculo?.PrecioGerente,
           PrecioLista: vehiculo?.PrecioLista,
           Anio: vehiculo?.Anio,
-          VehiculoDescripcion: `${vehiculo?.Modelo} ${vehiculo?.Marca} ${vehiculo?.Anio}`
+          VehiculoDescripcion: `${vehiculo?.Modelo} ${vehiculo?.Marca} ${vehiculo?.Anio}`,
         };
       });
 
@@ -92,25 +97,10 @@ const ClienteEmpleadoProductoList = () => {
     try {
       const response = await axios.get("http://localhost:4000/vehiculos");
       setVehiculos(response.data);
+      setVehiculosLoaded(true);
     } catch (error) {
       console.error("Error al obtener vehículos:", error);
     }
-  };
-
-  const handleCotizacionSelect = (cotizacion) => {
-    setSelectedCotizacion(cotizacion);
-    setFormCotizacion({
-      ClienteID: cotizacion.ClienteID,
-      VehiculoID: cotizacion.VehiculoID,
-      EstadoCotizacion: cotizacion.EstadoCotizacion || "Media",
-      FechaSeguimiento: cotizacion.FechaSeguimiento,
-    });
-    setShowCotizacionModal(true);
-  };
-
-  const handleFormChange = (e) => {
-    const { name, value } = e.target;
-    setFormCotizacion({ ...formCotizacion, [name]: value });
   };
 
   const handleAddEditCotizacion = async () => {
@@ -128,7 +118,7 @@ const ClienteEmpleadoProductoList = () => {
           FechaCotizacion: new Date().toISOString().slice(0, 10),
         });
       }
-      fetchCotizaciones(empleado.id, empleado.rol);
+      await fetchCotizaciones(empleado.id, empleado.rol);
       setShowCotizacionModal(false);
       setSelectedCotizacion(null);
       setFormCotizacion({
@@ -215,7 +205,6 @@ const ClienteEmpleadoProductoList = () => {
       asPdf.updateContainer(pdfDoc);
       const blobPdf = await asPdf.toBlob();
 
-      // Nombre del archivo PDF basado en los datos del cliente y del vehículo
       const fileName = `Cotización_${cliente?.Nombre || "Cliente"}_${
         cliente?.Apellido || ""
       }_${vehiculo || "Vehículo"}.pdf`;
@@ -232,6 +221,13 @@ const ClienteEmpleadoProductoList = () => {
   const handleShowDetalles = (cotizacion) => {
     setSelectedCotizacion(cotizacion);
     setShowDetallesModal(true);
+  };
+
+  const handleFormChange = (selectedOption, actionMeta) => {
+    setFormCotizacion({
+      ...formCotizacion,
+      [actionMeta.name]: selectedOption ? selectedOption.value : "",
+    });
   };
 
   return (
@@ -271,36 +267,77 @@ const ClienteEmpleadoProductoList = () => {
               <tr key={cotizacion.CotizacionID}>
                 <td>{index + 1}</td>
                 <td>
-                  {cliente.Nombre} {cliente.Apellido}
+                  {cliente?.Nombre} {cliente?.Apellido}
                   <br />
-                  {cliente.Telefono && <span>Teléfono: {cliente.Telefono}</span>}
+                  {cliente.Telefono && (
+                    <span>Teléfono: {cliente.Telefono}</span>
+                  )}
                   <br />
                   {cliente.CorreoElectronico && (
                     <span>Correo: {cliente.CorreoElectronico}</span>
                   )}
                 </td>
                 <td>
-                  {`${cotizacion.VehiculoDescripcion}`}<br />
-                  {/* {cotizacion.PrecioWeb && <span>Precio Web: {cotizacion.PrecioWeb}</span>}<br />
-                  {cotizacion.PrecioGerente && <span>Precio Gerente: {cotizacion.PrecioGerente}</span>}<br /> */}
-                  {cotizacion.PrecioLista && <span>Precio: {cotizacion.PrecioLista}</span>}
+                  {cotizacion.VehiculoDescripcion}
                   <br />
-                  {cotizacion.Anio && <span>Año: {cotizacion.Anio}</span>}
+                  {cotizacion.PrecioLista && (
+                    <span>
+                      Precio: {cotizacion.PrecioLista}
+                      <br />
+                      Año: {cotizacion.Anio}
+                    </span>
+                  )}
                 </td>
                 <td>{cotizacion.FechaCotizacion}</td>
                 <td>{cotizacion.EstadoCotizacion}</td>
                 <td>{cotizacion.FechaSeguimiento}</td>
                 <td>
-                  <Button
-                    variant="warning"
-                    onClick={() => handleCotizacionSelect(cotizacion)}
-                  >
-                    Editar
-                  </Button>
+                  <div style={{ display: "flex", gap: "10px" }}>
+                    <Button
+                      variant="warning"
+                      onClick={() => {
+                        setSelectedCotizacion(cotizacion);
+                        setFormCotizacion({
+                          ClienteID: cotizacion.ClienteID,
+                          VehiculoID: cotizacion.VehiculoID,
+                          EstadoCotizacion: cotizacion.EstadoCotizacion,
+                          FechaSeguimiento: cotizacion.FechaSeguimiento,
+                        });
+                        setShowCotizacionModal(true);
+                      }}
+                    >
+                      Editar
+                    </Button>
+
+                    <Button
+                      variant="danger"
+                      onClick={async () => {
+                        if (
+                          window.confirm(
+                            "¿Estás seguro de que deseas eliminar esta cotización?"
+                          )
+                        ) {
+                          try {
+                            await axios.delete(
+                              `http://localhost:4000/cotizaciones/${cotizacion.CotizacionID}`
+                            );
+                            await fetchCotizaciones(empleado.id, empleado.rol);
+                          } catch (error) {
+                            console.error(
+                              "Error al eliminar la cotización:",
+                              error
+                            );
+                          }
+                        }
+                      }}
+                    >
+                      Eliminar
+                    </Button>
+                  </div>
                 </td>
                 <td>
                   <Button
-                    variant="info"
+                    variant="success"
                     onClick={() => handleGeneratePdf(cotizacion)}
                   >
                     Generar PDF
@@ -308,10 +345,10 @@ const ClienteEmpleadoProductoList = () => {
                 </td>
                 <td>
                   <Button
-                    variant="success"
+                    variant="info"
                     onClick={() => handleShowDetalles(cotizacion)}
                   >
-                    Ver Detalles
+                    Detalles
                   </Button>
                 </td>
               </tr>
@@ -326,64 +363,70 @@ const ClienteEmpleadoProductoList = () => {
       >
         <Modal.Header closeButton>
           <Modal.Title>
-            {selectedCotizacion ? "Editar Cotización" : "Agregar Cotización"}
+            {selectedCotizacion ? "Editar" : "Agregar"} Cotización
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Form.Group controlId="formCotizacionCliente">
+            <Form.Group controlId="formClienteID">
               <Form.Label>Cliente</Form.Label>
-              <Form.Control
-                as="select"
+              <Select
                 name="ClienteID"
-                value={formCotizacion.ClienteID}
+                value={clientes.find(
+                  (cliente) => cliente.ClienteID === formCotizacion.ClienteID
+                )}
                 onChange={handleFormChange}
-              >
-                <option value="">Seleccione un cliente</option>
-                {clientes.map((cliente) => (
-                  <option key={cliente.ClienteID} value={cliente.ClienteID}>
-                    {cliente.Nombre} {cliente.Apellido}
-                  </option>
-                ))}
-              </Form.Control>
+                options={clientes.map((cliente) => ({
+                  value: cliente.ClienteID,
+                  label: `${cliente.Nombre} ${cliente.Apellido}`,
+                }))}
+                isClearable
+              />
             </Form.Group>
-            <Form.Group controlId="formCotizacionVehiculo">
+            <Form.Group controlId="formVehiculoID">
               <Form.Label>Vehículo</Form.Label>
-              <Form.Control
-                as="select"
+              <Select
                 name="VehiculoID"
-                value={formCotizacion.VehiculoID}
+                value={vehiculos.find(
+                  (vehiculo) => vehiculo.VehiculoID === formCotizacion.VehiculoID
+                )}
                 onChange={handleFormChange}
-              >
-                <option value="">Seleccione un vehículo</option>
-                {vehiculos.map((vehiculo) => (
-                  <option key={vehiculo.VehiculoID} value={vehiculo.VehiculoID}>
-                    {vehiculo.Modelo} {vehiculo.Marca} {vehiculo.Anio}
-                  </option>
-                ))}
-              </Form.Control>
+                options={vehiculos.map((vehiculo) => ({
+                  value: vehiculo.VehiculoID,
+                  label: `${vehiculo.Modelo} ${vehiculo.Marca} ${vehiculo.Anio}`,
+                }))}
+                isClearable
+              />
             </Form.Group>
-            <Form.Group controlId="formCotizacionEstado">
-              <Form.Label>Estado de la Cotización</Form.Label>
-              <Form.Control
-                as="select"
+            <Form.Group controlId="formEstadoCotizacion">
+              <Form.Label>Estado de Cotización</Form.Label>
+              <Select
                 name="EstadoCotizacion"
-                value={formCotizacion.EstadoCotizacion}
+                value={{
+                  value: formCotizacion.EstadoCotizacion,
+                  label: formCotizacion.EstadoCotizacion,
+                }}
                 onChange={handleFormChange}
-              >
-                <option value="Alta">Alta</option>
-                <option value="Media">Media</option>
-                <option value="Baja">Baja</option>
-                <option value="Anulada">Anulada</option>
-              </Form.Control>
+                options={[
+                  { value: "Alta", label: "Alta" },
+                  { value: "Media", label: "Media" },
+                  { value: "Baja", label: "Baja" },
+                ]}
+                isClearable
+              />
             </Form.Group>
-            <Form.Group controlId="formCotizacionSeguimiento">
+            <Form.Group controlId="formFechaSeguimiento">
               <Form.Label>Fecha de Seguimiento</Form.Label>
               <Form.Control
                 type="date"
                 name="FechaSeguimiento"
                 value={formCotizacion.FechaSeguimiento}
-                onChange={handleFormChange}
+                onChange={(e) =>
+                  setFormCotizacion({
+                    ...formCotizacion,
+                    FechaSeguimiento: e.target.value,
+                  })
+                }
               />
             </Form.Group>
           </Form>
@@ -393,19 +436,21 @@ const ClienteEmpleadoProductoList = () => {
             variant="secondary"
             onClick={() => setShowCotizacionModal(false)}
           >
-            Cancelar
+            Cerrar
           </Button>
           <Button variant="primary" onClick={handleAddEditCotizacion}>
-            {selectedCotizacion ? "Guardar Cambios" : "Agregar Cotización"}
+            Guardar
           </Button>
         </Modal.Footer>
       </Modal>
 
-      <CotizacionDetallesModal
-        cotizacion={selectedCotizacion}
-        show={showDetallesModal}
-        onHide={() => setShowDetallesModal(false)}
-      />
+      {selectedCotizacion && (
+        <CotizacionDetallesModal
+          show={showDetallesModal}
+          cotizacion={selectedCotizacion}
+          onHide={() => setShowDetallesModal(false)}
+        />
+      )}
     </div>
   );
 };

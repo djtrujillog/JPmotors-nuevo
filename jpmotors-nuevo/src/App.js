@@ -1,7 +1,7 @@
 // src/App.js
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import { Navbar, Nav } from "react-bootstrap";
+import { Navbar, Nav, NavDropdown } from "react-bootstrap";
 import Home from "./components/Home";
 import Nosotros from "./components/Nosotros";
 import Usados from "./components/Usados";
@@ -85,38 +85,26 @@ function App() {
                 </Nav.Item>
                 {auth && (
                   <>
-                    {roles.includes('Admin') && (
-                      <>
-                        <Nav.Item>
-                          <Nav.Link as={Link} to="/agvehiculo" className="nav-link">
-                            Agregar
-                          </Nav.Link>
-                        </Nav.Item>
-                        <Nav.Item>
-                          <Nav.Link as={Link} to="/empleados" className="nav-link">
-                            Empleados
-                          </Nav.Link>
-                        </Nav.Item>
-                      </>
-                    )}
-                    
                     {(roles.includes('Admin') || roles.includes('User')) && (
                       <>
-                        <Nav.Item>
-                          <Nav.Link as={Link} to="/clientes" className="nav-link">
-                            Clientes
-                          </Nav.Link>
-                        </Nav.Item>
-                        <Nav.Item>
-                          <Nav.Link as={Link} to="/cotizar" className="nav-link">
-                            Cartera
-                          </Nav.Link>
-                        </Nav.Item>
-                        <Nav.Item>
+                       <Nav.Item>
                           <Nav.Link as={Link} to="/calendario" className="nav-link">
                             Calendario
                           </Nav.Link>
                         </Nav.Item>
+                        <NavDropdown title="Administrar" id="adminDropdown">
+                        {roles.includes('Admin') && (
+                          <NavDropdown.Item as={Link} to="/empleados">Empleados</NavDropdown.Item>
+                        )}
+                          <NavDropdown.Item as={Link} to="/clientes">Clientes</NavDropdown.Item>
+                          {roles.includes('Admin') && (
+                            <NavDropdown.Item as={Link} to="/agvehiculo">Agregar</NavDropdown.Item>
+                          )}
+                        </NavDropdown>
+                        <NavDropdown title="Seguimientos" id="seguimientosDropdown">
+                          <NavDropdown.Item as={Link} to="/cotizar">Cartera</NavDropdown.Item>
+                        </NavDropdown>
+                       
                       </>
                     )}
                     <Nav.Item>

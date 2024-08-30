@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import cotizacionController from '../controllers/cotizacionController.mjs';
+import cotizacionController from '../controllers/Cotizaciones/cotizacionController.mjs';
 
 const router = Router();
 

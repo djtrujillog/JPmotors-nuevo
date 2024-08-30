@@ -21,7 +21,7 @@ function AutoImage({ longBlobData, alt }) {
 
     const handleImageClick = () => {
         // Implementar aquí la lógica para mostrar un modal o overlay con zoom
-        console.log('Implementar lógica de zoom aquí');
+        // console.log('Implementar lógica de zoom aquí');
     };
 
     return (

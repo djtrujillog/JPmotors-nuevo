@@ -1,349 +1,456 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import AutoModal from "./AutoModalCotizar";
-import ProdItem from "./ProductoItem";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Button, Modal, Form } from "react-bootstrap";
+import { Button, Modal, Form, Table } from "react-bootstrap";
+import { PDFDocument, pdf } from "@react-pdf/renderer";
+import Select from "react-select";  // Importa react-select
+import PdfCotizar from "./PdfCotizar";
+import CotizacionDetallesModal from "./CotizacionDetallesModal";
 
 const ClienteEmpleadoProductoList = () => {
-  const [autos, setAutos] = useState([]);
   const [clientes, setClientes] = useState([]);
-  const [empleados, setEmpleados] = useState([]);
-  const [marcas, setMarcas] = useState([]);
-  const [modelos, setModelos] = useState([]);
-  const [selectedAuto, setSelectedAuto] = useState(null);
-  const [selectedCliente, setSelectedCliente] = useState("");
-  const [selectedEmpleado, setSelectedEmpleado] = useState("");
-  const [selectedMarca, setSelectedMarca] = useState("");
-  const [selectedModelo, setSelectedModelo] = useState("");
-
-  // Estado para el modal de agregar cliente
-  const [showAddClientModal, setShowAddClientModal] = useState(false);
-  const [newClientForm, setNewClientForm] = useState({
-    Nombre: '',
-    Apellido: '',
-    Direccion: '',
-    Telefono: '',
-    CorreoElectronico: '',
-    Estado: '',
-    Documento: '',
-    Nit: ''
+  const [cotizaciones, setCotizaciones] = useState([]);
+  const [vehiculos, setVehiculos] = useState([]);
+  const [empleado, setEmpleado] = useState({
+    nombre: "",
+    apellido: "",
+    id: "",
+    rol: "",
   });
+  const [selectedCotizacion, setSelectedCotizacion] = useState(null);
+  const [formCotizacion, setFormCotizacion] = useState({
+    ClienteID: "",
+    VehiculoID: "",
+    EstadoCotizacion: "Media",
+    FechaSeguimiento: "",
+  });
+  const [showCotizacionModal, setShowCotizacionModal] = useState(false);
+  const [showDetallesModal, setShowDetallesModal] = useState(false);
+  const [vehiculosLoaded, setVehiculosLoaded] = useState(false);
 
-  // Función para cargar los datos iniciales
   useEffect(() => {
     const fetchData = async () => {
       try {
+        await fetchVehiculos();
         const clientesResponse = await axios.get(
           "http://localhost:4000/clientes"
         );
-        const empleadosResponse = await axios.get(
-          "http://localhost:4000/empleados"
-        );
         setClientes(clientesResponse.data);
-        setEmpleados(empleadosResponse.data);
-        fetchAutos(); // Llama a fetchAutos si es necesario
+
+        const nombre = localStorage.getItem("nombre");
+        const apellido = localStorage.getItem("apellido");
+        const id = localStorage.getItem("userId");
+        const roles = JSON.parse(localStorage.getItem("roles"));
+
+        if (nombre && apellido && id && roles) {
+          const rol = roles.includes("Admin") ? "Admin" : "User";
+          setEmpleado({ nombre, apellido, id, rol });
+
+          if (vehiculosLoaded) {
+            fetchCotizaciones(id, rol);
+          }
+        } else {
+          console.error("Datos del empleado no encontrados en el localStorage");
+        }
       } catch (error) {
         console.error("Error al cargar datos:", error);
       }
     };
+
     fetchData();
-  }, []); // No es necesario incluir fetchAutos aquí
+  }, [vehiculosLoaded]);
 
-  // Define fetchAutos con useCallback para que sea estable
-  const fetchAutos = useCallback(async () => {
+  const fetchCotizaciones = async (empleadoId, rol) => {
     try {
-      const params = {
-        cliente: selectedCliente,
-        empleado: selectedEmpleado,
-      };
-      const response = await axios.get("http://localhost:4000/vehiculos", {
-        params,
-      });
-      setAutos(response.data);
+      const response = await axios.get(
+        `http://localhost:4000/cotizaciones/byEmpleadoId/${empleadoId}`
+      );
+      let cotizacionesData = response.data;
 
-      // Extraer marcas únicas
-      const uniqueMarcas = [...new Set(response.data.map(auto => auto.Marca))];
-      setMarcas(uniqueMarcas);
-
-      // Si no hay marca seleccionada, extraer todos los modelos únicos
-      if (!selectedMarca) {
-        const uniqueModelos = [...new Set(response.data.map(auto => auto.Modelo))];
-        setModelos(uniqueModelos);
-      } else {
-        // Si hay una marca seleccionada, extraer modelos de esa marca
-        const filteredModelos = [...new Set(response.data
-          .filter(auto => auto.Marca === selectedMarca)
-          .map(auto => auto.Modelo))];
-        setModelos(filteredModelos);
+      if (rol === "User") {
+        cotizacionesData = cotizacionesData.filter(
+          (cotizacion) => cotizacion.EstadoCotizacion !== "Anulada"
+        );
       }
 
-    } catch (error) {
-      console.error("Error en la consulta a la API:", error);
-    }
-  }, [selectedCliente, selectedEmpleado, selectedMarca]); // Dependencias de fetchAutos
-
-  // Usa useEffect con fetchAutos en el array de dependencias
-  useEffect(() => {
-    fetchAutos();
-  }, [fetchAutos]); // Incluye fetchAutos aquí
-
-  // Filtrado de autos por marca y modelo
-  const filteredAutos = autos.filter(auto => {
-    return (
-      (selectedMarca === '' || auto.Marca === selectedMarca) &&
-      (selectedModelo === '' || auto.Modelo === selectedModelo)
-    );
-  });
-
-  const handleItemClick = (auto) => {
-    setSelectedAuto(auto);
-  };
-
-  const handleGenerateQuote = (auto) => {
-    setSelectedAuto(auto);
-  };
-
-  const handleClienteChange = (event) => {
-    setSelectedCliente(event.target.value);
-  };
-
-  const handleEmpleadoChange = (event) => {
-    setSelectedEmpleado(event.target.value);
-  };
-
-  const handleMarcaChange = (event) => {
-    setSelectedMarca(event.target.value);
-    setSelectedModelo(""); // Resetear modelo seleccionado al cambiar la marca
-  };
-
-  const handleModeloChange = (event) => {
-    setSelectedModelo(event.target.value);
-  };
-
-  const handleNewClientFormChange = (e) => {
-    const { name, value } = e.target;
-    setNewClientForm({
-      ...newClientForm,
-      [name]: value
-    });
-  };
-
-  const handleAddClient = async () => {
-    try {
-      await axios.post('http://localhost:4000/clientes', newClientForm);
-      // Actualiza la lista de clientes después de agregar uno nuevo
-      const response = await axios.get("http://localhost:4000/clientes");
-      setClientes(response.data);
-      // Resetea el formulario y cierra el modal
-      setNewClientForm({
-        Nombre: '',
-        Apellido: '',
-        Direccion: '',
-        Telefono: '',
-        CorreoElectronico: '',
-        Estado: '',
-        Documento: '',
-        Nit: ''
+      cotizacionesData = cotizacionesData.map((cotizacion) => {
+        const vehiculo = vehiculos.find(
+          (v) => v.VehiculoID === cotizacion.VehiculoID
+        );
+        return {
+          ...cotizacion,
+          PrecioWeb: vehiculo?.PrecioWeb,
+          PrecioGerente: vehiculo?.PrecioGerente,
+          PrecioLista: vehiculo?.PrecioLista,
+          Anio: vehiculo?.Anio,
+          VehiculoDescripcion: `${vehiculo?.Modelo} ${vehiculo?.Marca} ${vehiculo?.Anio}`,
+        };
       });
-      setShowAddClientModal(false);
+
+      setCotizaciones(cotizacionesData);
     } catch (error) {
-      console.error('Error al agregar cliente:', error);
+      console.error("Error al obtener cotizaciones:", error);
     }
+  };
+
+  const fetchVehiculos = async () => {
+    try {
+      const response = await axios.get("http://localhost:4000/vehiculos");
+      setVehiculos(response.data);
+      setVehiculosLoaded(true);
+    } catch (error) {
+      console.error("Error al obtener vehículos:", error);
+    }
+  };
+
+  const handleAddEditCotizacion = async () => {
+    try {
+      if (selectedCotizacion) {
+        await axios.put("http://localhost:4000/cotizaciones", {
+          CotizacionID: selectedCotizacion.CotizacionID,
+          ...formCotizacion,
+          EmpleadoID: empleado.id,
+        });
+      } else {
+        await axios.post("http://localhost:4000/cotizaciones", {
+          ...formCotizacion,
+          EmpleadoID: empleado.id,
+          FechaCotizacion: new Date().toISOString().slice(0, 10),
+        });
+      }
+      await fetchCotizaciones(empleado.id, empleado.rol);
+      setShowCotizacionModal(false);
+      setSelectedCotizacion(null);
+      setFormCotizacion({
+        ClienteID: "",
+        VehiculoID: "",
+        EstadoCotizacion: "Media",
+        FechaSeguimiento: "",
+      });
+    } catch (error) {
+      console.error("Error al guardar la cotización:", error);
+    }
+  };
+
+  const handleGeneratePdf = async (cotizacion) => {
+    try {
+      const [
+        imageRes,
+        motorRes,
+        seguridadRes,
+        interiorRes,
+        exteriorRes,
+        dimensionesRes,
+      ] = await Promise.all([
+        fetch(`http://localhost:4000/vehiculos/${cotizacion.VehiculoID}`),
+        fetch(`http://localhost:4000/vehiculos/motor/${cotizacion.VehiculoID}`),
+        fetch(
+          `http://localhost:4000/vehiculos/seguridad/${cotizacion.VehiculoID}`
+        ),
+        fetch(
+          `http://localhost:4000/vehiculos/interior/${cotizacion.VehiculoID}`
+        ),
+        fetch(
+          `http://localhost:4000/vehiculos/exterior/${cotizacion.VehiculoID}`
+        ),
+        fetch(
+          `http://localhost:4000/vehiculos/dimensiones/${cotizacion.VehiculoID}`
+        ),
+      ]);
+
+      const [
+        imageData,
+        motorData,
+        seguridadData,
+        interiorData,
+        exteriorData,
+        dimensionesData,
+      ] = await Promise.all([
+        imageRes.json(),
+        motorRes.json(),
+        seguridadRes.json(),
+        interiorRes.json(),
+        exteriorRes.json(),
+        dimensionesRes.json(),
+      ]);
+
+      const blob = new Blob([new Uint8Array(imageData.Imagen.data)], {
+        type: "image/jpeg",
+      });
+      const imageUrl = URL.createObjectURL(blob);
+
+      const cliente = clientes.find(
+        (c) => c.ClienteID === cotizacion.ClienteID
+      );
+      const vehiculo = cotizacion.VehiculoDescripcion;
+
+      const pdfDoc = (
+        <PdfCotizar
+          auto={cotizacion}
+          cliente={cliente}
+          empleado={empleado}
+          imageUrl={imageUrl}
+          motorDetails={motorData}
+          seguridadDetails={seguridadData}
+          interiorDetails={interiorData}
+          exteriorDetails={exteriorData}
+          dimensionesDetails={dimensionesData}
+          precioWeb={cotizacion.PrecioWeb}
+          precioGerente={cotizacion.PrecioGerente}
+          precioLista={cotizacion.PrecioLista}
+        />
+      );
+
+      const asPdf = pdf([]);
+      asPdf.updateContainer(pdfDoc);
+      const blobPdf = await asPdf.toBlob();
+
+      const fileName = `Cotización_${cliente?.Nombre || "Cliente"}_${
+        cliente?.Apellido || ""
+      }_${vehiculo || "Vehículo"}.pdf`;
+
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blobPdf);
+      link.download = fileName;
+      link.click();
+    } catch (error) {
+      console.error("Error al generar el PDF:", error);
+    }
+  };
+
+  const handleShowDetalles = (cotizacion) => {
+    setSelectedCotizacion(cotizacion);
+    setShowDetallesModal(true);
+  };
+
+  const handleFormChange = (selectedOption, actionMeta) => {
+    setFormCotizacion({
+      ...formCotizacion,
+      [actionMeta.name]: selectedOption ? selectedOption.value : "",
+    });
   };
 
   return (
     <div className="container-xl">
-      <h1 className="my-4">Lista de Autos</h1>
-      <div className="row my-4">
-        <div className="col-md-6">
-          <Button variant="primary" onClick={() => setShowAddClientModal(true)}>
-            Agregar Cliente
-          </Button>
+      {empleado.nombre && (
+        <div className="empleado-info">
+          <h6>Ejecutivo/a</h6>
+          <h2>
+            {empleado.nombre} {empleado.apellido}
+          </h2>
         </div>
-        <div className="col-md-6">
-          <h2>Clientes</h2>
-          <select
-            className="form-select"
-            value={selectedCliente}
-            onChange={handleClienteChange}
-          >
-            <option value="">Seleccione un cliente</option>
-            {clientes.map((cliente) => (
-              <option key={cliente.ClienteID} value={cliente.ClienteID}>
-                {cliente.Nombre} {cliente.Apellido}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-      <div className="row my-4">
-        <div className="col-md-6">
-          <h2>Empleados</h2>
-          <select
-            className="form-select"
-            value={selectedEmpleado}
-            onChange={handleEmpleadoChange}
-          >
-            <option value="">Seleccione un empleado</option>
-            {empleados.map((empleado) => (
-              <option key={empleado.EmpleadoID} value={empleado.EmpleadoID}>
-                {empleado.Nombre} {empleado.Apellido}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-      <div className="row my-4">
-        <div className="col-md-6">
-          <h2>Marca</h2>
-          <select
-            className="form-select"
-            value={selectedMarca}
-            onChange={handleMarcaChange}
-          >
-            <option value="">Filtrar por Marca</option>
-            {marcas.map(marca => (
-              <option key={marca} value={marca}>{marca}</option>
-            ))}
-          </select>
-        </div>
-        <div className="col-md-6">
-          <h2>Modelo</h2>
-          <select
-            className="form-select"
-            value={selectedModelo}
-            onChange={handleModeloChange}
-            disabled={!selectedMarca} // Deshabilitar si no hay marca seleccionada
-          >
-            <option value="">Filtrar por Modelo</option>
-            {modelos.map(modelo => (
-              <option key={modelo} value={modelo}>{modelo}</option>
-            ))}
-          </select>
-        </div>
-      </div>
-      <div className="row">
-        {filteredAutos.map((auto) => (
-          <ProdItem
-            key={auto.VehiculoID}
-            auto={auto}
-            onClick={handleItemClick}
-            onCotizacionClick={handleGenerateQuote}
-          />
-        ))}
-      </div>
-      {selectedAuto && (
-        <AutoModal
-          auto={selectedAuto}
-          cliente={clientes.find(
-            (cliente) => cliente.ClienteID === parseInt(selectedCliente)
-          )}
-          empleado={empleados.find(
-            (empleado) => empleado.EmpleadoID === parseInt(selectedEmpleado)
-          )}
-          onClose={() => setSelectedAuto(null)}
-        />
       )}
+      <h1 className="my-4">Cotizaciones del Empleado</h1>
+      <Button variant="primary" onClick={() => setShowCotizacionModal(true)}>
+        Agregar Cotización
+      </Button>
+      <Table striped bordered hover className="my-4">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Cliente</th>
+            <th>Vehículo</th>
+            <th>Fecha Cotización</th>
+            <th>Estado</th>
+            <th>Fecha Seguimiento</th>
+            <th>Acciones</th>
+            <th>Cotización</th>
+            <th>Detalles</th>
+          </tr>
+        </thead>
+        <tbody>
+          {cotizaciones.map((cotizacion, index) => {
+            const cliente = clientes.find(
+              (c) => c.ClienteID === cotizacion.ClienteID
+            );
+            return (
+              <tr key={cotizacion.CotizacionID}>
+                <td>{index + 1}</td>
+                <td>
+                  {cliente?.Nombre} {cliente?.Apellido}
+                  <br />
+                  {cliente.Telefono && (
+                    <span>Teléfono: {cliente.Telefono}</span>
+                  )}
+                  <br />
+                  {cliente.CorreoElectronico && (
+                    <span>Correo: {cliente.CorreoElectronico}</span>
+                  )}
+                </td>
+                <td>
+                  {cotizacion.VehiculoDescripcion}
+                  <br />
+                  {cotizacion.PrecioLista && (
+                    <span>
+                      Precio: {cotizacion.PrecioLista}
+                      <br />
+                      Año: {cotizacion.Anio}
+                    </span>
+                  )}
+                </td>
+                <td>{cotizacion.FechaCotizacion}</td>
+                <td>{cotizacion.EstadoCotizacion}</td>
+                <td>{cotizacion.FechaSeguimiento}</td>
+                <td>
+                  <div style={{ display: "flex", gap: "10px" }}>
+                    <Button
+                      variant="warning"
+                      onClick={() => {
+                        setSelectedCotizacion(cotizacion);
+                        setFormCotizacion({
+                          ClienteID: cotizacion.ClienteID,
+                          VehiculoID: cotizacion.VehiculoID,
+                          EstadoCotizacion: cotizacion.EstadoCotizacion,
+                          FechaSeguimiento: cotizacion.FechaSeguimiento,
+                        });
+                        setShowCotizacionModal(true);
+                      }}
+                    >
+                      Editar
+                    </Button>
 
-      {/* Modal para agregar cliente */}
-      <Modal show={showAddClientModal} onHide={() => setShowAddClientModal(false)}>
+                    <Button
+                      variant="danger"
+                      onClick={async () => {
+                        if (
+                          window.confirm(
+                            "¿Estás seguro de que deseas eliminar esta cotización?"
+                          )
+                        ) {
+                          try {
+                            await axios.delete(
+                              `http://localhost:4000/cotizaciones/${cotizacion.CotizacionID}`
+                            );
+                            await fetchCotizaciones(empleado.id, empleado.rol);
+                          } catch (error) {
+                            console.error(
+                              "Error al eliminar la cotización:",
+                              error
+                            );
+                          }
+                        }
+                      }}
+                    >
+                      Eliminar
+                    </Button>
+                  </div>
+                </td>
+                <td>
+                  <Button
+                    variant="success"
+                    onClick={() => handleGeneratePdf(cotizacion)}
+                  >
+                    Generar PDF
+                  </Button>
+                </td>
+                <td>
+                  <Button
+                    variant="info"
+                    onClick={() => handleShowDetalles(cotizacion)}
+                  >
+                    Detalles
+                  </Button>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </Table>
+
+      <Modal
+        show={showCotizacionModal}
+        onHide={() => setShowCotizacionModal(false)}
+      >
         <Modal.Header closeButton>
-          <Modal.Title>Agregar Nuevo Cliente</Modal.Title>
+          <Modal.Title>
+            {selectedCotizacion ? "Editar" : "Agregar"} Cotización
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Form.Group controlId="formClienteNombre">
-              <Form.Label>Nombre</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Ingrese el nombre"
-                name="Nombre"
-                value={newClientForm.Nombre}
-                onChange={handleNewClientFormChange}
+            <Form.Group controlId="formClienteID">
+              <Form.Label>Cliente</Form.Label>
+              <Select
+                name="ClienteID"
+                value={clientes.find(
+                  (cliente) => cliente.ClienteID === formCotizacion.ClienteID
+                )}
+                onChange={handleFormChange}
+                options={clientes.map((cliente) => ({
+                  value: cliente.ClienteID,
+                  label: `${cliente.Nombre} ${cliente.Apellido}`,
+                }))}
+                isClearable
               />
             </Form.Group>
-            <Form.Group controlId="formClienteApellido">
-              <Form.Label>Apellido</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Ingrese el apellido"
-                name="Apellido"
-                value={newClientForm.Apellido}
-                onChange={handleNewClientFormChange}
+            <Form.Group controlId="formVehiculoID">
+              <Form.Label>Vehículo</Form.Label>
+              <Select
+                name="VehiculoID"
+                value={vehiculos.find(
+                  (vehiculo) => vehiculo.VehiculoID === formCotizacion.VehiculoID
+                )}
+                onChange={handleFormChange}
+                options={vehiculos.map((vehiculo) => ({
+                  value: vehiculo.VehiculoID,
+                  label: `${vehiculo.Modelo} ${vehiculo.Marca} ${vehiculo.Anio}`,
+                }))}
+                isClearable
               />
             </Form.Group>
-            <Form.Group controlId="formClienteDireccion">
-              <Form.Label>Dirección</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Ingrese la dirección"
-                name="Direccion"
-                value={newClientForm.Direccion}
-                onChange={handleNewClientFormChange}
+            <Form.Group controlId="formEstadoCotizacion">
+              <Form.Label>Estado de Cotización</Form.Label>
+              <Select
+                name="EstadoCotizacion"
+                value={{
+                  value: formCotizacion.EstadoCotizacion,
+                  label: formCotizacion.EstadoCotizacion,
+                }}
+                onChange={handleFormChange}
+                options={[
+                  { value: "Alta", label: "Alta" },
+                  { value: "Media", label: "Media" },
+                  { value: "Baja", label: "Baja" },
+                ]}
+                isClearable
               />
             </Form.Group>
-            <Form.Group controlId="formClienteTelefono">
-              <Form.Label>Teléfono</Form.Label>
+            <Form.Group controlId="formFechaSeguimiento">
+              <Form.Label>Fecha de Seguimiento</Form.Label>
               <Form.Control
-                type="text"
-                placeholder="Ingrese el teléfono"
-                name="Telefono"
-                value={newClientForm.Telefono}
-                onChange={handleNewClientFormChange}
-              />
-            </Form.Group>
-            <Form.Group controlId="formClienteCorreoElectronico">
-              <Form.Label>Correo Electrónico</Form.Label>
-              <Form.Control
-                type="email"
-                placeholder="Ingrese el correo electrónico"
-                name="CorreoElectronico"
-                value={newClientForm.CorreoElectronico}
-                onChange={handleNewClientFormChange}
-              />
-            </Form.Group>
-            <Form.Group controlId="formClienteEstado">
-              <Form.Label>Estado</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Ingrese el estado"
-                name="Estado"
-                value={newClientForm.Estado}
-                onChange={handleNewClientFormChange}
-              />
-            </Form.Group>
-            <Form.Group controlId="formClienteDocumento">
-              <Form.Label>Documento</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Ingrese el documento"
-                name="Documento"
-                value={newClientForm.Documento}
-                onChange={handleNewClientFormChange}
-              />
-            </Form.Group>
-            <Form.Group controlId="formClienteNit">
-              <Form.Label>NIT</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Ingrese el NIT"
-                name="Nit"
-                value={newClientForm.Nit}
-                onChange={handleNewClientFormChange}
+                type="date"
+                name="FechaSeguimiento"
+                value={formCotizacion.FechaSeguimiento}
+                onChange={(e) =>
+                  setFormCotizacion({
+                    ...formCotizacion,
+                    FechaSeguimiento: e.target.value,
+                  })
+                }
               />
             </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowAddClientModal(false)}>
+          <Button
+            variant="secondary"
+            onClick={() => setShowCotizacionModal(false)}
+          >
             Cerrar
           </Button>
-          <Button variant="primary" onClick={handleAddClient}>
-            Agregar Cliente
+          <Button variant="primary" onClick={handleAddEditCotizacion}>
+            Guardar
           </Button>
         </Modal.Footer>
       </Modal>
+
+      {selectedCotizacion && (
+        <CotizacionDetallesModal
+          show={showDetallesModal}
+          cotizacion={selectedCotizacion}
+          onHide={() => setShowDetallesModal(false)}
+        />
+      )}
     </div>
   );
 };

@@ -7,11 +7,13 @@ import authRouters from './routes/auth.routes.mjs';
 import dashboardRouters from './routes/dashboard.routes.mjs';
 import vehiculosRouter from './routes/vehiculo.routes.mjs';
 import marcasRouter from './routes/marca.routes.mjs';
-import cotizacionRouter from './routes/cotizacion.Routes.mjs';
+import cotizacionRouter from './routes/cotizacion.routes.mjs';
 import empleadosRouter from './routes/empleados.routes.mjs';
 import clienteRouter from './routes/cliente.routes.mjs';
-
+import seguimientoRouter from './routes/seguimiento.routes.mjs';
 const app = express();
+import mailRouter from './routes/mail.routes.mjs';  // Importa la nueva ruta de correo
+
 
 app.set('port', process.env.PORT || 4000);
 
@@ -28,6 +30,9 @@ app.use('/marcas', marcasRouter);
 app.use('/cotizaciones', cotizacionRouter);
 app.use('/empleados', empleadosRouter);
 app.use('/clientes', clienteRouter);
+app.use('/seguimientos', seguimientoRouter);
+app.use('/mail', mailRouter);  // Usa la nueva ruta de correo
+
 
 sequelize.authenticate()
   .then(() => {

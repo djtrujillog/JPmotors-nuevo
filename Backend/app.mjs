@@ -21,7 +21,7 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.get('/', (req, res) => res.json({ message: 'API JP Motors GT' }));
+app.get('/', (req, res) => res.json({ message: 'API JP Motors GT Septiembre 2024' }));
 
 app.use('/auth', authRouters);
 app.use('/dashboard', dashboardRouters);

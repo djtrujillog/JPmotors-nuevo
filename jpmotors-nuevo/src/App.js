@@ -1,25 +1,56 @@
 // src/App.js
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import { Navbar, Nav } from "react-bootstrap";
+import { Navbar, Nav, NavDropdown } from "react-bootstrap";
 import Home from "./components/Home";
 import Nosotros from "./components/Nosotros";
-// import Nuevos from "./components/Nuevos";
 import Usados from "./components/Usados";
 import Contacto from "./components/Contacto";
-import Footer from "./components/Footer"; // Asegúrate de que esta ruta sea correcta
+import Footer from "./components/Footer"; 
 import AutoList from "./components/Autolist.js";
 import AgVehiculo from "./components/AgregarVehiculo";
-// import Preloader from "./components/Preloader";
+import Clientes from "./components/AgregarCliente.js";
+import Empleados from "./components/AgregarEmpleado.js";
+import Calendario from "./components/Calendario.js";
+import ClienteEmpleadoProductoList from "./components/ClienteEmpleadoProductoList.js";
+import Login from "./components/Login";
 import logo from "./img/Logo-12.png";
 import "./App.css";
 import "./js/custom.js";
-
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
+  const [auth, setAuth] = useState(false);
+  const [roles, setRoles] = useState([]);
+  const [showLogin, setShowLogin] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const storedRoles = localStorage.getItem('roles');
+    if (token && storedRoles) {
+      setAuth(true);
+      try {
+        const parsedRoles = JSON.parse(storedRoles);
+        setRoles(parsedRoles);
+      } catch (error) {
+        console.error("Failed to parse roles from localStorage", error);
+        setRoles([]);
+      }
+    }
+  }, [auth]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('roles');
+    setAuth(false);
+    setRoles([]);
+  };
+
+  const handleLoginClose = () => setShowLogin(false);
+  const handleLoginShow = () => setShowLogin(true);
+
   return (
-    <div>
-      {/* <Preloader /> */}
+    <div style={{ marginBottom: "60px" }}>
       <br />
       <br />
       <br />
@@ -34,7 +65,7 @@ function App() {
               <Nav className="ms-auto mb-2 mb-lg-0">
                 <Nav.Item>
                   <Nav.Link as={Link} to="/" className="nav-link active">
-                    Home
+                    Inicio
                   </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
@@ -48,33 +79,77 @@ function App() {
                   </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                  <Nav.Link as={Link} to="/agvehiculo" className="nav-link">
-                    Usados
-                  </Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
                   <Nav.Link as={Link} to="/contacto" className="nav-link">
                     Contacto
                   </Nav.Link>
                 </Nav.Item>
-                {/* <Nav.Item>
-                  <Nav.Link as={Link} to="/nuevos" className="nav-link">
-                    {Contacto.name}
-                  </Nav.Link>
-                </Nav.Item> */}
+                {auth && (
+                  <>
+                    {(roles.includes('Admin') || roles.includes('User')) && (
+                      <>
+                       <Nav.Item>
+                          <Nav.Link as={Link} to="/calendario" className="nav-link">
+                            Calendario
+                          </Nav.Link>
+                        </Nav.Item>
+                        <NavDropdown title="Administrar" id="adminDropdown">
+                        {roles.includes('Admin') && (
+                          <NavDropdown.Item as={Link} to="/empleados">Empleados</NavDropdown.Item>
+                        )}
+                          <NavDropdown.Item as={Link} to="/clientes">Clientes</NavDropdown.Item>
+                          {roles.includes('Admin') && (
+                            <NavDropdown.Item as={Link} to="/agvehiculo">Agregar</NavDropdown.Item>
+                          )}
+                        </NavDropdown>
+                        <NavDropdown title="Seguimientos" id="seguimientosDropdown">
+                          <NavDropdown.Item as={Link} to="/cotizar">Cartera</NavDropdown.Item>
+                        </NavDropdown>
+                       
+                      </>
+                    )}
+                    <Nav.Item>
+                      <Nav.Link onClick={handleLogout} className="nav-link">
+                        Logout
+                      </Nav.Link>
+                    </Nav.Item>
+                  </>
+                )}
+                {!auth && (
+                  <Nav.Item>
+                    {/* <Nav.Link as={Link} to="/login" className="nav-link">
+                      Login
+                    </Nav.Link> */}
+                  </Nav.Item>
+                )}
               </Nav>
             </Navbar.Collapse>
           </div>
         </Navbar>
 
         <Routes>
-        <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home />} />
           <Route path="/nosotros" element={<Nosotros />} />
           <Route path="/nuevos" element={<AutoList />} />
           <Route path="/usados" element={<Usados />} />
           <Route path="/contacto" element={<Contacto />} />
-          <Route path="/agvehiculo" element={<AgVehiculo/>}/>
-          
+          {auth && (
+            <>
+              {roles.includes('Admin') && (
+                <>
+                  <Route path="/agvehiculo" element={<AgVehiculo />} />
+                  <Route path="/empleados" element={<Empleados />} />
+                </>
+              )}
+              {(roles.includes('Admin') || roles.includes('User')) && (
+                <>
+                  <Route path="/clientes" element={<Clientes />} />
+                  <Route path="/cotizar" element={<ClienteEmpleadoProductoList />} />
+                  <Route path="/calendario" element={<Calendario />} />
+                </>
+              )}
+            </>
+          )}
+          <Route path="/login" element={<Login setAuth={setAuth} handleClose={handleLoginClose} />} />
         </Routes>
       </Router>
       <Footer />

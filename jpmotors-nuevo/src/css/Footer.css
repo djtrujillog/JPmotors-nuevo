@@ -1,8 +1,0 @@
-.footer-fixed {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  background-color: #f8f9fa; /* Ajusta el color según tu diseño */
-  padding: 10px 0;
-  z-index: 1000; /* Asegúrate de que el footer esté encima de otros elementos */
-}

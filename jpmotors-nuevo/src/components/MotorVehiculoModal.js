@@ -12,6 +12,8 @@ const DetallesVehiculoMotorModal = ({ show, handleClose, vehiculo }) => {
   useEffect(() => {
     if (vehiculo && vehiculo.VehiculoID) {
       fetchExistingDetalles(vehiculo.VehiculoID);
+    } else {
+      setExistingDetalles([]); // Resetea los detalles si no hay un vehículo
     }
   }, [vehiculo]);
 

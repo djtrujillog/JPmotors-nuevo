@@ -13,8 +13,11 @@ const DetallesVehiculoModal = ({ show, handleClose, vehiculo }) => {
   useEffect(() => {
     if (vehiculo && vehiculo.VehiculoID) {
       fetchExistingDetalles(vehiculo.VehiculoID);
+    } else {
+      setExistingDetalles([]); // Resetea los detalles si no hay un vehículo
     }
   }, [vehiculo]);
+  
 
   // Función para obtener los detalles existentes desde el servidor
   const fetchExistingDetalles = async (VehiculoID) => {

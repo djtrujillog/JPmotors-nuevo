@@ -1,11 +1,12 @@
-// src/components/Footer.js
 import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const Footer = () => {
   return (
-    <footer  expand="lg" variant="light" bg="light" className="no-print">
+    <><br /><br /><br /><br /><br /><br /><br /><br />
+    <footer className="footer no-print bg-light">
+
       <Container className="bg-light">
         <Row>
           <Col md={6}>
@@ -15,8 +16,7 @@ const Footer = () => {
               de pago para que puedas adquirir tu vehículo.
             </p>
             <p>
-              <span className="fas fa-map-marker-alt"></span> Por el centro de
-              salud, San Benito, Petén.
+              <span className="fas fa-map-marker-alt"></span> Santa Elena, a media cuadra del centro de salud frente a gasolinera Puma, Flores, Petén.
             </p>
             <p>
               <span className="fas fa-phone"></span> (502) 3973 - 1085
@@ -44,39 +44,31 @@ const Footer = () => {
                 <h6>Síguenos</h6>
                 <span
                   className="fab fa-facebook-square"
-                  onClick={() =>
-                    window.open(
-                      "https://www.facebook.com/jpmotorsgt?mibextid=sCpJLy",
-                      "_blank"
-                    )
-                  }
+                  onClick={() => window.open(
+                    "https://www.facebook.com/jpmotorsgt?mibextid=sCpJLy",
+                    "_blank"
+                  )}
                 ></span>
                 <span
                   className="fab fa-instagram"
-                  onClick={() =>
-                    window.open(
-                      "https://www.instagram.com/jpmotorsgt?igsh=MXU2eXVhdXlyNDdxcg%3D%3D",
-                      "_blank"
-                    )
-                  }
+                  onClick={() => window.open(
+                    "https://www.instagram.com/jpmotorsgt?igsh=MXU2eXVhdXlyNDdxcg%3D%3D",
+                    "_blank"
+                  )}
                 ></span>
                 <span
                   className="fab fa-whatsapp"
-                  onClick={() =>
-                    window.open(
-                      "https://api.whatsapp.com/send?phone=50239731085&text=%c2%a1Hola%21%2c%20me%20gustar%c3%ada%20consultar%20informaci%c3%b3n%20acerca%20de%20un%20vehículo.",
-                      "_blank"
-                    )
-                  }
-                ><br/></span>
+                  onClick={() => window.open(
+                    "https://api.whatsapp.com/send?phone=50239731085&text=%c2%a1Hola%21%2c%20me%20gustar%c3%ada%20consultar%20informaci%c3%b3n%20acerca%20de%20un%20vehículo.",
+                    "_blank"
+                  )}
+                ><br /></span>
                 <span
                   className="fa fa-solid fa-map-pin"
-                  onClick={() =>
-                    window.open(
-                      "https://maps.app.goo.gl/WWxi4PL3varFVxZu7",
-                      "_blank"
-                    )
-                  }
+                  onClick={() => window.open(
+                    "https://maps.app.goo.gl/WWxi4PL3varFVxZu7",
+                    "_blank"
+                  )}
                 ></span>
               </Col>
             </Row>
@@ -85,27 +77,39 @@ const Footer = () => {
       </Container>
       <section className="footer no-print">
         {/* <Container className="content">
-          <Row>
-            <Col md={6} xs={12}>
-              <p id="Info-empresa"></p>
-            </Col>
-            <Col md={6} xs={12} className="text-end">
-              <p>
-                Desarrollado por{" "}
-                <a
-                  href="https://github.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  JMservices
-                </a>
-              </p>
-            </Col>
-          </Row>
-        </Container> */}
+      <Row>
+        <Col md={6} xs={12}>
+          <p id="Info-empresa"></p>
+        </Col>
+        <Col md={6} xs={12} className="text-end">
+          <p>
+            Desarrollado por{" "}
+            <a
+              href="https://github.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              JMservices
+            </a>
+          </p>
+        </Col>
+      </Row>
+    </Container> */}
       </section>
-    </footer>
+      {/* <style jsx>{`
+      .footer {
+        position: abso;
+        bottom: 0;
+        width: 100%;
+        background-color: #f8f9fa;
+        padding: 10px 0;
+        z-index: 1000;
+      }
+    `}</style> */}
+    </footer></>
   );
 };
+
+
 
 export default Footer;

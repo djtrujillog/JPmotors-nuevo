@@ -16,8 +16,7 @@ const Footer = () => {
               de pago para que puedas adquirir tu vehículo.
             </p>
             <p>
-              <span className="fas fa-map-marker-alt"></span> Por el centro de
-              salud, San Benito, Petén.
+              <span className="fas fa-map-marker-alt"></span> Santa Elena, a media cuadra del centro de salud frente a gasolinera Puma, Flores, Petén.
             </p>
             <p>
               <span className="fas fa-phone"></span> (502) 3973 - 1085

@@ -12,7 +12,9 @@ import AgVehiculo from "./components/AgregarVehiculo";
 import Clientes from "./components/AgregarCliente.js";
 import Empleados from "./components/AgregarEmpleado.js";
 import Calendario from "./components/Calendario.js";
+import Reportes from "./components/Reportes.js";
 import ClienteEmpleadoProductoList from "./components/ClienteEmpleadoProductoList.js";
+import MisReportes from "./components/misReportes.js";
 import Login from "./components/Login";
 import logo from "./img/Logo-12.png";
 import "./App.css";
@@ -99,7 +101,12 @@ function App() {
                           <NavDropdown.Item as={Link} to="/clientes">Clientes</NavDropdown.Item>
                           {roles.includes('Admin') && (
                             <NavDropdown.Item as={Link} to="/agvehiculo">Agregar</NavDropdown.Item>
+                          )} {roles.includes('Admin') && (
+                            <NavDropdown.Item as={Link} to="/reportes">Reportes</NavDropdown.Item>
+                          )}{(roles.includes('Admin') || roles.includes('User')) && (
+                            <NavDropdown.Item as={Link} to="/misreportes">Mis Reportes</NavDropdown.Item>
                           )}
+                          
                         </NavDropdown>
                         <NavDropdown title="Seguimientos" id="seguimientosDropdown">
                           <NavDropdown.Item as={Link} to="/cotizar">Cartera</NavDropdown.Item>
@@ -132,6 +139,9 @@ function App() {
           <Route path="/nuevos" element={<AutoList />} />
           <Route path="/usados" element={<Usados />} />
           <Route path="/contacto" element={<Contacto />} />
+          <Route path="/reportes" element={<Reportes />} />
+          <Route path="/misreportes" element={<MisReportes />} />
+          
           {auth && (
             <>
               {roles.includes('Admin') && (
@@ -145,6 +155,7 @@ function App() {
                   <Route path="/clientes" element={<Clientes />} />
                   <Route path="/cotizar" element={<ClienteEmpleadoProductoList />} />
                   <Route path="/calendario" element={<Calendario />} />
+                  <Route path="/misreportes" element={<MisReportes />} />
                 </>
               )}
             </>

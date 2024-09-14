@@ -27,6 +27,23 @@ const vehiculoController = {
     }
   },
 
+  getVehiculosNombre: async (req, res) => {
+    try {
+      const result = await sequelize.query("SELECT VehiculoID,Modelo,Marca,Anio,PrecioGerente,PrecioWeb, PrecioLista, MarcaID FROM Vehiculos", {
+        type: sequelize.QueryTypes.SELECT,
+      });
+
+      if (result.length > 0) {
+        res.status(200).json(result);
+      } else {
+        res.status(404).json({ message: "No hay vehículos" });
+      }
+    } catch (error) {
+      console.error("Error al obtener vehículos:", error);
+      res.status(500).send("Error interno del servidor");
+    }
+  },
+
   getVehiculoMotor: async (req, res) => {
     try {
       const { id } = req.params;

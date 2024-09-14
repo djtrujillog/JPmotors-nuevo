@@ -21,7 +21,7 @@ const ClienteEmpleadoProductoList = () => {
   const [formCotizacion, setFormCotizacion] = useState({
     ClienteID: "",
     VehiculoID: "",
-    EstadoCotizacion: "Media",
+    EstadoCotizacion: "",
     FechaSeguimiento: "",
   });
   const [showCotizacionModal, setShowCotizacionModal] = useState(false);
@@ -67,9 +67,9 @@ const ClienteEmpleadoProductoList = () => {
       );
       let cotizacionesData = response.data;
 
-      if (rol === "User") {
+      if (rol === "User" || rol === "Admin") {
         cotizacionesData = cotizacionesData.filter(
-          (cotizacion) => cotizacion.EstadoCotizacion !== "Anulada"
+          (cotizacion) => cotizacion.EstadoCotizacion !== "Anulada" & cotizacion.EstadoCotizacion !== "Finalizada"
         );
       }
 
@@ -95,7 +95,7 @@ const ClienteEmpleadoProductoList = () => {
 
   const fetchVehiculos = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/vehiculos");
+      const response = await axios.get("http://localhost:4000/vehiculos/pornombre");
       setVehiculos(response.data);
       setVehiculosLoaded(true);
     } catch (error) {
@@ -124,14 +124,14 @@ const ClienteEmpleadoProductoList = () => {
       setFormCotizacion({
         ClienteID: "",
         VehiculoID: "",
-        EstadoCotizacion: "Media",
+        EstadoCotizacion: "",
         FechaSeguimiento: "",
       });
     } catch (error) {
       console.error("Error al guardar la cotización:", error);
     }
   };
-
+//Creacion de pdf
   const handleGeneratePdf = async (cotizacion) => {
     try {
       const [
@@ -357,92 +357,132 @@ const ClienteEmpleadoProductoList = () => {
         </tbody>
       </Table>
 
-      <Modal
-        show={showCotizacionModal}
-        onHide={() => setShowCotizacionModal(false)}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>
-            {selectedCotizacion ? "Editar" : "Agregar"} Cotización
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group controlId="formClienteID">
-              <Form.Label>Cliente</Form.Label>
-              <Select
-                name="ClienteID"
-                value={clientes.find(
-                  (cliente) => cliente.ClienteID === formCotizacion.ClienteID
-                )}
-                onChange={handleFormChange}
-                options={clientes.map((cliente) => ({
-                  value: cliente.ClienteID,
-                  label: `${cliente.Nombre} ${cliente.Apellido}`,
-                }))}
-                isClearable
-              />
-            </Form.Group>
-            <Form.Group controlId="formVehiculoID">
-              <Form.Label>Vehículo</Form.Label>
-              <Select
-                name="VehiculoID"
-                value={vehiculos.find(
-                  (vehiculo) => vehiculo.VehiculoID === formCotizacion.VehiculoID
-                )}
-                onChange={handleFormChange}
-                options={vehiculos.map((vehiculo) => ({
-                  value: vehiculo.VehiculoID,
-                  label: `${vehiculo.Modelo} ${vehiculo.Marca} ${vehiculo.Anio}`,
-                }))}
-                isClearable
-              />
-            </Form.Group>
-            <Form.Group controlId="formEstadoCotizacion">
-              <Form.Label>Estado de Cotización</Form.Label>
-              <Select
-                name="EstadoCotizacion"
-                value={{
-                  value: formCotizacion.EstadoCotizacion,
-                  label: formCotizacion.EstadoCotizacion,
-                }}
-                onChange={handleFormChange}
-                options={[
-                  { value: "Alta", label: "Alta" },
-                  { value: "Media", label: "Media" },
-                  { value: "Baja", label: "Baja" },
-                ]}
-                isClearable
-              />
-            </Form.Group>
-            <Form.Group controlId="formFechaSeguimiento">
-              <Form.Label>Fecha de Seguimiento</Form.Label>
-              <Form.Control
-                type="date"
-                name="FechaSeguimiento"
-                value={formCotizacion.FechaSeguimiento}
-                onChange={(e) =>
-                  setFormCotizacion({
-                    ...formCotizacion,
-                    FechaSeguimiento: e.target.value,
-                  })
+      <Modal show={showCotizacionModal} onHide={() => setShowCotizacionModal(false)}>
+  <Modal.Header closeButton>
+    <Modal.Title>
+      {selectedCotizacion ? "Editar" : "Agregar"} Cotización
+    </Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    <Form>
+      <Form.Group controlId="formClienteID">
+        <Form.Label>Cliente</Form.Label>
+        <Select
+          name="ClienteID"
+          value={
+            formCotizacion.ClienteID
+              ? {
+                  value: formCotizacion.ClienteID,
+                  label: clientes.find(
+                    (cliente) => cliente.ClienteID === formCotizacion.ClienteID
+                  )?.Nombre + " " + clientes.find(
+                    (cliente) => cliente.ClienteID === formCotizacion.ClienteID
+                  )?.Apellido,
                 }
-              />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            variant="secondary"
-            onClick={() => setShowCotizacionModal(false)}
-          >
-            Cerrar
-          </Button>
-          <Button variant="primary" onClick={handleAddEditCotizacion}>
-            Guardar
-          </Button>
-        </Modal.Footer>
-      </Modal>
+              : null
+          }
+          onChange={(selectedOption) =>
+            setFormCotizacion({
+              ...formCotizacion,
+              ClienteID: selectedOption ? selectedOption.value : null,
+            })
+          }
+          options={clientes.map((cliente) => ({
+            value: cliente.ClienteID,
+            label: `${cliente.Nombre} ${cliente.Apellido}`,
+          }))}
+          isClearable
+        />
+      </Form.Group>
+      
+      <Form.Group controlId="formVehiculoID">
+        <Form.Label>Vehículo</Form.Label>
+        <Select
+          name="VehiculoID"
+          value={
+            formCotizacion.VehiculoID
+              ? {
+                  value: formCotizacion.VehiculoID,
+                  label: vehiculos.find(
+                    (vehiculo) =>
+                      vehiculo.VehiculoID === formCotizacion.VehiculoID
+                  )?.Modelo + " " + vehiculos.find(
+                    (vehiculo) =>
+                      vehiculo.VehiculoID === formCotizacion.VehiculoID
+                  )?.Marca + " " + vehiculos.find(
+                    (vehiculo) =>
+                      vehiculo.VehiculoID === formCotizacion.VehiculoID
+                  )?.Anio,
+                }
+              : null
+          }
+          onChange={(selectedOption) =>
+            setFormCotizacion({
+              ...formCotizacion,
+              VehiculoID: selectedOption ? selectedOption.value : null,
+            })
+          }
+          options={vehiculos.map((vehiculo) => ({
+            value: vehiculo.VehiculoID,
+            label: `${vehiculo.Modelo} ${vehiculo.Marca} ${vehiculo.Anio}`,
+          }))}
+          isClearable
+        />
+      </Form.Group>
+
+      <Form.Group controlId="formEstadoCotizacion">
+        <Form.Label>Estado de Cotización</Form.Label>
+        <Select
+          name="EstadoCotizacion"
+          value={{
+            value: formCotizacion.EstadoCotizacion,
+            label: formCotizacion.EstadoCotizacion,
+          }}
+          onChange={(selectedOption) =>
+            setFormCotizacion({
+              ...formCotizacion,
+              EstadoCotizacion: selectedOption ? selectedOption.value : "",
+            })
+          }
+          options={[
+            { value: "Alta", label: "Alta" },
+            { value: "Media", label: "Media" },
+            { value: "Baja", label: "Baja" },
+            { value: "Finalizada", label: "Finalizada" },
+          ]}
+          isClearable
+        />
+      </Form.Group>
+
+      <Form.Group controlId="formFechaSeguimiento">
+        <Form.Label>Fecha de Seguimiento</Form.Label>
+        <Form.Control
+          type="date"
+          name="FechaSeguimiento"
+          value={formCotizacion.FechaSeguimiento}
+          onChange={(e) =>
+            setFormCotizacion({
+              ...formCotizacion,
+              FechaSeguimiento: e.target.value,
+            })
+          }
+        />
+      </Form.Group>
+    </Form>
+  </Modal.Body>
+  <Modal.Footer>
+    <Button
+      variant="secondary"
+      onClick={() => setShowCotizacionModal(false)}
+    >
+      Cerrar
+    </Button>
+    <Button variant="primary" onClick={handleAddEditCotizacion}>
+      Guardar
+    </Button>
+  </Modal.Footer>
+</Modal>
+
 
       {selectedCotizacion && (
         <CotizacionDetallesModal

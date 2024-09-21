@@ -30,14 +30,14 @@ const AgregarVehiculo = () => {
 
   const fetchVehiculos = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:4000/vehiculos"
-      );
+      // Cambiar la URL de la solicitud para hacer la consulta más ligera
+      const response = await axios.get("https://jpmotorsgt.azurewebsites.net/vehiculos/pornombre");
       setVehiculos(response.data || []); // Asegurarse de que siempre es un array
     } catch (error) {
       console.error("Error al obtener vehículos:", error);
     }
   };
+  
 
   useEffect(() => {
     fetchVehiculos();
@@ -140,7 +140,7 @@ const AgregarVehiculo = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/vehiculos",
+        "https://jpmotorsgt.azurewebsites.net/vehiculos",
         formData,
         {
           headers: {
@@ -164,7 +164,7 @@ const AgregarVehiculo = () => {
 
     try {
       const response = await axios.put(
-        `http://localhost:4000/vehiculos/${editingVehiculo.VehiculoID}`,
+        `https://jpmotorsgt.azurewebsites.net/vehiculos/${editingVehiculo.VehiculoID}`,
         formData,
         {
           headers: {
@@ -185,7 +185,7 @@ const AgregarVehiculo = () => {
   const deleteVehiculo = async (VehiculoID) => {
     try {
       await axios.delete(
-        `http://localhost:4000/vehiculos/${VehiculoID}`
+        `https://jpmotorsgt.azurewebsites.net/vehiculos/${VehiculoID}`
       );
       setVehiculos(vehiculos.filter((v) => v.VehiculoID !== VehiculoID));
     } catch (error) {
@@ -343,6 +343,27 @@ const AgregarVehiculo = () => {
               <Form.Label>Imagen:</Form.Label>
               <Form.Control type="file" onChange={handleFileChange} />
             </Form.Group>
+            <Form.Group>
+        <Form.Label>Condición:</Form.Label>
+        <Form.Control
+          as="select"
+          {...register("Condicion", { required: true })}
+        >
+          <option value="Nuevo">Nuevo</option>
+          <option value="Usado">Usado</option>
+        </Form.Control>
+      </Form.Group>
+
+      <Form.Group>
+        <Form.Label>Estado:</Form.Label>
+        <Form.Control
+          as="select"
+          {...register("Estado", { required: true })}
+        >
+          <option value="Activo">Activo</option>
+          <option value="Inactivo">Inactivo</option>
+        </Form.Control>
+      </Form.Group>
             <Button variant="primary" type="submit">
               Actualizar Vehículo
             </Button>
@@ -421,6 +442,27 @@ const AgregarVehiculo = () => {
               <Form.Label>Imagen:</Form.Label>
               <Form.Control type="file" onChange={handleFileChange} />
             </Form.Group>
+            <Form.Group>
+        <Form.Label>Condición:</Form.Label>
+        <Form.Control
+          as="select"
+          {...register("Condicion", { required: true })}
+        >
+          <option value="Nuevo">Nuevo</option>
+          <option value="Usado">Usado</option>
+        </Form.Control>
+      </Form.Group>
+
+      <Form.Group>
+        <Form.Label>Estado:</Form.Label>
+        <Form.Control
+          as="select"
+          {...register("Estado", { required: true })}
+        >
+          <option value="Activo">Activo</option>
+          <option value="Inactivo">Inactivo</option>
+        </Form.Control>
+      </Form.Group>
             <Button variant="primary" type="submit">
               Agregar Vehículo
             </Button>

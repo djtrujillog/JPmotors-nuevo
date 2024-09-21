@@ -3,7 +3,7 @@ import AutoItem from './AutoItem';
 import AutoModal from './AutoModal';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const AutoList = () => {
+const AutolistUsadosdos = () => {
   const [autos, setAutos] = useState([]);
   const [selectedAuto, setSelectedAuto] = useState(null);
   const [filterLinea, setFilterLinea] = useState('');
@@ -14,7 +14,7 @@ const AutoList = () => {
   useEffect(() => {
     const fetchAutos = async () => {
       try {
-        const response = await fetch('https://jpmotorsgt.azurewebsites.net/vehiculos/nuevos');
+        const response = await fetch('https://jpmotorsgt.azurewebsites.net/vehiculos/usados');
         const data = await response.json();
         if (response.ok) {
           setAutos(data);
@@ -68,7 +68,7 @@ const AutoList = () => {
   return (
     <div className="container-xl">
       <div>
-        <h1 className="my-4 text-center">Lista de Vehiculos</h1>
+        <h1 className="my-4 text-center">Lista de Vehiculos Usados</h1>
         <div className="mb-4 d-flex justify-content-center">
           <div className="form-group mr-2">
             <label htmlFor="filterLinea">Marca</label>
@@ -121,4 +121,4 @@ const AutoList = () => {
   );
 };
 
-export default AutoList;
+export default AutolistUsadosdos;

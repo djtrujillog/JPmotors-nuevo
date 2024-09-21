@@ -33,7 +33,7 @@ const ClienteEmpleadoProductoList = () => {
       try {
         await fetchVehiculos();
         const clientesResponse = await axios.get(
-          "http://localhost:4000/clientes"
+          "https://jpmotorsgt.azurewebsites.net/clientes"
         );
         setClientes(clientesResponse.data);
 
@@ -63,7 +63,7 @@ const ClienteEmpleadoProductoList = () => {
   const fetchCotizaciones = async (empleadoId, rol) => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/cotizaciones/byEmpleadoId/${empleadoId}`
+        `https://jpmotorsgt.azurewebsites.net/cotizaciones/byEmpleadoId/${empleadoId}`
       );
       let cotizacionesData = response.data;
 
@@ -95,7 +95,7 @@ const ClienteEmpleadoProductoList = () => {
 
   const fetchVehiculos = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/vehiculos/pornombre");
+      const response = await axios.get("https://jpmotorsgt.azurewebsites.net/vehiculos/pornombre");
       setVehiculos(response.data);
       setVehiculosLoaded(true);
     } catch (error) {
@@ -106,13 +106,13 @@ const ClienteEmpleadoProductoList = () => {
   const handleAddEditCotizacion = async () => {
     try {
       if (selectedCotizacion) {
-        await axios.put("http://localhost:4000/cotizaciones", {
+        await axios.put("https://jpmotorsgt.azurewebsites.net/cotizaciones", {
           CotizacionID: selectedCotizacion.CotizacionID,
           ...formCotizacion,
           EmpleadoID: empleado.id,
         });
       } else {
-        await axios.post("http://localhost:4000/cotizaciones", {
+        await axios.post("https://jpmotorsgt.azurewebsites.net/cotizaciones", {
           ...formCotizacion,
           EmpleadoID: empleado.id,
           FechaCotizacion: new Date().toISOString().slice(0, 10),
@@ -132,91 +132,101 @@ const ClienteEmpleadoProductoList = () => {
     }
   };
 //Creacion de pdf
-  const handleGeneratePdf = async (cotizacion) => {
-    try {
-      const [
-        imageRes,
-        motorRes,
-        seguridadRes,
-        interiorRes,
-        exteriorRes,
-        dimensionesRes,
-      ] = await Promise.all([
-        fetch(`http://localhost:4000/vehiculos/${cotizacion.VehiculoID}`),
-        fetch(`http://localhost:4000/vehiculos/motor/${cotizacion.VehiculoID}`),
-        fetch(
-          `http://localhost:4000/vehiculos/seguridad/${cotizacion.VehiculoID}`
-        ),
-        fetch(
-          `http://localhost:4000/vehiculos/interior/${cotizacion.VehiculoID}`
-        ),
-        fetch(
-          `http://localhost:4000/vehiculos/exterior/${cotizacion.VehiculoID}`
-        ),
-        fetch(
-          `http://localhost:4000/vehiculos/dimensiones/${cotizacion.VehiculoID}`
-        ),
-      ]);
+const handleGeneratePdf = async (cotizacion) => {
+  try {
+    // Consultar detalles del vehículo y cliente como ya lo haces
+    const [
+      imageRes,
+      motorRes,
+      seguridadRes,
+      interiorRes,
+      exteriorRes,
+      dimensionesRes,
+    ] = await Promise.all([
+      fetch(`https://jpmotorsgt.azurewebsites.net/vehiculos/${cotizacion.VehiculoID}`),
+      fetch(`https://jpmotorsgt.azurewebsites.net/vehiculos/motor/${cotizacion.VehiculoID}`),
+      fetch(`https://jpmotorsgt.azurewebsites.net/vehiculos/seguridad/${cotizacion.VehiculoID}`),
+      fetch(`https://jpmotorsgt.azurewebsites.net/vehiculos/interior/${cotizacion.VehiculoID}`),
+      fetch(`https://jpmotorsgt.azurewebsites.net/vehiculos/exterior/${cotizacion.VehiculoID}`),
+      fetch(`https://jpmotorsgt.azurewebsites.net/vehiculos/dimensiones/${cotizacion.VehiculoID}`),
+    ]);
 
-      const [
-        imageData,
-        motorData,
-        seguridadData,
-        interiorData,
-        exteriorData,
-        dimensionesData,
-      ] = await Promise.all([
-        imageRes.json(),
-        motorRes.json(),
-        seguridadRes.json(),
-        interiorRes.json(),
-        exteriorRes.json(),
-        dimensionesRes.json(),
-      ]);
+    const [
+      imageData,
+      motorData,
+      seguridadData,
+      interiorData,
+      exteriorData,
+      dimensionesData,
+    ] = await Promise.all([
+      imageRes.json(),
+      motorRes.json(),
+      seguridadRes.json(),
+      interiorRes.json(),
+      exteriorRes.json(),
+      dimensionesRes.json(),
+    ]);
 
-      const blob = new Blob([new Uint8Array(imageData.Imagen.data)], {
-        type: "image/jpeg",
-      });
-      const imageUrl = URL.createObjectURL(blob);
-
-      const cliente = clientes.find(
-        (c) => c.ClienteID === cotizacion.ClienteID
-      );
-      const vehiculo = cotizacion.VehiculoDescripcion;
-
-      const pdfDoc = (
-        <PdfCotizar
-          auto={cotizacion}
-          cliente={cliente}
-          empleado={empleado}
-          imageUrl={imageUrl}
-          motorDetails={motorData}
-          seguridadDetails={seguridadData}
-          interiorDetails={interiorData}
-          exteriorDetails={exteriorData}
-          dimensionesDetails={dimensionesData}
-          precioWeb={cotizacion.PrecioWeb}
-          precioGerente={cotizacion.PrecioGerente}
-          precioLista={cotizacion.PrecioLista}
-        />
-      );
-
-      const asPdf = pdf([]);
-      asPdf.updateContainer(pdfDoc);
-      const blobPdf = await asPdf.toBlob();
-
-      const fileName = `Cotización_${cliente?.Nombre || "Cliente"}_${
-        cliente?.Apellido || ""
-      }_${vehiculo || "Vehículo"}.pdf`;
-
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blobPdf);
-      link.download = fileName;
-      link.click();
-    } catch (error) {
-      console.error("Error al generar el PDF:", error);
+    // Buscar el vehículo correspondiente a la cotización
+    const vehiculo = vehiculos.find((v) => v.VehiculoID === cotizacion.VehiculoID);
+    if (!vehiculo) {
+      console.error('Vehículo no encontrado');
+      return;
     }
-  };
+
+    // Crear blob para la imagen del vehículo
+    const blob = new Blob([new Uint8Array(imageData.Imagen.data)], {
+      type: "image/jpeg",
+    });
+    const imageUrl = URL.createObjectURL(blob);
+
+    // Buscar cliente correspondiente a la cotización
+    const cliente = clientes.find((c) => c.ClienteID === cotizacion.ClienteID);
+
+    // Descomponemos marca y modelo desde el objeto vehiculo
+    const { Marca: marca, Modelo: modelo } = vehiculo;
+
+    // Nueva parte: obtener los detalles del empleado desde la API
+    const empleadoId = empleado.id; // Empleado ID ya obtenido desde localStorage
+    const empleadoResponse = await axios.get(`https://jpmotorsgt.azurewebsites.net/empleados/${empleadoId}`);
+    const { Telefono: telefonoEmpleado } = empleadoResponse.data;
+
+    // Crear el documento PDF
+    const pdfDoc = (
+      <PdfCotizar
+        marca={marca}
+        modelo={modelo}
+        auto={cotizacion}
+        cliente={cliente}
+        empleado={{ ...empleado, telefono: telefonoEmpleado }} // Aquí pasamos el teléfono del empleado desde la API
+        imageUrl={imageUrl}
+        motorDetails={motorData}
+        seguridadDetails={seguridadData}
+        interiorDetails={interiorData}
+        exteriorDetails={exteriorData}
+        dimensionesDetails={dimensionesData}
+        precioWeb={cotizacion.PrecioWeb}
+        precioGerente={cotizacion.PrecioGerente}
+        precioLista={cotizacion.PrecioLista}
+      />
+    );
+
+    const asPdf = pdf([]);
+    asPdf.updateContainer(pdfDoc);
+    const blobPdf = await asPdf.toBlob();
+
+    const fileName = `Cotización_${cliente?.Nombre || "Cliente"}_${cliente?.Apellido || ""}_${vehiculo.Marca}_${vehiculo.Modelo}.pdf`;
+
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blobPdf);
+    link.download = fileName;
+    link.click();
+  } catch (error) {
+    console.error("Error al generar el PDF:", error);
+  }
+};
+
+
 
   const handleShowDetalles = (cotizacion) => {
     setSelectedCotizacion(cotizacion);
@@ -319,7 +329,7 @@ const ClienteEmpleadoProductoList = () => {
                         ) {
                           try {
                             await axios.delete(
-                              `http://localhost:4000/cotizaciones/${cotizacion.CotizacionID}`
+                              `https://jpmotorsgt.azurewebsites.net/cotizaciones/${cotizacion.CotizacionID}`
                             );
                             await fetchCotizaciones(empleado.id, empleado.rol);
                           } catch (error) {

@@ -247,18 +247,18 @@ const cotizacionController = {
     put: async (req, res) => {
         try {
             const { CotizacionID, EmpleadoID, ClienteID, VehiculoID, EstadoCotizacion, FechaSeguimiento } = req.body;
-
+    
             // Usar parámetros seguros para evitar SQL Injection
             let query = `
-                    UPDATE Cotizaciones 
-                    SET EmpleadoID = :EmpleadoID, 
-                        ClienteID = :ClienteID, 
-                        VehiculoID = :VehiculoID, 
-                        EstadoCotizacion = :EstadoCotizacion, 
-                        FechaSeguimiento = :FechaSeguimiento
-                    WHERE CotizacionID = :CotizacionID;
-                `;
-
+                UPDATE Cotizaciones 
+                SET EmpleadoID = :EmpleadoID, 
+                    ClienteID = :ClienteID, 
+                    VehiculoID = :VehiculoID, 
+                    EstadoCotizacion = :EstadoCotizacion, 
+                    FechaSeguimiento = :FechaSeguimiento
+                WHERE CotizacionID = :CotizacionID;
+            `;
+    
             const result = await sequelize.query(query, {
                 replacements: {
                     EmpleadoID,
@@ -270,11 +270,112 @@ const cotizacionController = {
                 },
                 type: sequelize.QueryTypes.UPDATE
             });
-
+    
             res.status(200).json({ message: 'Cotización actualizada correctamente', result });
         } catch (error) {
             console.log('Error al actualizar cotización:', error);
             res.status(500).send('Error interno del servidor');
+        }
+    },
+
+    putSeparado: async (req, res) => {
+        try {
+            // Obtener el CotizacionID de los parámetros de la URL
+            const { CotizacionID } = req.params;
+            const { EmpleadoID, ClienteID, VehiculoID, EstadoCotizacion, FechaSeguimiento } = req.body;
+    
+            // Asegurarse de que CotizacionID esté presente
+            if (!CotizacionID) {
+                return res.status(400).json({ error: 'CotizacionID es requerido en la URL' });
+            }
+    
+            let fieldsToUpdate = [];
+            let replacements = { CotizacionID };
+    
+            // Construir la consulta dependiendo de los campos presentes en el body
+            if (EmpleadoID !== undefined) {
+                fieldsToUpdate.push('EmpleadoID = :EmpleadoID');
+                replacements.EmpleadoID = EmpleadoID;
+            }
+    
+            if (ClienteID !== undefined) {
+                fieldsToUpdate.push('ClienteID = :ClienteID');
+                replacements.ClienteID = ClienteID;
+            }
+    
+            if (VehiculoID !== undefined) {
+                fieldsToUpdate.push('VehiculoID = :VehiculoID');
+                replacements.VehiculoID = VehiculoID;
+            }
+    
+            if (EstadoCotizacion !== undefined) {
+                fieldsToUpdate.push('EstadoCotizacion = :EstadoCotizacion');
+                replacements.EstadoCotizacion = EstadoCotizacion;
+            }
+    
+            if (FechaSeguimiento !== undefined) {
+                fieldsToUpdate.push('FechaSeguimiento = :FechaSeguimiento');
+                replacements.FechaSeguimiento = FechaSeguimiento;
+            }
+    
+            // Si no hay campos para actualizar, devolver un error
+            if (fieldsToUpdate.length === 0) {
+                return res.status(400).json({ error: 'No hay campos para actualizar' });
+            }
+    
+            let query = `
+                UPDATE Cotizaciones 
+                SET ${fieldsToUpdate.join(', ')}
+                WHERE CotizacionID = :CotizacionID;
+            `;
+    
+            const result = await sequelize.query(query, {
+                replacements,
+                type: sequelize.QueryTypes.UPDATE
+            });
+    
+            res.status(200).json({ message: 'Cotización actualizada correctamente', result });
+        } catch (error) {
+            console.log('Error al actualizar cotización:', error);
+            res.status(500).send('Error interno del servidor');
+        }
+    },
+    
+    
+    
+
+    Reasignar:async (req, res) => {
+        const { EmpleadoID } = req.body; // Obtenemos el nuevo EmpleadoID del body
+        const CotizacionID = req.params.id; // Obtenemos el ID de la cotización de los parámetros
+    
+        if (!EmpleadoID) {
+            return res.status(400).json({ message: "Se requiere el EmpleadoID para reasignar la cotización." });
+        }
+    
+        try {
+            // Consulta para reasignar el empleado
+            let query = `
+                UPDATE Cotizaciones 
+                SET EmpleadoID = :EmpleadoID
+                WHERE CotizacionID = :CotizacionID;
+            `;
+    
+            const result = await sequelize.query(query, {
+                replacements: {
+                    EmpleadoID,
+                    CotizacionID
+                },
+                type: sequelize.QueryTypes.UPDATE
+            });
+    
+            if (result[1] === 0) { // Si no se actualizó ninguna fila
+                return res.status(404).json({ message: "No se encontró la cotización con el ID proporcionado." });
+            }
+    
+            res.status(200).json({ message: 'Cotización reasignada correctamente', result });
+        } catch (error) {
+            console.error('Error al reasignar empleado:', error);
+            res.status(500).json({ message: 'Error interno del servidor al reasignar empleado.' });
         }
     },
 

@@ -11,7 +11,7 @@ const Clientes = () => {
     Direccion: '',
     Telefono: '',
     CorreoElectronico: '',
-    Estado: '',
+    // Estado: '',
     Documento: '',
     Nit: ''
   });
@@ -25,7 +25,7 @@ const Clientes = () => {
 
   const fetchClientes = async () => {
     try {
-      const response = await axios.get('http://localhost:4000/clientes');
+      const response = await axios.get('https://jpmotorsgt.azurewebsites.net/clientes');
       setClientes(response.data);
     } catch (error) {
       console.error('Error al obtener clientes:', error);
@@ -57,7 +57,7 @@ const Clientes = () => {
       Direccion: '',
       Telefono: '',
       CorreoElectronico: '',
-      Estado: '',
+      // Estado: '',
       Documento: '',
       Nit: ''
     });
@@ -69,7 +69,7 @@ const Clientes = () => {
 
   const addCliente = async () => {
     try {
-      await axios.post('http://localhost:4000/clientes', form);
+      await axios.post('https://jpmotorsgt.azurewebsites.net/clientes', form);
     } catch (error) {
       console.error('Error al agregar cliente:', error);
     }
@@ -77,7 +77,7 @@ const Clientes = () => {
 
   const updateCliente = async () => {
     try {
-      await axios.put(`http://localhost:4000/clientes/${currentClienteId}`, form);
+      await axios.put(`https://jpmotorsgt.azurewebsites.net/clientes/${currentClienteId}`, form);
     } catch (error) {
       console.error('Error al actualizar cliente:', error);
     }
@@ -92,7 +92,7 @@ const Clientes = () => {
 
   const deleteCliente = async (id) => {
     try {
-      await axios.delete(`http://localhost:4000/clientes/${id}`);
+      await axios.delete(`https://jpmotorsgt.azurewebsites.net/clientes/${id}`);
       fetchClientes();
     } catch (error) {
       console.error('Error al eliminar cliente:', error);
@@ -109,7 +109,7 @@ const Clientes = () => {
       Direccion: '',
       Telefono: '',
       CorreoElectronico: '',
-      Estado: '',
+      // Estado: '',
       Documento: '',
       Nit: ''
     });
@@ -151,9 +151,15 @@ const Clientes = () => {
               <Form.Control type="email" name="CorreoElectronico" value={form.CorreoElectronico} onChange={handleInputChange} />
             </Form.Group>
             <Form.Group>
-              <Form.Label>Estado</Form.Label>
-              <Form.Control type="text" name="Estado" value={form.Estado} onChange={handleInputChange} />
-            </Form.Group>
+  <Form.Label>Estado</Form.Label>
+  <Form.Select name="Estado" value={form.Estado} onChange={handleInputChange}>
+    <option value="">Selecciona un estado</option>
+    <option value="Activo">Activo</option>
+    <option value="Inactivo">Inactivo</option>
+    <option value="">Null</option>
+  </Form.Select>
+</Form.Group>
+
             <Form.Group>
               <Form.Label>Documento</Form.Label>
               <Form.Control type="text" name="Documento" value={form.Documento} onChange={handleInputChange} />

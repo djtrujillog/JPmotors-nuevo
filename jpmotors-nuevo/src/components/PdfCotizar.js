@@ -132,11 +132,12 @@ const PdfDocument = ({
           <Text>info@jpmotorsgt.com</Text>
         </View>
       </View>
+
       <View style={styles.section}>
         <Text style={styles.headerPros}>Cotizacion</Text>
         {imageUrl && <Image style={styles.image} src={imageUrl} />}
       </View>
-      
+
       <View style={styles.clientEmployeeSection}>
         <View style={styles.clientEmployeeColumn}>
           <Text style={styles.subTitle}>Cliente: </Text>
@@ -144,9 +145,9 @@ const PdfDocument = ({
           <Text style={styles.clientEmployeeText}>Teléfono: {cliente?.Telefono}</Text>
         </View>
         <View style={styles.clientEmployeeColumn}>
-          <Text style={styles.subTitle}>Ejecutivo/A:</Text>
-          <Text style={styles.clientEmployeeText}>Nombre: {empleado?.nombre} {empleado?.apellido}</Text> {/* Make sure these match */}
-          <Text style={styles.clientEmployeeText}>Teléfono: {empleado?.Telefono}</Text> {/* If available */}
+          <Text style={styles.subTitle}>Ejecutivo/a:</Text>
+          <Text style={styles.clientEmployeeText}>Nombre: {empleado?.nombre} {empleado?.apellido}</Text>
+          <Text style={styles.clientEmployeeText}>Teléfono: {empleado?.telefono}</Text> {/* Mostrar teléfono del empleado */}
         </View>
       </View>
 
@@ -166,6 +167,7 @@ const PdfDocument = ({
           </View>
         </View>
       </View>
+
       <View style={styles.divider} />
       <View style={styles.section}>
         <Image style={styles.separadorImage} src={separador5} />
@@ -182,6 +184,7 @@ const PdfDocument = ({
           </View>
         </View>
       </View>
+
       <View style={styles.divider} />
       <View style={styles.section}>
         <Image style={styles.separadorImage} src={separador1} />
@@ -198,6 +201,7 @@ const PdfDocument = ({
           </View>
         </View>
       </View>
+
       <View style={styles.divider} />
       <View style={styles.section}>
         <Image style={styles.separadorImage} src={separador2} />
@@ -214,6 +218,7 @@ const PdfDocument = ({
           </View>
         </View>
       </View>
+
       <View style={styles.divider} />
       <View style={styles.section}>
         <Image style={styles.separadorImage} src={separador3} />
@@ -230,7 +235,7 @@ const PdfDocument = ({
           </View>
         </View>
       </View>
-      
+
       <View style={styles.divider} />
       <View style={styles.section}>
         <Text style={styles.priceText}>Precios</Text>

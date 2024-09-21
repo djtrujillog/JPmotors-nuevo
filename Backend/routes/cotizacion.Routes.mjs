@@ -13,6 +13,8 @@ router.post('/byParameters', cotizacionController.getCotizacionesByParameters);
 router.post('/',  cotizacionController.post);
 router.put('/', cotizacionController.put);
 router.delete('/:id', cotizacionController.delete);
+router.put('/reasignarEmpleado/:id', cotizacionController.Reasignar);
+router.put('/modificarseparado/:CotizacionID', cotizacionController.putSeparado);
 // Update and delete routes need to be added in your controller if you need them
 
 export default router;

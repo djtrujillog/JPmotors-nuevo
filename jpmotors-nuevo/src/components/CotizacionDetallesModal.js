@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Button, Table, Form } from "react-bootstrap";
 import axios from "axios";
+import jsPDF from "jspdf";  // Importar jsPDF
+import "jspdf-autotable";   // Importar autotable para tablas en el PDF
 
 const CotizacionDetallesModal = ({ cotizacion, show, onHide }) => {
   const [seguimientos, setSeguimientos] = useState([]);
-  const [imageBlob, setImageBlob] = useState(null); // Nuevo estado para la imagen del vehículo
+  const [imageBlob, setImageBlob] = useState(null); 
   const [formSeguimiento, setFormSeguimiento] = useState({
     CotizacionID: cotizacion?.CotizacionID || "",
     Comentario: "",
@@ -17,7 +19,7 @@ const CotizacionDetallesModal = ({ cotizacion, show, onHide }) => {
   useEffect(() => {
     if (show) {
       setSeguimientos([]);
-      setImageBlob(null); // Resetear la imagen cuando se muestra el modal
+      setImageBlob(null); 
       setFormSeguimiento({
         CotizacionID: cotizacion?.CotizacionID || "",
         Comentario: "",
@@ -30,7 +32,7 @@ const CotizacionDetallesModal = ({ cotizacion, show, onHide }) => {
       const fetchSeguimientos = async () => {
         if (cotizacion) {
           try {
-            const response = await axios.get(`http://localhost:4000/seguimientos/${cotizacion.CotizacionID}`);
+            const response = await axios.get(`https://jpmotorsgt.azurewebsites.net/seguimientos/${cotizacion.CotizacionID}`);
             setSeguimientos(response.data);
           } catch (error) {
             console.error("Error al obtener seguimientos:", error);
@@ -41,7 +43,7 @@ const CotizacionDetallesModal = ({ cotizacion, show, onHide }) => {
       const fetchVehicleImage = async () => {
         if (cotizacion) {
           try {
-            const imageRes = await fetch(`http://localhost:4000/vehiculos/${cotizacion.VehiculoID}`);
+            const imageRes = await fetch(`https://jpmotorsgt.azurewebsites.net/vehiculos/${cotizacion.VehiculoID}`);
             const imageData = await imageRes.json();
             const blob = new Blob([new Uint8Array(imageData.Imagen.data)], {
               type: "image/jpeg",
@@ -65,11 +67,11 @@ const CotizacionDetallesModal = ({ cotizacion, show, onHide }) => {
 
   const handleAddSeguimiento = async () => {
     try {
-      await axios.post("http://localhost:4000/seguimientos", {
+      await axios.post("https://jpmotorsgt.azurewebsites.net/seguimientos", {
         ...formSeguimiento,
         CotizacionID: cotizacion.CotizacionID,
       });
-      const updatedSeguimientos = await axios.get(`http://localhost:4000/seguimientos/${cotizacion.CotizacionID}`);
+      const updatedSeguimientos = await axios.get(`https://jpmotorsgt.azurewebsites.net/seguimientos/${cotizacion.CotizacionID}`);
       setSeguimientos(updatedSeguimientos.data);
       setFormSeguimiento({
         Comentario: "",
@@ -93,12 +95,12 @@ const CotizacionDetallesModal = ({ cotizacion, show, onHide }) => {
 
   const handleUpdateSeguimiento = async () => {
     try {
-      await axios.put("http://localhost:4000/seguimientos", {
+      await axios.put("https://jpmotorsgt.azurewebsites.net/seguimientos", {
         SeguimientoID: editingId,
         CotizacionID: cotizacion.CotizacionID,
         ...formSeguimiento,
       });
-      const updatedSeguimientos = await axios.get(`http://localhost:4000/seguimientos/${cotizacion.CotizacionID}`);
+      const updatedSeguimientos = await axios.get(`https://jpmotorsgt.azurewebsites.net/seguimientos/${cotizacion.CotizacionID}`);
       setSeguimientos(updatedSeguimientos.data);
       setIsEditing(false);
       setEditingId(null);
@@ -114,8 +116,8 @@ const CotizacionDetallesModal = ({ cotizacion, show, onHide }) => {
 
   const handleDeleteSeguimiento = async (id) => {
     try {
-      await axios.delete(`http://localhost:4000/seguimientos/${id}`);
-      const updatedSeguimientos = await axios.get(`http://localhost:4000/seguimientos/${cotizacion.CotizacionID}`);
+      await axios.delete(`https://jpmotorsgt.azurewebsites.net/seguimientos/${id}`);
+      const updatedSeguimientos = await axios.get(`https://jpmotorsgt.azurewebsites.net/seguimientos/${cotizacion.CotizacionID}`);
       setSeguimientos(updatedSeguimientos.data);
     } catch (error) {
       console.error("Error al eliminar seguimiento:", error);
@@ -123,6 +125,42 @@ const CotizacionDetallesModal = ({ cotizacion, show, onHide }) => {
   };
 
   const imageUrl = imageBlob ? URL.createObjectURL(imageBlob) : null;
+
+  // Función para generar el PDF
+  const generatePDF = () => {
+    const doc = new jsPDF();
+
+    // Título
+    doc.text("Detalles de la Cotización", 10, 10);
+
+    // Información del cliente y cotización
+    doc.text(`Cliente: ${cotizacion?.NombreCliente}`, 10, 20);
+    doc.text(`Vehículo: ${cotizacion?.VehiculoDescripcion}`, 10, 30);
+    doc.text(`Fecha de Cotización: ${cotizacion?.FechaCotizacion}`, 10, 40);
+    doc.text(`Estado: ${cotizacion?.EstadoCotizacion}`, 10, 50);
+    doc.text(`Precio: ${cotizacion?.PrecioLista}`, 10, 60);
+
+    // Tabla de Seguimientos
+    if (seguimientos.length > 0) {
+      const tableColumn = ["#", "Descripción", "Comentario", "Fecha Seguimiento"];
+      const tableRows = [];
+
+      seguimientos.forEach((seguimiento, index) => {
+        const seguimientoData = [
+          index + 1,
+          seguimiento.Descripcion,
+          seguimiento.Comentario,
+          seguimiento.FechaSeguimiento,
+        ];
+        tableRows.push(seguimientoData);
+      });
+
+      doc.autoTable(tableColumn, tableRows, { startY: 70 });
+    }
+
+    // Descargar el archivo PDF
+    doc.save(`cotizacion_${cotizacion?.CotizacionID}.pdf`);
+  };
 
   return (
     <Modal show={show} onHide={onHide} size="xl">
@@ -190,6 +228,7 @@ const CotizacionDetallesModal = ({ cotizacion, show, onHide }) => {
         )}
 
         <Form className="mt-4">
+          {/* Formulario para añadir/editar seguimiento */}
           <Form.Group controlId="formSeguimientoTipoID">
             <Form.Label>Tipo de Seguimiento</Form.Label>
             <Form.Control
@@ -203,7 +242,6 @@ const CotizacionDetallesModal = ({ cotizacion, show, onHide }) => {
               <option value={3}>Visita del cliente a la Agencia</option>
               <option value={4}>Whatsapp</option>
               <option value={5}>Facebook</option>
-              {/* Agrega más opciones según tu base de datos */}
             </Form.Control>
           </Form.Group>
           <Form.Group controlId="formSeguimientoComentario">
@@ -239,6 +277,9 @@ const CotizacionDetallesModal = ({ cotizacion, show, onHide }) => {
         <Button variant="secondary" onClick={onHide}>
           Cerrar
         </Button>
+        <Button variant="primary" onClick={generatePDF}>
+          Descargar PDF
+        </Button> {/* Botón para descargar el PDF */}
       </Modal.Footer>
     </Modal>
   );

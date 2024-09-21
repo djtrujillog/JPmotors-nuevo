@@ -27,27 +27,35 @@ const styles = {
 };
 
 function Contacto() {
-    const [to, setTo] = useState('cnetpeten@gmail.com'); // Dirección fija para prueba
-    const [subject, setSubject] = useState('Jpmotors');
-    const [message, setMessage] = useState('Intento de correos.');
+    const [to, setTo] = useState(''); // Dirección fija para prueba
+    const [subject, setSubject] = useState('');
+    const [message, setMessage] = useState('');
 
     const handleSubmit = async (event) => {
-        event.preventDefault();
-        try {
-            const response = await fetch('http://localhost:4000/mail/send', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ to, subject, message }),
-            });
-            const result = await response.json();
-            alert(result.message);
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Failed to send email');
-        }
-    };
+      event.preventDefault();
+      
+      // Validación básica de los campos
+      if (!to || !subject || !message) {
+          alert("Todos los campos son obligatorios");
+          return;
+      }
+      
+      try {
+          const response = await fetch('https://jpmotorsgt.azurewebsites.net/mail/send', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ to, subject, message }),
+          });
+          const result = await response.json();
+          alert(result.message);
+      } catch (error) {
+          console.error('Error:', error);
+          alert('Failed to send email');
+      }
+  };
+  
 
     return (
        <><br /><br /><br /><Container style={styles.container}>
@@ -75,7 +83,7 @@ function Contacto() {
             <Form.Label style={styles.label}>Mensaje</Form.Label>
             <Form.Control
               as="textarea"
-              rows={3}
+              rows={5}
               placeholder="Ingrese el mensaje del correo"
               value={message}
               onChange={(e) => setMessage(e.target.value)}

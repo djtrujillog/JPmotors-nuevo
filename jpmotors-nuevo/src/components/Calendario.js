@@ -33,7 +33,7 @@ const Calendario = () => {
 
   const fetchVehiculo = async (vehiculoId) => {
     if (!vehiculos.has(vehiculoId)) {
-      const response = await axios.get(`http://localhost:4000/vehiculos/${vehiculoId}`);
+      const response = await axios.get(`https://jpmotorsgt.azurewebsites.net/vehiculos/${vehiculoId}`);
       vehiculos.set(vehiculoId, response.data); // Almacenar en memoria
       setVehiculos(new Map(vehiculos)); // Actualizar el estado
     }
@@ -42,7 +42,7 @@ const Calendario = () => {
 
   const fetchCotizaciones = async (empleadoId) => {
     try {
-      const response = await axios.get(`http://localhost:4000/cotizaciones/byEmpleadoId/${empleadoId}`);
+      const response = await axios.get(`https://jpmotorsgt.azurewebsites.net/cotizaciones/byEmpleadoId/${empleadoId}`);
       const cotizacionesData = response.data;
       setCotizaciones(cotizacionesData);
     } catch (error) {

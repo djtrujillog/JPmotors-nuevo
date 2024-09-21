@@ -45,7 +45,7 @@ const MisReportes = () => {
 
   const fetchClientes = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/clientes");
+      const response = await axios.get("https://jpmotorsgt.azurewebsites.net/clientes");
       setClientes(response.data);
     } catch (error) {
       console.error("Error fetching clients:", error);
@@ -55,7 +55,7 @@ const MisReportes = () => {
 
   const fetchVehiculos = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/vehiculos");
+      const response = await axios.get("https://jpmotorsgt.azurewebsites.net/vehiculos");
       setVehiculos(response.data);
     } catch (error) {
       console.error("Error fetching vehicles:", error);
@@ -71,29 +71,20 @@ const MisReportes = () => {
         FechaFinal: fechaFinal ? moment(fechaFinal).format("YYYY-MM-DD") : null,
         ClienteId: clienteSeleccionado ? clienteSeleccionado.value : null,
         VehiculoId: vehiculoSeleccionado ? vehiculoSeleccionado.value : null,
+        EmpleadoId: empleado.id, // Se obtiene el empleadoId desde localStorage
       };
 
-      let response;
+      const response = await axios.post("https://jpmotorsgt.azurewebsites.net/cotizaciones/byParameters", filtros);
 
-      // Si no hay fechas ni filtros aplicados, buscar todos los reportes por EmpleadoID
-      if (!fechaInicial && !fechaFinal && !clienteSeleccionado && !vehiculoSeleccionado) {
-        response = await axios.get(`http://localhost:4000/cotizaciones/byEmpleadoID/${empleado.id}`);
-      } else {
-        // Si hay fechas o filtros, utilizar el endpoint de búsqueda por filtros
-        response = await axios.post("http://localhost:4000/cotizaciones/byFechas", filtros);
-      }
-
-      // Normalizar los datos para asegurar que todas las propiedades existan
       const reportesNormalizados = response.data.map(reporte => ({
-        CotizacionID: reporte.CotizacionID,
-        NombreCliente: reporte.NombreCliente || "N/A",
-        VehiculoDescripcion: reporte.VehiculoDescripcion || "N/A",
-        EstadoCotizacion: reporte.EstadoCotizacion || "N/A",
-        FechaCotizacion: reporte.FechaCotizacion || "N/A",
-        FechaSeguimiento: reporte.FechaSeguimiento || "N/A",
+        CotizacionID: reporte.cotizacionId,
+        NombreCliente: reporte.nombreCliente || "N/A",
+        VehiculoDescripcion: reporte.vehiculoDescripcion || "N/A",
+        EstadoCotizacion: reporte.estadoCotizacion || "N/A",
+        FechaCotizacion: reporte.fechaCotizacion || "N/A",
+        FechaSeguimiento: reporte.fechaSeguimiento || "N/A",
       }));
 
-      // Establecer los reportes y limpiar mensajes de error
       setReportes(reportesNormalizados);
       setSuccessMessage("Reportes generados correctamente.");
       setError(null);
@@ -245,30 +236,22 @@ const MisReportes = () => {
               {currentReports.map((reporte) => (
                 <tr key={reporte.CotizacionID}>
                   <td>{reporte.CotizacionID}</td>
-                  <td>{reporte.NombreCliente}</td>
-                  <td>{reporte.VehiculoDescripcion}</td>
-                  <td>{reporte.EstadoCotizacion}</td>
-                  <td>{reporte.FechaCotizacion}</td>
-                  <td>{reporte.FechaSeguimiento}</td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
+                  <td>{reporte.NombreCliente
+                  }</td> <td>{reporte.VehiculoDescripcion}</td> <td>{reporte.EstadoCotizacion}</td> <td>{reporte.FechaCotizacion}</td> <td>{reporte.FechaSeguimiento}</td> </tr> ))} </tbody> </Table>
+                        <Pagination>
+        {pageNumbers.map(number => (
+          <Pagination.Item key={number} active={number === currentPage} onClick={() => handlePageChange(number)}>
+            {number}
+          </Pagination.Item>
+        ))}
+      </Pagination>
 
-          <Pagination>
-            {pageNumbers.map(number => (
-              <Pagination.Item key={number} active={number === currentPage} onClick={() => handlePageChange(number)}>
-                {number}
-              </Pagination.Item>
-            ))}
-          </Pagination>
-
-          <Button variant="success" onClick={exportToCSV}>Exportar CSV</Button>
-          <Button variant="danger" onClick={exportToPDF}>Exportar PDF</Button>
-        </>
-      )}
-    </Container>
-  );
-};
+      <Button variant="secondary" onClick={exportToCSV}>Exportar a CSV</Button>
+      <Button variant="secondary" onClick={exportToPDF}>Exportar a PDF</Button>
+    </>
+  )}
+</Container>
+); };
 
 export default MisReportes;
+

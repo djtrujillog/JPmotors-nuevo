@@ -272,7 +272,7 @@ const AgregarVehiculo = () => {
         <Modal.Body>
           <Form onSubmit={handleSubmit(onSubmitEdit)}>
             <Form.Group>
-              <Form.Label>Modelo:</Form.Label>
+              <Form.Label>Linea:</Form.Label>
               <Form.Control
                 type="text"
                 defaultValue={editingVehiculo?.Modelo || ''}

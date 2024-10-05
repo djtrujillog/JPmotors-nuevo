@@ -6,6 +6,7 @@ import separador2 from '../img/separador_2.png';
 import separador3 from '../img/separador_3.png';
 import separador5 from '../img/separador_5.png';
 import separador6 from '../img/separador_6.png';
+import separador4 from '../img/separador_4.png';
 
 // Estilos para el documento PDF
 const styles = StyleSheet.create({
@@ -117,6 +118,7 @@ const PdfDocument = ({
   interiorDetails,
   exteriorDetails,
   dimensionesDetails,
+  garantiaDetails,
   precioWeb,
   precioGerente,
   precioLista,
@@ -235,6 +237,24 @@ const PdfDocument = ({
           </View>
         </View>
       </View>
+       {/* Detalles de Garantía */}
+       {garantiaDetails?.Garantia && (
+        <View style={styles.section}>
+          <Image style={styles.separadorImage} src={separador4} /> {/* Imagen separador4 */}
+          <View style={styles.columns}>
+            <View style={styles.column}>
+              {garantiaDetails.Garantia.slice(0, Math.ceil(garantiaDetails.Garantia.length / 2)).map((detail, index) => (
+                <Text key={index} style={styles.bulletPoint}>• {detail}</Text>
+              ))}
+            </View>
+            <View style={styles.column}>
+              {garantiaDetails.Garantia.slice(Math.ceil(garantiaDetails.Garantia.length / 2)).map((detail, index) => (
+                <Text key={index} style={styles.bulletPoint}>• {detail}</Text>
+              ))}
+            </View>
+          </View>
+        </View>
+      )}
 
       <View style={styles.divider} />
       <View style={styles.section}>

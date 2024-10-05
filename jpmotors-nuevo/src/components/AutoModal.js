@@ -11,7 +11,8 @@ const AutoModal = ({ auto, onClose }) => {
   const [interiorDetails, setInteriorDetails] = useState(null);
   const [exteriorDetails, setExteriorDetails] = useState(null);
   const [dimensionesDetails, setDimensionesDetails] = useState(null);
-  
+  const [garantiaDetails, setGarantiaDetails] = useState(null);  // Agregar el estado para la garantía
+
   // Estado para manejar el modal de cotización
   const [showCotizacionModal, setShowCotizacionModal] = useState(false);
   const [cotizacionData, setCotizacionData] = useState({
@@ -30,8 +31,7 @@ const AutoModal = ({ auto, onClose }) => {
 
   const handleCotizacionSubmit = async (e) => {
     e.preventDefault();
-    // Aquí enviaríamos la cotización al backend
-    const response = await fetch('https://jpmotorsgt.azurewebsites.net/mail/cotizacion', {
+    const response = await fetch('http://localhost:4000/mail/cotizacion', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -64,25 +64,15 @@ const AutoModal = ({ auto, onClose }) => {
           interiorRes,
           exteriorRes,
           dimensionesRes,
+          garantiaRes
         ] = await Promise.all([
-          fetch(
-            `https://jpmotorsgt.azurewebsites.net/vehiculos/${auto.VehiculoID}`
-          ),
-          fetch(
-            `https://jpmotorsgt.azurewebsites.net/vehiculos/motor/${auto.VehiculoID}`
-          ),
-          fetch(
-            `https://jpmotorsgt.azurewebsites.net/vehiculos/seguridad/${auto.VehiculoID}`
-          ),
-          fetch(
-            `https://jpmotorsgt.azurewebsites.net/vehiculos/interior/${auto.VehiculoID}`
-          ),
-          fetch(
-            `https://jpmotorsgt.azurewebsites.net/vehiculos/exterior/${auto.VehiculoID}`
-          ),
-          fetch(
-            `https://jpmotorsgt.azurewebsites.net/vehiculos/dimensiones/${auto.VehiculoID}`
-          ),
+          fetch(`http://localhost:4000/vehiculos/${auto.VehiculoID}`),
+          fetch(`http://localhost:4000/vehiculos/motor/${auto.VehiculoID}`),
+          fetch(`http://localhost:4000/vehiculos/seguridad/${auto.VehiculoID}`),
+          fetch(`http://localhost:4000/vehiculos/interior/${auto.VehiculoID}`),
+          fetch(`http://localhost:4000/vehiculos/exterior/${auto.VehiculoID}`),
+          fetch(`http://localhost:4000/vehiculos/dimensiones/${auto.VehiculoID}`),
+          fetch(`http://localhost:4000/vehiculos/detalleGarantia/${auto.VehiculoID}`)
         ]);
 
         const [
@@ -92,6 +82,7 @@ const AutoModal = ({ auto, onClose }) => {
           interiorData,
           exteriorData,
           dimensionesData,
+          garantiaData
         ] = await Promise.all([
           imageRes.json(),
           motorRes.json(),
@@ -99,6 +90,7 @@ const AutoModal = ({ auto, onClose }) => {
           interiorRes.json(),
           exteriorRes.json(),
           dimensionesRes.json(),
+          garantiaRes.json()
         ]);
 
         const blob = new Blob([new Uint8Array(imageData.Imagen.data)], {
@@ -110,6 +102,7 @@ const AutoModal = ({ auto, onClose }) => {
         setInteriorDetails(interiorData);
         setExteriorDetails(exteriorData);
         setDimensionesDetails(dimensionesData);
+        setGarantiaDetails(garantiaData);
       } catch (error) {
         console.error("Error al cargar los datos del vehículo:", error);
       }
@@ -118,15 +111,21 @@ const AutoModal = ({ auto, onClose }) => {
     fetchData();
   }, [auto]);
 
-  if (
-    !imageBlob ||
-    !motorDetails ||
-    !seguridadDetails ||
-    !interiorDetails ||
-    !exteriorDetails ||
-    !dimensionesDetails
-  )
+  // Verificamos si faltan datos importantes para renderizar el modal
+  const noDataAvailable = (
+    !imageBlob &&
+    !motorDetails &&
+    !seguridadDetails &&
+    !interiorDetails &&
+    !exteriorDetails &&
+    !dimensionesDetails &&
+    !garantiaDetails
+  );
+
+  // Si no hay ningún dato relevante, no mostramos el modal
+  if (noDataAvailable) {
     return null;
+  }
 
   const imageUrl = URL.createObjectURL(imageBlob);
 
@@ -151,38 +150,68 @@ const AutoModal = ({ auto, onClose }) => {
           <div className="container">
             <div className="row">
               <div className="col-md-6">
-                <h4>Detalles del Motor</h4>
-                <ul>
-                  {motorDetails.Motor.map((detail, index) => (
-                    <li key={index}>{detail}</li>
-                  ))}
-                </ul>
-                <h4>Detalles de Seguridad</h4>
-                <ul>
-                  {seguridadDetails.Seguridad.map((detail, index) => (
-                    <li key={index}>{detail}</li>
-                  ))}
-                </ul>
-                <h4>Dimensiones del Vehiculo</h4>
-                <ul>
-                  {dimensionesDetails.Dimensiones.map((detail, index) => (
-                    <li key={index}>{detail}</li>
-                  ))}
-                </ul>
+                {motorDetails?.Motor?.length > 0 && (
+                  <>
+                    <h4>Detalles del Motor</h4>
+                    <ul>
+                      {motorDetails.Motor.map((detail, index) => (
+                        <li key={index}>{detail}</li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+                {seguridadDetails?.Seguridad?.length > 0 && (
+                  <>
+                    <h4>Detalles de Seguridad</h4>
+                    <ul>
+                      {seguridadDetails.Seguridad.map((detail, index) => (
+                        <li key={index}>{detail}</li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+                {dimensionesDetails?.Dimensiones?.length > 0 && (
+                  <>
+                    <h4>Dimensiones del Vehiculo</h4>
+                    <ul>
+                      {dimensionesDetails.Dimensiones.map((detail, index) => (
+                        <li key={index}>{detail}</li>
+                      ))}
+                    </ul>
+                  </>
+                )}
               </div>
               <div className="col-md-6">
-                <h4>Detalles de Interior</h4>
-                <ul>
-                  {interiorDetails.Interior.map((detail, index) => (
-                    <li key={index}>{detail}</li>
-                  ))}
-                </ul>
-                <h4>Detalles de Exterior</h4>
-                <ul>
-                  {exteriorDetails.Exterior.map((detail, index) => (
-                    <li key={index}>{detail}</li>
-                  ))}
-                </ul>
+                {interiorDetails?.Interior?.length > 0 && (
+                  <>
+                    <h4>Detalles de Interior</h4>
+                    <ul>
+                      {interiorDetails.Interior.map((detail, index) => (
+                        <li key={index}>{detail}</li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+                {exteriorDetails?.Exterior?.length > 0 && (
+                  <>
+                    <h4>Detalles de Exterior</h4>
+                    <ul>
+                      {exteriorDetails.Exterior.map((detail, index) => (
+                        <li key={index}>{detail}</li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+                {garantiaDetails?.Garantia?.length > 0 && (
+                  <>
+                    <h4>Detalles de Garantía</h4>
+                    <ul>
+                      {garantiaDetails.Garantia.map((detail, index) => (
+                        <li key={index}>{detail}</li>
+                      ))}
+                    </ul>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -205,6 +234,7 @@ const AutoModal = ({ auto, onClose }) => {
                 interiorDetails={interiorDetails}
                 exteriorDetails={exteriorDetails}
                 dimensionesDetails={dimensionesDetails}
+                garantiaDetails={garantiaDetails}
               />
             }
             fileName={`${auto.Marca}_${auto.Modelo}.pdf`}

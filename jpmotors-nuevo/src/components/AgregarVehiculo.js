@@ -9,6 +9,7 @@ import DetallesVehiculoExteriorModal from "./ExteriorVehiculoModal";
 import DetallesVehiculoInteriorModal from "./InteriorVehiculoModal";
 import DetallesVehiculoMotorModal from "./MotorVehiculoModal";
 import DetallesVehiculoSeguridadModal from "./SeguridadVehiculoModal";
+import DetallesVehiculoGarantia from "./GarantiaVehiculoModal";
 
 const AgregarVehiculo = () => {
   const { register, handleSubmit, reset } = useForm();
@@ -27,11 +28,13 @@ const AgregarVehiculo = () => {
   const [detailingMotorVehiculo, setDetailingMotorVehiculo] = useState(null);
   const [showSeguridadModal, setShowSeguridadModal] = useState(false);
   const [detailingSeguridadVehiculo, setDetailingSeguridadVehiculo] = useState(null);
+  const [showGarantiaModal, setShowGarantiadModal] = useState(false);
+  const [detailingGarantiaVehiculo, setDetailingGarantiaVehiculo] = useState(false);
 
   const fetchVehiculos = async () => {
     try {
       // Cambiar la URL de la solicitud para hacer la consulta más ligera
-      const response = await axios.get("https://jpmotorsgt.azurewebsites.net/vehiculos/pornombre");
+      const response = await axios.get("http://localhost:4000/vehiculos/pornombre");
       setVehiculos(response.data || []); // Asegurarse de que siempre es un array
     } catch (error) {
       console.error("Error al obtener vehículos:", error);
@@ -131,6 +134,18 @@ const AgregarVehiculo = () => {
     reset();
   };
 
+  const openGarantiaModal = (vehiculo) => {
+    setDetailingGarantiaVehiculo(vehiculo);
+    setShowGarantiadModal(true);
+    reset();
+  };
+
+  const closeGarantiaModal = () => {
+    setShowGarantiadModal(false);
+    setDetailingGarantiaVehiculo(null);
+    reset();
+  };
+
   const onSubmitAdd = async (data) => {
     const formData = new FormData();
     formData.append("file", selectedFile);
@@ -140,7 +155,7 @@ const AgregarVehiculo = () => {
 
     try {
       const response = await axios.post(
-        "https://jpmotorsgt.azurewebsites.net/vehiculos",
+        "http://localhost:4000/vehiculos",
         formData,
         {
           headers: {
@@ -164,7 +179,7 @@ const AgregarVehiculo = () => {
 
     try {
       const response = await axios.put(
-        `https://jpmotorsgt.azurewebsites.net/vehiculos/${editingVehiculo.VehiculoID}`,
+        `http://localhost:4000/vehiculos/${editingVehiculo.VehiculoID}`,
         formData,
         {
           headers: {
@@ -185,7 +200,7 @@ const AgregarVehiculo = () => {
   const deleteVehiculo = async (VehiculoID) => {
     try {
       await axios.delete(
-        `https://jpmotorsgt.azurewebsites.net/vehiculos/${VehiculoID}`
+        `http://localhost:4000/vehiculos/${VehiculoID}`
       );
       setVehiculos(vehiculos.filter((v) => v.VehiculoID !== VehiculoID));
     } catch (error) {
@@ -253,11 +268,18 @@ const AgregarVehiculo = () => {
                   Motor
                 </Button>{" "}
                 <Button
-                  variant="outline-info"
-                  size="sm"
-                  onClick={() => openSeguridadModal(vehiculo)}
-                >
-                  Seguridad
+  variant="outline-info"
+  size="sm"
+  onClick={() => openGarantiaModal(vehiculo)}
+>
+  Garantia
+                </Button>{" "}
+                <Button
+  variant="outline-info"
+  size="sm"
+  onClick={() => openSeguridadModal(vehiculo)}
+>
+  Seguridad
                 </Button>{" "}
               </div>
             </ListGroup.Item>
@@ -378,7 +400,7 @@ const AgregarVehiculo = () => {
         <Modal.Body>
           <Form onSubmit={handleSubmit(onSubmitAdd)}>
             <Form.Group>
-              <Form.Label>Modelo:</Form.Label>
+              <Form.Label>Linea:</Form.Label>
               <Form.Control
                 type="text"
                 {...register("Modelo", { required: true })}
@@ -495,6 +517,11 @@ const AgregarVehiculo = () => {
         show={showSeguridadModal}
         handleClose={closeSeguridadModal}
         vehiculo={detailingSeguridadVehiculo}
+      />
+      <DetallesVehiculoGarantia
+        show={showGarantiaModal}
+        handleClose={closeGarantiaModal}
+        vehiculo={detailingGarantiaVehiculo}
       />
     </Container>
   );

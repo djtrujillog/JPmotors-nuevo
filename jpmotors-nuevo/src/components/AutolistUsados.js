@@ -14,7 +14,7 @@ const AutolistUsadosdos = () => {
   useEffect(() => {
     const fetchAutos = async () => {
       try {
-        const response = await fetch('https://jpmotorsgt.azurewebsites.net/vehiculos/usados');
+        const response = await fetch('http://localhost:4000/vehiculos/usados');
         const data = await response.json();
         if (response.ok) {
           setAutos(data);

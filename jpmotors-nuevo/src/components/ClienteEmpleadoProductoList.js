@@ -33,7 +33,7 @@ const ClienteEmpleadoProductoList = () => {
       try {
         await fetchVehiculos();
         const clientesResponse = await axios.get(
-          "https://jpmotorsgt.azurewebsites.net/clientes"
+          "http://localhost:4000/clientes"
         );
         setClientes(clientesResponse.data);
 
@@ -63,7 +63,7 @@ const ClienteEmpleadoProductoList = () => {
   const fetchCotizaciones = async (empleadoId, rol) => {
     try {
       const response = await axios.get(
-        `https://jpmotorsgt.azurewebsites.net/cotizaciones/byEmpleadoId/${empleadoId}`
+        `http://localhost:4000/cotizaciones/byEmpleadoId/${empleadoId}`
       );
       let cotizacionesData = response.data;
 
@@ -95,7 +95,7 @@ const ClienteEmpleadoProductoList = () => {
 
   const fetchVehiculos = async () => {
     try {
-      const response = await axios.get("https://jpmotorsgt.azurewebsites.net/vehiculos/pornombre");
+      const response = await axios.get("http://localhost:4000/vehiculos/pornombre");
       setVehiculos(response.data);
       setVehiculosLoaded(true);
     } catch (error) {
@@ -106,13 +106,13 @@ const ClienteEmpleadoProductoList = () => {
   const handleAddEditCotizacion = async () => {
     try {
       if (selectedCotizacion) {
-        await axios.put("https://jpmotorsgt.azurewebsites.net/cotizaciones", {
+        await axios.put("http://localhost:4000/cotizaciones", {
           CotizacionID: selectedCotizacion.CotizacionID,
           ...formCotizacion,
           EmpleadoID: empleado.id,
         });
       } else {
-        await axios.post("https://jpmotorsgt.azurewebsites.net/cotizaciones", {
+        await axios.post("http://localhost:4000/cotizaciones", {
           ...formCotizacion,
           EmpleadoID: empleado.id,
           FechaCotizacion: new Date().toISOString().slice(0, 10),
@@ -142,13 +142,15 @@ const handleGeneratePdf = async (cotizacion) => {
       interiorRes,
       exteriorRes,
       dimensionesRes,
+      garantiaRes,
     ] = await Promise.all([
-      fetch(`https://jpmotorsgt.azurewebsites.net/vehiculos/${cotizacion.VehiculoID}`),
-      fetch(`https://jpmotorsgt.azurewebsites.net/vehiculos/motor/${cotizacion.VehiculoID}`),
-      fetch(`https://jpmotorsgt.azurewebsites.net/vehiculos/seguridad/${cotizacion.VehiculoID}`),
-      fetch(`https://jpmotorsgt.azurewebsites.net/vehiculos/interior/${cotizacion.VehiculoID}`),
-      fetch(`https://jpmotorsgt.azurewebsites.net/vehiculos/exterior/${cotizacion.VehiculoID}`),
-      fetch(`https://jpmotorsgt.azurewebsites.net/vehiculos/dimensiones/${cotizacion.VehiculoID}`),
+      fetch(`http://localhost:4000/vehiculos/${cotizacion.VehiculoID}`),
+      fetch(`http://localhost:4000/vehiculos/motor/${cotizacion.VehiculoID}`),
+      fetch(`http://localhost:4000/vehiculos/seguridad/${cotizacion.VehiculoID}`),
+      fetch(`http://localhost:4000/vehiculos/interior/${cotizacion.VehiculoID}`),
+      fetch(`http://localhost:4000/vehiculos/exterior/${cotizacion.VehiculoID}`),
+      fetch(`http://localhost:4000/vehiculos/dimensiones/${cotizacion.VehiculoID}`),
+      fetch(`http://localhost:4000/vehiculos/detalleGarantia/${cotizacion.VehiculoID}`),
     ]);
 
     const [
@@ -158,6 +160,7 @@ const handleGeneratePdf = async (cotizacion) => {
       interiorData,
       exteriorData,
       dimensionesData,
+      garantiaData,
     ] = await Promise.all([
       imageRes.json(),
       motorRes.json(),
@@ -165,6 +168,7 @@ const handleGeneratePdf = async (cotizacion) => {
       interiorRes.json(),
       exteriorRes.json(),
       dimensionesRes.json(),
+      garantiaRes.json(),
     ]);
 
     // Buscar el vehículo correspondiente a la cotización
@@ -188,7 +192,7 @@ const handleGeneratePdf = async (cotizacion) => {
 
     // Nueva parte: obtener los detalles del empleado desde la API
     const empleadoId = empleado.id; // Empleado ID ya obtenido desde localStorage
-    const empleadoResponse = await axios.get(`https://jpmotorsgt.azurewebsites.net/empleados/${empleadoId}`);
+    const empleadoResponse = await axios.get(`http://localhost:4000/empleados/${empleadoId}`);
     const { Telefono: telefonoEmpleado } = empleadoResponse.data;
 
     // Crear el documento PDF
@@ -205,6 +209,7 @@ const handleGeneratePdf = async (cotizacion) => {
         interiorDetails={interiorData}
         exteriorDetails={exteriorData}
         dimensionesDetails={dimensionesData}
+        garantiaDetails={garantiaData}
         precioWeb={cotizacion.PrecioWeb}
         precioGerente={cotizacion.PrecioGerente}
         precioLista={cotizacion.PrecioLista}
@@ -329,7 +334,7 @@ const handleGeneratePdf = async (cotizacion) => {
                         ) {
                           try {
                             await axios.delete(
-                              `https://jpmotorsgt.azurewebsites.net/cotizaciones/${cotizacion.CotizacionID}`
+                              `http://localhost:4000/cotizaciones/${cotizacion.CotizacionID}`
                             );
                             await fetchCotizaciones(empleado.id, empleado.rol);
                           } catch (error) {

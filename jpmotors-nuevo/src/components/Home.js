@@ -2,7 +2,9 @@ import React from "react";
 import { Carousel, Row, Col, Container } from "react-bootstrap";
 import img1 from "../img/caru1.jpg";
 import img2 from "../img/caru2.jpg";
-import img3 from "../img/caru1.jpg";
+import img3 from "../img/caru3.jpg";
+import img4 from "../img/caru4.jpg";
+import img5 from "../img/caru3.jpg";
 import cardImg1 from "../img/Logo-02.jpg";
 import cardImg2 from "../img/Logo-03.jpg";
 
@@ -19,6 +21,12 @@ function Home() {
         </Carousel.Item>
         <Carousel.Item>
           <img src={img3} className="d-block w-100" alt="Third slide" />
+        </Carousel.Item>
+        <Carousel.Item>
+          <img src={img4} className="d-block w-100" alt="Four slide" />
+        </Carousel.Item>
+        <Carousel.Item>
+          <img src={img5} className="d-block w-100" alt="Five slide" />
         </Carousel.Item>
       </Carousel>
 

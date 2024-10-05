@@ -25,6 +25,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 function App() {
   const [auth, setAuth] = useState(false);
   const [roles, setRoles] = useState([]);
+  // eslint-disable-next-line no-unused-vars
   const [showLogin, setShowLogin] = useState(false);
 
   useEffect(() => {
@@ -50,6 +51,7 @@ function App() {
   };
 
   const handleLoginClose = () => setShowLogin(false);
+  // eslint-disable-next-line no-unused-vars
   const handleLoginShow = () => setShowLogin(true);
 
   return (
@@ -60,7 +62,7 @@ function App() {
 
       {/* Botón flotante de WhatsApp */}
       <a 
-  href="https://api.whatsapp.com/send?phone=50239731085&text=%C2%A1Hola%21%2C%20me%20gustar%C3%ADa%20consultar%20informaci%C3%B3n%20acerca%20de%20un%20veh%C3%ADculo." 
+  href="https://api.whatsapp.com/send?phone=50250601959&text=%C2%A1Hola%21%2C%20me%20gustar%C3%ADa%20consultar%20informaci%C3%B3n%20acerca%20de%20un%20veh%C3%ADculo." 
   target="_blank" 
   rel="noopener noreferrer" 
   className="whatsapp-btn"
@@ -91,12 +93,12 @@ function App() {
                 </Nav.Item>
                 <Nav.Item>
                   <Nav.Link as={Link} to="/nuevos" className="nav-link">
-                    Autos Nuevos
+                    Nuevos
                   </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
                   <Nav.Link as={Link} to="/usados" className="nav-link">
-                    Autos Usados
+                    Usados
                   </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>

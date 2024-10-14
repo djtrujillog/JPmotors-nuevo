@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Button, Modal, Form } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable'; // Importar el plugin de autoTable
 
 const Clientes = () => {
   const [clientes, setClientes] = useState([]);
@@ -11,13 +13,14 @@ const Clientes = () => {
     Direccion: '',
     Telefono: '',
     CorreoElectronico: '',
-    // Estado: '',
+    Estado: '',
     Documento: '',
     Nit: ''
   });
   const [isEditing, setIsEditing] = useState(false);
   const [currentClienteId, setCurrentClienteId] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [search, setSearch] = useState(''); // Estado para el filtro de búsqueda
 
   useEffect(() => {
     fetchClientes();
@@ -57,7 +60,7 @@ const Clientes = () => {
       Direccion: '',
       Telefono: '',
       CorreoElectronico: '',
-      // Estado: '',
+      Estado: '',
       Documento: '',
       Nit: ''
     });
@@ -109,7 +112,7 @@ const Clientes = () => {
       Direccion: '',
       Telefono: '',
       CorreoElectronico: '',
-      // Estado: '',
+      Estado: '',
       Documento: '',
       Nit: ''
     });
@@ -117,11 +120,62 @@ const Clientes = () => {
 
   const handleShow = () => setShowModal(true);
 
+  // Filtrar clientes basado en el valor del filtro
+  const filteredClientes = clientes.filter((cliente) => 
+    cliente.Nombre.toLowerCase().includes(search.toLowerCase()) || 
+    cliente.Apellido.toLowerCase().includes(search.toLowerCase()) || 
+    cliente.CorreoElectronico.toLowerCase().includes(search.toLowerCase())
+  );
+
+  // Generar el reporte en PDF con los clientes filtrados
+  const generateReport = () => {
+    const doc = new jsPDF();
+
+    // Título del reporte
+    doc.setFontSize(18);
+    doc.text('Clientes JP Motors GT', 10, 10);
+
+    // Crear la tabla de clientes usando autoTable
+    const tableColumn = ["Nombre", "Apellido", "Dirección", "Teléfono", "Correo", "Estado", "Documento", "Nit"];
+    const tableRows = [];
+
+    filteredClientes.forEach(cliente => {
+      const clienteData = [
+        cliente.Nombre,
+        cliente.Apellido,
+        cliente.Direccion || "N/A",     // Mostrar "N/A" si no hay valor
+        cliente.Telefono || "N/A",
+        cliente.CorreoElectronico || "N/A",
+        cliente.Estado || "N/A",
+        cliente.Documento || "N/A",
+        cliente.Nit || "N/A"
+      ];
+      tableRows.push(clienteData);
+    });
+
+    doc.autoTable(tableColumn, tableRows, { startY: 20 }); // Generar la tabla
+
+    doc.save('reporte_clientes.pdf'); // Descarga el archivo PDF
+  };
+
   return (
     <div className="container">
       <h1 className="my-4">Gestión de Clientes</h1>
+      
+      {/* Input de búsqueda */}
+      <Form.Control 
+        type="text" 
+        placeholder="Buscar cliente por nombre, apellido o correo" 
+        value={search} 
+        onChange={(e) => setSearch(e.target.value)} 
+        className="mb-3"
+      />
+
       <Button variant="primary" onClick={handleShow}>
         Agregar Cliente
+      </Button>
+      <Button variant="info" className="ml-3" onClick={generateReport}>
+        Generar Reporte PDF
       </Button>
 
       <Modal show={showModal} onHide={handleClose}>
@@ -151,15 +205,13 @@ const Clientes = () => {
               <Form.Control type="email" name="CorreoElectronico" value={form.CorreoElectronico} onChange={handleInputChange} />
             </Form.Group>
             <Form.Group>
-  <Form.Label>Estado</Form.Label>
-  <Form.Select name="Estado" value={form.Estado} onChange={handleInputChange}>
-    <option value="">Selecciona un estado</option>
-    <option value="Activo">Activo</option>
-    <option value="Inactivo">Inactivo</option>
-    <option value="">Null</option>
-  </Form.Select>
-</Form.Group>
-
+              <Form.Label>Estado</Form.Label>
+              <Form.Select name="Estado" value={form.Estado} onChange={handleInputChange}>
+                <option value="">Selecciona un estado</option>
+                <option value="Activo">Activo</option>
+                <option value="Inactivo">Inactivo</option>
+              </Form.Select>
+            </Form.Group>
             <Form.Group>
               <Form.Label>Documento</Form.Label>
               <Form.Control type="text" name="Documento" value={form.Documento} onChange={handleInputChange} />
@@ -175,8 +227,9 @@ const Clientes = () => {
         </Modal.Body>
       </Modal>
 
+      {/* Listado de clientes filtrados */}
       <ul className="list-group mt-4">
-        {clientes.map(cliente => (
+        {filteredClientes.map(cliente => (
           <li key={cliente.ClienteID} className="list-group-item d-flex justify-content-between align-items-center">
             <span>{cliente.Nombre} {cliente.Apellido} - {cliente.CorreoElectronico}</span>
             <div>

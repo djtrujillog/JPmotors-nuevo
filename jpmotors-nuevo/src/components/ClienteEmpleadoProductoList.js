@@ -6,6 +6,8 @@ import { PDFDocument, pdf } from "@react-pdf/renderer";
 import Select from "react-select";  // Importa react-select
 import PdfCotizar from "./PdfCotizar";
 import CotizacionDetallesModal from "./CotizacionDetallesModal";
+import AutoImage from './AutoImageLogo'; // Asegúrate de tener la ruta correcta
+
 
 const ClienteEmpleadoProductoList = () => {
   const [clientes, setClientes] = useState([]);
@@ -21,6 +23,10 @@ const ClienteEmpleadoProductoList = () => {
   const [formCotizacion, setFormCotizacion] = useState({
     ClienteID: "",
     VehiculoID: "",
+    NoFactura:"",
+    PrecioPlacas:"",
+    PrecioCotizacion:"",
+    ColoresDisponibles:"",
     EstadoCotizacion: "",
     FechaSeguimiento: "",
   });
@@ -56,42 +62,52 @@ const ClienteEmpleadoProductoList = () => {
         console.error("Error al cargar datos:", error);
       }
     };
+    
 
     fetchData();
-  }, [vehiculosLoaded]);
+  }, [vehiculosLoaded]); 
 
   const fetchCotizaciones = async (empleadoId, rol) => {
     try {
-      const response = await axios.get(
-        `http://localhost:4000/cotizaciones/byEmpleadoId/${empleadoId}`
-      );
+      const response = await axios.get(`http://localhost:4000/cotizaciones/byEmpleadoId/${empleadoId}`);
       let cotizacionesData = response.data;
-
+  
       if (rol === "User" || rol === "Admin") {
         cotizacionesData = cotizacionesData.filter(
-          (cotizacion) => cotizacion.EstadoCotizacion !== "Anulada" & cotizacion.EstadoCotizacion !== "Finalizada"
+          (cotizacion) => cotizacion.EstadoCotizacion !== "Anulada" && cotizacion.EstadoCotizacion !== "Finalizada"
         );
       }
-
-      cotizacionesData = cotizacionesData.map((cotizacion) => {
-        const vehiculo = vehiculos.find(
-          (v) => v.VehiculoID === cotizacion.VehiculoID
-        );
-        return {
-          ...cotizacion,
-          PrecioWeb: vehiculo?.PrecioWeb,
-          PrecioGerente: vehiculo?.PrecioGerente,
-          PrecioLista: vehiculo?.PrecioLista,
-          Anio: vehiculo?.Anio,
-          VehiculoDescripcion: `${vehiculo?.Modelo} ${vehiculo?.Marca} ${vehiculo?.Anio}`,
-        };
-      });
-
+  
+      // Para cada cotización, hacer una solicitud adicional para obtener los detalles del vehículo y la marca
+      cotizacionesData = await Promise.all(
+        cotizacionesData.map(async (cotizacion) => {
+          // Obtener detalles del vehículo por VehiculoID
+          const vehiculoRes = await axios.get(`http://localhost:4000/vehiculos/${cotizacion.VehiculoID}`);
+          const vehiculo = vehiculoRes.data;
+  
+          // Obtener detalles de la marca usando el MarcaID del vehículo
+          const marcaRes = await axios.get(`http://localhost:4000/marcas/${vehiculo.MarcaID}`);
+          const marca = marcaRes.data[0]; // Suponiendo que la API retorna un array con una marca
+  
+          return {
+            ...cotizacion,
+            PrecioWeb: vehiculo.PrecioWeb,
+            PrecioGerente: vehiculo.PrecioGerente,
+            PrecioLista: vehiculo.PrecioLista,
+            Anio: vehiculo.Anio,
+            VehiculoDescripcion: `${vehiculo.Modelo} ${vehiculo.Marca} ${vehiculo.Anio}`,
+            VehiculoImagen: vehiculo.Imagen.data, // Añadir la imagen del vehículo
+            MarcaLogo: marca.Logo?.data, // Añadir el logo de la marca si está disponible
+          };
+        })
+      );
+  
       setCotizaciones(cotizacionesData);
     } catch (error) {
       console.error("Error al obtener cotizaciones:", error);
     }
   };
+  
 
   const fetchVehiculos = async () => {
     try {
@@ -105,6 +121,12 @@ const ClienteEmpleadoProductoList = () => {
 
   const handleAddEditCotizacion = async () => {
     try {
+      // Validación para el campo "NoFactura"
+      if (formCotizacion.EstadoCotizacion === "Finalizada" && !formCotizacion.NoFactura) {
+        alert("Debe ingresar el número de factura cuando el estado es Finalizada.");
+        return; // Detenemos la ejecución si falta NoFactura y el estado es "Finalizada"
+      }
+  
       if (selectedCotizacion) {
         await axios.put("http://localhost:4000/cotizaciones", {
           CotizacionID: selectedCotizacion.CotizacionID,
@@ -126,15 +148,20 @@ const ClienteEmpleadoProductoList = () => {
         VehiculoID: "",
         EstadoCotizacion: "",
         FechaSeguimiento: "",
+        NoFactura: "",
+        PrecioPlacas: "",
+        PrecioCotizacion: "",
+        ColoresDisponibles: ""
       });
     } catch (error) {
       console.error("Error al guardar la cotización:", error);
     }
   };
+  
 //Creacion de pdf
 const handleGeneratePdf = async (cotizacion) => {
   try {
-    // Consultar detalles del vehículo y cliente como ya lo haces
+    // Consultar detalles del vehículo y cliente
     const [
       imageRes,
       motorRes,
@@ -171,39 +198,47 @@ const handleGeneratePdf = async (cotizacion) => {
       garantiaRes.json(),
     ]);
 
-    // Buscar el vehículo correspondiente a la cotización
+    // Obtener los detalles del vehículo
     const vehiculo = vehiculos.find((v) => v.VehiculoID === cotizacion.VehiculoID);
     if (!vehiculo) {
       console.error('Vehículo no encontrado');
       return;
     }
 
+    // Hacer la solicitud al logo de la marca usando el MarcaID del vehículo
+    const marcaRes = await axios.get(`http://localhost:4000/marcas/${vehiculo.MarcaID}`);
+    const marcaData = marcaRes.data[0];
+
+    // Crear blob para el logo de la marca si está disponible
+    let marcaLogoUrl = null;
+    if (marcaData?.Logo?.data) {
+      const logoBlob = new Blob([new Uint8Array(marcaData.Logo.data)], { type: "image/jpeg" });
+      marcaLogoUrl = URL.createObjectURL(logoBlob);
+    }
+
     // Crear blob para la imagen del vehículo
-    const blob = new Blob([new Uint8Array(imageData.Imagen.data)], {
+    const vehicleBlob = new Blob([new Uint8Array(imageData.Imagen.data)], {
       type: "image/jpeg",
     });
-    const imageUrl = URL.createObjectURL(blob);
+    const vehicleImageUrl = URL.createObjectURL(vehicleBlob);
 
     // Buscar cliente correspondiente a la cotización
     const cliente = clientes.find((c) => c.ClienteID === cotizacion.ClienteID);
 
-    // Descomponemos marca y modelo desde el objeto vehiculo
-    const { Marca: marca, Modelo: modelo } = vehiculo;
-
-    // Nueva parte: obtener los detalles del empleado desde la API
-    const empleadoId = empleado.id; // Empleado ID ya obtenido desde localStorage
-    const empleadoResponse = await axios.get(`http://localhost:4000/empleados/${empleadoId}`);
+    // Obtener los detalles del empleado desde la API
+    const empleadoResponse = await axios.get(`http://localhost:4000/empleados/${empleado.id}`);
     const { Telefono: telefonoEmpleado } = empleadoResponse.data;
 
     // Crear el documento PDF
     const pdfDoc = (
       <PdfCotizar
-        marca={marca}
-        modelo={modelo}
+        marca={vehiculo.Marca}
+        modelo={vehiculo.Modelo}
         auto={cotizacion}
         cliente={cliente}
-        empleado={{ ...empleado, telefono: telefonoEmpleado }} // Aquí pasamos el teléfono del empleado desde la API
-        imageUrl={imageUrl}
+        empleado={{ ...empleado, telefono: telefonoEmpleado }}
+        imageUrl={vehicleImageUrl}  // Incluir imagen del vehículo
+        marcaLogoUrl={marcaLogoUrl}  // Incluir logo de la marca si está disponible
         motorDetails={motorData}
         seguridadDetails={seguridadData}
         interiorDetails={interiorData}
@@ -213,9 +248,13 @@ const handleGeneratePdf = async (cotizacion) => {
         precioWeb={cotizacion.PrecioWeb}
         precioGerente={cotizacion.PrecioGerente}
         precioLista={cotizacion.PrecioLista}
+        precioPlacas={cotizacion.PrecioPlacas}
+        precioCotizacion={cotizacion.PrecioCotizacion}
+        coloresDisponibles={cotizacion.ColoresDisponibles}
       />
     );
 
+    // Generar el PDF y descargarlo
     const asPdf = pdf([]);
     asPdf.updateContainer(pdfDoc);
     const blobPdf = await asPdf.toBlob();
@@ -230,6 +269,7 @@ const handleGeneratePdf = async (cotizacion) => {
     console.error("Error al generar el PDF:", error);
   }
 };
+
 
 
 
@@ -258,6 +298,8 @@ const handleGeneratePdf = async (cotizacion) => {
       <h1 className="my-4">Cotizaciones del Empleado</h1>
       <Button variant="primary" onClick={() => setShowCotizacionModal(true)}>
         Agregar Cotización
+
+        
       </Button>
       <Table striped bordered hover className="my-4">
         <thead>
@@ -265,6 +307,7 @@ const handleGeneratePdf = async (cotizacion) => {
             <th>#</th>
             <th>Cliente</th>
             <th>Vehículo</th>
+            {/* <th>Logo Marca</th> */}
             <th>Fecha Cotización</th>
             <th>Estado</th>
             <th>Fecha Seguimiento</th>
@@ -297,12 +340,19 @@ const handleGeneratePdf = async (cotizacion) => {
                   <br />
                   {cotizacion.PrecioLista && (
                     <span>
-                      Precio: {cotizacion.PrecioLista}
+                      Precio: {cotizacion.PrecioCotizacion}
+                      <br />
+                      Placas: {cotizacion.PrecioPlacas}
+                      <br />
+                      Color Disponible: {cotizacion.ColoresDisponibles}
                       <br />
                       Año: {cotizacion.Anio}
                     </span>
                   )}
                 </td>
+                {/* <td>
+            <AutoImage longBlobData={cotizacion.MarcaLogo} alt="Logo Marca" style={{ width: '50px', height: '50px' }} />
+          </td> */}
                 <td>{cotizacion.FechaCotizacion}</td>
                 <td>{cotizacion.EstadoCotizacion}</td>
                 <td>{cotizacion.FechaSeguimiento}</td>
@@ -315,6 +365,10 @@ const handleGeneratePdf = async (cotizacion) => {
                         setFormCotizacion({
                           ClienteID: cotizacion.ClienteID,
                           VehiculoID: cotizacion.VehiculoID,
+                          NoFactura: cotizacion.NoFactura,            
+                         PrecioPlacas: cotizacion.PrecioPlacas,      
+                          PrecioCotizacion: cotizacion.PrecioCotizacion,  
+                         ColoresDisponibles: cotizacion.ColoresDisponibles, 
                           EstadoCotizacion: cotizacion.EstadoCotizacion,
                           FechaSeguimiento: cotizacion.FechaSeguimiento,
                         });
@@ -372,7 +426,8 @@ const handleGeneratePdf = async (cotizacion) => {
         </tbody>
       </Table>
 
-      <Modal show={showCotizacionModal} onHide={() => setShowCotizacionModal(false)}>
+{/* Modal para agregar cotizacion */}
+<Modal show={showCotizacionModal} onHide={() => setShowCotizacionModal(false)}>
   <Modal.Header closeButton>
     <Modal.Title>
       {selectedCotizacion ? "Editar" : "Agregar"} Cotización
@@ -380,22 +435,21 @@ const handleGeneratePdf = async (cotizacion) => {
   </Modal.Header>
   <Modal.Body>
     <Form>
+      {/* Cliente */}
       <Form.Group controlId="formClienteID">
         <Form.Label>Cliente</Form.Label>
         <Select
           name="ClienteID"
-          value={
-            formCotizacion.ClienteID
-              ? {
-                  value: formCotizacion.ClienteID,
-                  label: clientes.find(
-                    (cliente) => cliente.ClienteID === formCotizacion.ClienteID
-                  )?.Nombre + " " + clientes.find(
-                    (cliente) => cliente.ClienteID === formCotizacion.ClienteID
-                  )?.Apellido,
-                }
-              : null
-          }
+          value={formCotizacion.ClienteID
+            ? {
+                value: formCotizacion.ClienteID,
+                label: `${clientes.find(
+                  (cliente) => cliente.ClienteID === formCotizacion.ClienteID
+                )?.Nombre} ${clientes.find(
+                  (cliente) => cliente.ClienteID === formCotizacion.ClienteID
+                )?.Apellido}`,
+              }
+            : null}
           onChange={(selectedOption) =>
             setFormCotizacion({
               ...formCotizacion,
@@ -409,28 +463,24 @@ const handleGeneratePdf = async (cotizacion) => {
           isClearable
         />
       </Form.Group>
-      
+
+      {/* Vehículo */}
       <Form.Group controlId="formVehiculoID">
         <Form.Label>Vehículo</Form.Label>
         <Select
           name="VehiculoID"
-          value={
-            formCotizacion.VehiculoID
-              ? {
-                  value: formCotizacion.VehiculoID,
-                  label: vehiculos.find(
-                    (vehiculo) =>
-                      vehiculo.VehiculoID === formCotizacion.VehiculoID
-                  )?.Modelo + " " + vehiculos.find(
-                    (vehiculo) =>
-                      vehiculo.VehiculoID === formCotizacion.VehiculoID
-                  )?.Marca + " " + vehiculos.find(
-                    (vehiculo) =>
-                      vehiculo.VehiculoID === formCotizacion.VehiculoID
-                  )?.Anio,
-                }
-              : null
-          }
+          value={formCotizacion.VehiculoID
+            ? {
+                value: formCotizacion.VehiculoID,
+                label: `${vehiculos.find(
+                  (vehiculo) => vehiculo.VehiculoID === formCotizacion.VehiculoID
+                )?.Modelo} ${vehiculos.find(
+                  (vehiculo) => vehiculo.VehiculoID === formCotizacion.VehiculoID
+                )?.Marca} ${vehiculos.find(
+                  (vehiculo) => vehiculo.VehiculoID === formCotizacion.VehiculoID
+                )?.Anio}`,
+              }
+            : null}
           onChange={(selectedOption) =>
             setFormCotizacion({
               ...formCotizacion,
@@ -445,6 +495,7 @@ const handleGeneratePdf = async (cotizacion) => {
         />
       </Form.Group>
 
+      {/* Estado de Cotización */}
       <Form.Group controlId="formEstadoCotizacion">
         <Form.Label>Estado de Cotización</Form.Label>
         <Select
@@ -469,6 +520,7 @@ const handleGeneratePdf = async (cotizacion) => {
         />
       </Form.Group>
 
+      {/* Fecha de Seguimiento */}
       <Form.Group controlId="formFechaSeguimiento">
         <Form.Label>Fecha de Seguimiento</Form.Label>
         <Form.Control
@@ -483,13 +535,77 @@ const handleGeneratePdf = async (cotizacion) => {
           }
         />
       </Form.Group>
+
+      {/* No. de Factura */}
+<Form.Group controlId="formNoFactura">
+  <Form.Label>No. de Factura</Form.Label>
+  <Form.Control
+    type="text"
+    name="NoFactura"
+    value={formCotizacion.NoFactura}
+    onChange={(e) =>
+      setFormCotizacion({
+        ...formCotizacion,
+        NoFactura: e.target.value,
+      })
+    }
+    disabled={formCotizacion.EstadoCotizacion !== "Finalizada"} // Deshabilitado si no es "Finalizada"
+  />
+</Form.Group>
+
+
+      {/* Precio de las Placas */}
+      <Form.Group controlId="formPrecioPlacas">
+        <Form.Label>Precio de las Placas</Form.Label>
+        <Form.Control
+          type="number"
+          name="PrecioPlacas"
+          value={formCotizacion.PrecioPlacas}
+          onChange={(e) =>
+            setFormCotizacion({
+              ...formCotizacion,
+              PrecioPlacas: e.target.value,
+            })
+          }
+        />
+      </Form.Group>
+
+      {/* Precio de la Cotización */}
+      <Form.Group controlId="formPrecioCotizacion">
+        <Form.Label>Precio de la Cotización</Form.Label>
+        <Form.Control
+          type="number"
+          name="PrecioCotizacion"
+          value={formCotizacion.PrecioCotizacion}
+          onChange={(e) =>
+            setFormCotizacion({
+              ...formCotizacion,
+              PrecioCotizacion: e.target.value,
+            })
+          }
+        />
+      </Form.Group>
+
+      {/* Colores Disponibles */}
+      <Form.Group controlId="formColoresDisponibles">
+        <Form.Label>Colores Disponibles</Form.Label>
+        <Form.Control
+          as="textarea"
+          name="ColoresDisponibles"
+          value={formCotizacion.ColoresDisponibles}
+          onChange={(e) =>
+            setFormCotizacion({
+              ...formCotizacion,
+              ColoresDisponibles: e.target.value,
+            })
+          }
+          rows={3}
+        />
+      </Form.Group>
     </Form>
   </Modal.Body>
   <Modal.Footer>
-    <Button
-      variant="secondary"
-      onClick={() => setShowCotizacionModal(false)}
-    >
+    <Button variant="secondary" onClick={() => setShowCotizacionModal(false)}>
       Cerrar
     </Button>
     <Button variant="primary" onClick={handleAddEditCotizacion}>
@@ -508,6 +624,8 @@ const handleGeneratePdf = async (cotizacion) => {
       )}
     </div>
   );
+  
 };
+
 
 export default ClienteEmpleadoProductoList;

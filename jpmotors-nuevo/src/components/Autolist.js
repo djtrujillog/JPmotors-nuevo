@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import AutoItem from './AutoItem';
 import AutoModal from './AutoModal';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -7,28 +7,32 @@ const AutoList = () => {
   const [autos, setAutos] = useState([]);
   const [selectedAuto, setSelectedAuto] = useState(null);
   const [filterLinea, setFilterLinea] = useState('');
-  const [filterModelo, setFilterModelo] = useState('');
+  const [filterModelo, setFilterModelo] = useState([]);
   const [marcas, setMarcas] = useState([]);
   const [modelos, setModelos] = useState([]);
 
   useEffect(() => {
     const fetchAutos = async () => {
       try {
-        const response = await fetch('http://localhost:4000/vehiculos/nuevos');
-        const data = await response.json();
-        if (response.ok) {
+        const cachedData = localStorage.getItem('autos');
+        const cachedTime = localStorage.getItem('autos_timestamp');
+        const currentTime = Date.now();
+        
+        if (cachedData && cachedTime && (currentTime - cachedTime < 3600000)) {
+          const data = JSON.parse(cachedData);
           setAutos(data);
-
-          // Extraer marcas únicas
-          const uniqueMarcas = [...new Set(data.map(auto => auto.Marca))];
-          setMarcas(uniqueMarcas);
-
-          // Extraer modelos únicos
-          const uniqueModelos = [...new Set(data.map(auto => auto.Modelo))];
-          setModelos(uniqueModelos);
-
+          updateMarcasYModelos(data);
         } else {
-          console.error("Error al cargar los autos");
+          const response = await fetch('http://localhost:4000/vehiculos/nuevos');
+          const data = await response.json();
+          if (response.ok) {
+            setAutos(data);
+            localStorage.setItem('autos', JSON.stringify(data));
+            localStorage.setItem('autos_timestamp', currentTime);
+            updateMarcasYModelos(data);
+          } else {
+            console.error("Error al cargar los autos");
+          }
         }
       } catch (error) {
         console.error("Error en la consulta a la API:", error);
@@ -38,16 +42,20 @@ const AutoList = () => {
     fetchAutos();
   }, []);
 
+  const updateMarcasYModelos = (data) => {
+    setMarcas([...new Set(data.map(auto => auto.Marca))]);
+    setModelos([...new Set(data.map(auto => auto.Modelo))]);
+  };
+
   // Filtrar modelos según la marca seleccionada
   useEffect(() => {
     if (filterLinea) {
-      const filteredModelos = [...new Set(autos
+      const filteredModelos = autos
         .filter(auto => auto.Marca === filterLinea)
-        .map(auto => auto.Modelo))];
-      setModelos(filteredModelos);
+        .map(auto => auto.Modelo);
+      setModelos([...new Set(filteredModelos)]);
     } else {
-      const uniqueModelos = [...new Set(autos.map(auto => auto.Modelo))];
-      setModelos(uniqueModelos);
+      setModelos([...new Set(autos.map(auto => auto.Modelo))]);
     }
     setFilterModelo(''); // Resetear modelo seleccionado al cambiar la marca
   }, [filterLinea, autos]);
@@ -67,38 +75,36 @@ const AutoList = () => {
 
   return (
     <div className="container-xl">
-      <div>
-        <h1 className="my-4 text-center">Lista de Vehiculos</h1>
-        <div className="mb-4 d-flex justify-content-center">
-          <div className="form-group mr-2">
-            <label htmlFor="filterLinea">Marca</label>
-            <select
-              id="filterLinea"
-              value={filterLinea}
-              onChange={(e) => setFilterLinea(e.target.value)}
-              className="form-control"
-            >
-              <option value="">Todas las Marcas</option>
-              {marcas.map(marca => (
-                <option key={marca} value={marca}>{marca}</option>
-              ))}
-            </select>
-          </div>
-          <div className="form-group">
-            <label htmlFor="filterModelo">Linea</label>
-            <select
-              id="filterModelo"
-              value={filterModelo}
-              onChange={(e) => setFilterModelo(e.target.value)}
-              className="form-control"
-              disabled={!filterLinea}
-            >
-              <option value="">Todas las Lineas</option>
-              {modelos.map(modelo => (
-                <option key={modelo} value={modelo}>{modelo}</option>
-              ))}
-            </select>
-          </div>
+      <h1 className="my-4 text-center">Lista de Vehiculos</h1>
+      <div className="mb-4 d-flex justify-content-center">
+        <div className="form-group mr-2">
+          <label htmlFor="filterLinea">Marca</label>
+          <select
+            id="filterLinea"
+            value={filterLinea}
+            onChange={(e) => setFilterLinea(e.target.value)}
+            className="form-control"
+          >
+            <option value="">Todas las Marcas</option>
+            {marcas.map(marca => (
+              <option key={marca} value={marca}>{marca}</option>
+            ))}
+          </select>
+        </div>
+        <div className="form-group">
+          <label htmlFor="filterModelo">Linea</label>
+          <select
+            id="filterModelo"
+            value={filterModelo}
+            onChange={(e) => setFilterModelo(e.target.value)}
+            className="form-control"
+            disabled={!filterLinea}
+          >
+            <option value="">Todas las Lineas</option>
+            {modelos.map(modelo => (
+              <option key={modelo} value={modelo}>{modelo}</option>
+            ))}
+          </select>
         </div>
       </div>
       <br />

@@ -6,12 +6,13 @@ import "../css/AutoModal.css"; // Import custom CSS
 
 const AutoModal = ({ auto, onClose }) => {
   const [imageBlob, setImageBlob] = useState(null);
+  const [logoBlob, setLogoBlob] = useState(null);
   const [motorDetails, setMotorDetails] = useState(null);
   const [seguridadDetails, setSeguridadDetails] = useState(null);
   const [interiorDetails, setInteriorDetails] = useState(null);
   const [exteriorDetails, setExteriorDetails] = useState(null);
   const [dimensionesDetails, setDimensionesDetails] = useState(null);
-  const [garantiaDetails, setGarantiaDetails] = useState(null);  // Agregar el estado para la garantía
+  const [garantiaDetails, setGarantiaDetails] = useState(null);
 
   // Estado para manejar el modal de cotización
   const [showCotizacionModal, setShowCotizacionModal] = useState(false);
@@ -59,6 +60,7 @@ const AutoModal = ({ auto, onClose }) => {
       try {
         const [
           imageRes,
+          marcaRes,
           motorRes,
           seguridadRes,
           interiorRes,
@@ -67,6 +69,7 @@ const AutoModal = ({ auto, onClose }) => {
           garantiaRes
         ] = await Promise.all([
           fetch(`http://localhost:4000/vehiculos/${auto.VehiculoID}`),
+          fetch(`http://localhost:4000/marcas/${auto.MarcaID}`),
           fetch(`http://localhost:4000/vehiculos/motor/${auto.VehiculoID}`),
           fetch(`http://localhost:4000/vehiculos/seguridad/${auto.VehiculoID}`),
           fetch(`http://localhost:4000/vehiculos/interior/${auto.VehiculoID}`),
@@ -77,6 +80,7 @@ const AutoModal = ({ auto, onClose }) => {
 
         const [
           imageData,
+          marcaData,
           motorData,
           seguridadData,
           interiorData,
@@ -85,6 +89,7 @@ const AutoModal = ({ auto, onClose }) => {
           garantiaData
         ] = await Promise.all([
           imageRes.json(),
+          marcaRes.json(),
           motorRes.json(),
           seguridadRes.json(),
           interiorRes.json(),
@@ -93,10 +98,20 @@ const AutoModal = ({ auto, onClose }) => {
           garantiaRes.json()
         ]);
 
-        const blob = new Blob([new Uint8Array(imageData.Imagen.data)], {
+        // Convertir la imagen del vehículo a Blob
+        const imageBlobData = new Blob([new Uint8Array(imageData.Imagen.data)], {
           type: "image/jpeg",
         });
-        setImageBlob(blob);
+        setImageBlob(imageBlobData);
+
+        // Convertir el logo de la marca a Blob si está presente
+        if (marcaData[0]?.Logo?.data) {
+          const logoBlobData = new Blob([new Uint8Array(marcaData[0].Logo.data)], {
+            type: "image/jpeg",
+          });
+          setLogoBlob(logoBlobData);
+        }
+
         setMotorDetails(motorData);
         setSeguridadDetails(seguridadData);
         setInteriorDetails(interiorData);
@@ -128,6 +143,7 @@ const AutoModal = ({ auto, onClose }) => {
   }
 
   const imageUrl = URL.createObjectURL(imageBlob);
+  const logoUrl = logoBlob ? URL.createObjectURL(logoBlob) : null;
 
   return (
     <>
@@ -138,7 +154,16 @@ const AutoModal = ({ auto, onClose }) => {
         dialogClassName="custom-modal-width"
       >
         <Modal.Header closeButton>
-          <Modal.Title>{`${auto.Marca} ${auto.Modelo}`}</Modal.Title>
+          <Modal.Title>
+            {logoUrl && (
+              <img
+                src={logoUrl}
+                alt={`${auto.Marca} Logo`}
+                style={{ width: "50px", marginRight: "10px" }}
+              />
+            )}
+            {`${auto.Marca} ${auto.Modelo}`}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <img
@@ -229,6 +254,7 @@ const AutoModal = ({ auto, onClose }) => {
                 marca={auto.Marca}
                 modelo={auto.Modelo}
                 imageUrl={imageUrl}
+                logoUrl={logoUrl} // Pasar el logo para el PDF
                 motorDetails={motorDetails}
                 seguridadDetails={seguridadDetails}
                 interiorDetails={interiorDetails}

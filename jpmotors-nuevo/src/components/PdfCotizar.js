@@ -53,6 +53,12 @@ const styles = StyleSheet.create({
     height: 'auto',
     marginBottom: 5,
   },
+  logo: {
+    width: '5%', // Ajusta el tamaño del logo según sea necesario
+    height: 'auto',
+    marginBottom: 10,
+    alignSelf: 'center', // Centrar el logo
+  },  // <- aquí faltaba la llave de cierre
   subTitle: {
     fontSize: 10,
     marginBottom: 8,
@@ -106,6 +112,7 @@ const styles = StyleSheet.create({
   },
 });
 
+
 // Componente para generar el documento PDF
 const PdfDocument = ({
   imageUrl,
@@ -122,6 +129,10 @@ const PdfDocument = ({
   precioWeb,
   precioGerente,
   precioLista,
+  precioPlacas,        // Nuevo campo
+  precioCotizacion,    // Nuevo campo
+  coloresDisponibles,   // Nuevo campo
+  marcaLogoUrl,
 }) => (
   <Document>
     <Page style={styles.page}>
@@ -130,11 +141,12 @@ const PdfDocument = ({
         <Text style={styles.headerTitle}>{marca} {modelo}</Text>
         <View style={styles.headerInfo}>
           <Text>Por el centro de salud, Santa Elena, Petén.</Text>
-          <Text>(502) 7927 7733</Text>
+          <Text>(502) 5060 1959</Text>
           <Text>info@jpmotorsgt.com</Text>
         </View>
       </View>
-
+      {/* Agregar el logo de la marca */}
+      {marcaLogoUrl && <Image style={styles.logo} src={marcaLogoUrl} />}
       <View style={styles.section}>
         <Text style={styles.headerPros}>Cotizacion</Text>
         {imageUrl && <Image style={styles.image} src={imageUrl} />}
@@ -261,7 +273,9 @@ const PdfDocument = ({
         <Text style={styles.priceText}>Precios</Text>
         <Text style={styles.priceText}>Precio Web: {precioWeb}</Text>
         <Text style={styles.priceText}>Precio Gerente: {precioGerente}</Text>
-        <Text style={styles.priceText}>Precio de Lista: {precioLista}</Text>
+        <Text style={styles.priceText}>Precio de Lista: {precioCotizacion}</Text>
+        <Text style={styles.priceText}>Color Disponible: {coloresDisponibles}</Text>
+
       </View>
     </Page>
   </Document>

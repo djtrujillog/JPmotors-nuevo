@@ -16,6 +16,7 @@ import Reportes from "./components/Reportes.js";
 import Reasignar from "./components/Reasignacion.js";
 import ClienteEmpleadoProductoList from "./components/ClienteEmpleadoProductoList.js";
 import MisReportes from "./components/misReportes.js";
+import Marcas from "./components/marcas.js";
 import Login from "./components/Login";
 import logo from "./img/Logo-12.png";
 import "./App.css";
@@ -124,6 +125,8 @@ function App() {
                             <NavDropdown.Item as={Link} to="/agvehiculo">Agregar Vehiculo</NavDropdown.Item>
                           )} {roles.includes('Admin') && (
                             <NavDropdown.Item as={Link} to="/reportes">Reportes de Seguimientos</NavDropdown.Item>
+                          )} {roles.includes('Admin') && (
+                            <NavDropdown.Item as={Link} to="/marcas">Marcas</NavDropdown.Item>
                           )}{(roles.includes('Admin') || roles.includes('User')) && (
                             <NavDropdown.Item as={Link} to="/misreportes">Mis Reportes de Seguimiento</NavDropdown.Item>
                           )}
@@ -166,6 +169,7 @@ function App() {
           <Route path="/reportes" element={<Reportes />} />
           <Route path="/misreportes" element={<MisReportes />} />
           
+          
           {auth && (
             <>
               {roles.includes('Admin') && (
@@ -173,7 +177,7 @@ function App() {
                   <Route path="/agvehiculo" element={<AgVehiculo />} />
                   <Route path="/empleados" element={<Empleados />} />
                   <Route path="/reasignar" element={<Reasignar />} />
-
+                  <Route path="/marcas" element={<Marcas />} />
                 </>
               )}
               {(roles.includes('Admin') || roles.includes('User')) && (

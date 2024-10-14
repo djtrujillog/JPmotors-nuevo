@@ -27,7 +27,7 @@ const Footer = () => {
                 <h6>Síguenos</h6>
                 <span className="fab fa-facebook-square" onClick={() => window.open('https://www.facebook.com/jpmotorsgt?mibextid=sCpJLy', '_blank')}></span>
                 <span className="fab fa-instagram" onClick={() => window.open('https://www.instagram.com/jpmotorsgt?igsh=MXU2eXVhdXlyNDdxcg%3D%3D', '_blank')}></span>
-                <span className="fab fa-whatsapp" onClick={() => window.open('https://api.whatsapp.com/send?phone=50239731085&text=%c2%a1Hola%21%2c%20me%20gustar%c3%ada%20consultar%20informaci%c3%b3n%20acerca%20de%20un%20vehículo.', '_blank')}></span>
+                <span className="fab fa-whatsapp" onClick={() => window.open('https://api.whatsapp.com/send?phone=50250601959&text=%c2%a1Hola%21%2c%20me%20gustar%c3%ada%20consultar%20informaci%c3%b3n%20acerca%20de%20un%20vehículo.', '_blank')}></span>
                 <span className="fa fa-solid fa-map-pin" onClick={() => window.open('https://maps.app.goo.gl/WWxi4PL3varFVxZu7', '_blank')}></span>
               </Col>
             </Row>

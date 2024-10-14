@@ -14,9 +14,13 @@ const AutolistUsadosdos = () => {
   useEffect(() => {
     const fetchAutos = async () => {
       try {
-        const response = await fetch('http://localhost:4000/vehiculos/usados');
-        const data = await response.json();
-        if (response.ok) {
+        // Verificar si hay datos en caché
+        const cachedAutos = localStorage.getItem('autos');
+        const cachedTime = localStorage.getItem('cachedTime');
+
+        // Si hay datos en caché y no han pasado 10 minutos
+        if (cachedAutos && cachedTime && (Date.now() - cachedTime < 10 * 60 * 1000)) {
+          const data = JSON.parse(cachedAutos);
           setAutos(data);
 
           // Extraer marcas únicas
@@ -26,9 +30,27 @@ const AutolistUsadosdos = () => {
           // Extraer modelos únicos
           const uniqueModelos = [...new Set(data.map(auto => auto.Modelo))];
           setModelos(uniqueModelos);
-
         } else {
-          console.error("Error al cargar los autos");
+          // Hacer la consulta a la API
+          const response = await fetch('http://localhost:4000/vehiculos/usados');
+          const data = await response.json();
+          if (response.ok) {
+            setAutos(data);
+
+            // Almacenar en caché
+            localStorage.setItem('autos', JSON.stringify(data));
+            localStorage.setItem('cachedTime', Date.now());
+
+            // Extraer marcas únicas
+            const uniqueMarcas = [...new Set(data.map(auto => auto.Marca))];
+            setMarcas(uniqueMarcas);
+
+            // Extraer modelos únicos
+            const uniqueModelos = [...new Set(data.map(auto => auto.Modelo))];
+            setModelos(uniqueModelos);
+          } else {
+            console.error("Error al cargar los autos");
+          }
         }
       } catch (error) {
         console.error("Error en la consulta a la API:", error);

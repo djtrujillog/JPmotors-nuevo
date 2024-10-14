@@ -53,6 +53,12 @@ const styles = StyleSheet.create({
     height: 'auto',
     marginBottom: 5,
   },
+  logo: {
+    width: '25%', // Ajusta el tamaño del logo según sea necesario
+    height: 'auto',
+    marginBottom: 10,
+    alignSelf: 'center', // Centrar el logo
+  },
   subTitle: {
     fontSize: 14,
     marginBottom: 8,
@@ -93,6 +99,7 @@ const PdfDocument = ({
   exteriorDetails,
   dimensionesDetails,
   garantiaDetails,
+  logoUrl, // Nueva prop para el logo
 }) => (
   <Document>
     <Page style={styles.page}>
@@ -103,10 +110,12 @@ const PdfDocument = ({
         {/* Información de contacto alineada a la derecha */}
         <View style={styles.headerInfo}>
           <Text>Por el centro de salud, Santa Elena, Petén.</Text>
-          <Text>(502) 7927 7733</Text>
+          <Text>(502) 5060 1959</Text>
           <Text>info@jpmotorsgt.com</Text>
         </View>
       </View>
+      {/* Agregar el logo de la marca */}
+      {logoUrl && <Image style={styles.logo} src={logoUrl} />}
       <View style={styles.section}>
         {/* Título de la sección */}
         <Text style={styles.headerPros}>PROSPECTO</Text>

@@ -249,7 +249,7 @@ const cotizacionController = {
         try {
             const t = await sequelize.transaction();
             const { CotizacionID, EmpleadoID, ClienteID, VehiculoID, EstadoCotizacion, FechaSeguimiento, NoFactura, PrecioPlacas, PrecioCotizacion, ColoresDisponibles } = req.body;
-
+            console.log("Valor de PrecioCotizacion antes de enviar:", PrecioCotizacion);
             try {
                 // Usar parámetros seguros para evitar SQL Injection
                 let query = `
@@ -265,6 +265,9 @@ const cotizacionController = {
                         ColoresDisponibles= :ColoresDisponibles
                     WHERE CotizacionID = :CotizacionID
                 `;
+                const { PrecioPlacas, PrecioCotizacion } = req.body;
+console.log("PrecioCotizacion recibido:", PrecioCotizacion);
+
 
                 const result = await sequelize.query(query, {
                     replacements: {
@@ -315,7 +318,9 @@ const cotizacionController = {
         } catch (error) {
             console.log('Error al actualizar cotización:', error.message);
             res.status(500).send('Error interno del servidor');
+            
         }
+        
     },
 
     putSeparado: async (req, res) => {

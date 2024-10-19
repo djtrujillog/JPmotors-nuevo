@@ -336,20 +336,20 @@ const handleGeneratePdf = async (cotizacion) => {
                   )}
                 </td>
                 <td>
-                  {cotizacion.VehiculoDescripcion}
-                  <br />
-                  {cotizacion.PrecioLista && (
-                    <span>
-                      Precio: {cotizacion.PrecioCotizacion}
-                      <br />
-                      Placas: {cotizacion.PrecioPlacas}
-                      <br />
-                      Color Disponible: {cotizacion.ColoresDisponibles}
-                      <br />
-                      Año: {cotizacion.Anio}
-                    </span>
-                  )}
-                </td>
+  {cotizacion.VehiculoDescripcion}
+  <br />
+  {cotizacion.PrecioLista && (
+    <span>
+      Precio: {parseFloat(cotizacion.PrecioCotizacion).toFixed(2)}
+      <br />
+      Placas: {parseFloat(cotizacion.PrecioPlacas).toFixed(2)}
+      <br />
+      Color Disponible: {cotizacion.ColoresDisponibles}
+      <br />
+      Año: {cotizacion.Anio}
+    </span>
+  )}
+</td>
                 {/* <td>
             <AutoImage longBlobData={cotizacion.MarcaLogo} alt="Logo Marca" style={{ width: '50px', height: '50px' }} />
           </td> */}

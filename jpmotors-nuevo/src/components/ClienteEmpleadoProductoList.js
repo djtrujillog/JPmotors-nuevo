@@ -78,16 +78,17 @@ const ClienteEmpleadoProductoList = () => {
         );
       }
   
-      // Para cada cotización, hacer una solicitud adicional para obtener los detalles del vehículo y la marca
       cotizacionesData = await Promise.all(
         cotizacionesData.map(async (cotizacion) => {
-          // Obtener detalles del vehículo por VehiculoID
           const vehiculoRes = await axios.get(`http://localhost:4000/vehiculos/${cotizacion.VehiculoID}`);
+          if (!vehiculoRes.data) throw new Error('Vehículo data es undefined');
           const vehiculo = vehiculoRes.data;
   
-          // Obtener detalles de la marca usando el MarcaID del vehículo
           const marcaRes = await axios.get(`http://localhost:4000/marcas/${vehiculo.MarcaID}`);
-          const marca = marcaRes.data[0]; // Suponiendo que la API retorna un array con una marca
+          if (!marcaRes.data || !Array.isArray(marcaRes.data) || marcaRes.data.length === 0) {
+            throw new Error('Marca data es undefined o el array está vacío');
+          }
+          const marca = marcaRes.data[0];
   
           return {
             ...cotizacion,
@@ -96,7 +97,7 @@ const ClienteEmpleadoProductoList = () => {
             PrecioLista: vehiculo.PrecioLista,
             Anio: vehiculo.Anio,
             VehiculoDescripcion: `${vehiculo.Modelo} ${vehiculo.Marca} ${vehiculo.Anio}`,
-            VehiculoImagen: vehiculo.Imagen.data, // Añadir la imagen del vehículo
+            VehiculoImagen: vehiculo.ImagenBase64, // Usando la imagen en base64
             MarcaLogo: marca.Logo?.data, // Añadir el logo de la marca si está disponible
           };
         })
@@ -104,9 +105,10 @@ const ClienteEmpleadoProductoList = () => {
   
       setCotizaciones(cotizacionesData);
     } catch (error) {
-      console.error("Error al obtener cotizaciones:", error);
+      console.error('Error al obtener cotizaciones:', error);
     }
   };
+  
   
 
   const fetchVehiculos = async () => {
@@ -217,10 +219,11 @@ const handleGeneratePdf = async (cotizacion) => {
     }
 
     // Crear blob para la imagen del vehículo
-    const vehicleBlob = new Blob([new Uint8Array(imageData.Imagen.data)], {
-      type: "image/jpeg",
-    });
-    const vehicleImageUrl = URL.createObjectURL(vehicleBlob);
+    // Suponiendo que imageData.ImagenBase64 contiene la imagen en formato base64
+const vehicleImageUrl = imageData.ImagenBase64; // Usar directamente la base64
+
+// Luego, puedes usar `vehicleImageUrl` en tu componente PDF
+
 
     // Buscar cliente correspondiente a la cotización
     const cliente = clientes.find((c) => c.ClienteID === cotizacion.ClienteID);

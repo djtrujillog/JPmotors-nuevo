@@ -15,6 +15,7 @@ import detalleSeguridadController from "../controllers/Vehiculos/detalleSegurida
 import detalleGarantiacontroller from "../controllers/Vehiculos/detalleGarantiaController.mjs";
 
 
+
 // Obtener la ruta del directorio actual
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -41,6 +42,8 @@ router.get("/:id", vehiculoController.getVehiculoPorID);
 router.post("/", upload.single("file"), vehiculoController.post);
 router.put("/:id", upload.single("file"), vehiculoController.put);
 router.delete("/:VehiculoID", vehiculoController.delete);
+router.get('/imagenes/:nombreImagen', vehiculoController.getImagen);
+
 
 // Rutas para detalleDimensiones 
 router.get("/detalleDimensiones", detalleDimensionesController.getAll);

@@ -9,6 +9,7 @@ import { fileURLToPath } from 'url'; // Necesario para obtener __dirname en ES M
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+//obtener vehiculos
 const vehiculoController = {
   getVehiculos: async (req, res) => {
     try {
@@ -26,40 +27,98 @@ const vehiculoController = {
       res.status(500).send("Error interno del servidor");
     }
   },
+//obtener imagenes
+
+  getImagen: (req, res) => {
+    const { nombreImagen } = req.params;
+    const imagenPath = path.join(__dirname, '../../images', nombreImagen);
+
+    res.sendFile(imagenPath, (err) => {
+      if (err) {
+        console.error("Error al enviar la imagen:", err);
+        res.status(404).json({ message: 'Imagen no encontrada' });
+      }
+    });
+  },
 
   getVehiculosNuevos: async (req, res) => {
     try {
-      const result = await sequelize.query("SELECT * FROM Vehiculos v WHERE Condicion = 'Nuevo' and Estado ='Activo'", {
+      // Consulta para obtener los datos de los vehículos
+      const result = await sequelize.query("SELECT VehiculoID, Modelo, Marca, Anio, PrecioGerente, PrecioWeb, PrecioLista, ImagenUrl, MarcaID, Condicion, Estado FROM Vehiculos v WHERE Condicion = 'Nuevo' AND Estado ='Activo'", {
         type: sequelize.QueryTypes.SELECT,
       });
 
       if (result.length > 0) {
-        res.status(200).json(result);
+        const vehiculosConImagenes = await Promise.all(result.map(async (vehiculo) => {
+          try {
+            // Construir la ruta completa de la imagen
+            const imagenPath = path.join(__dirname, '../../images', `${vehiculo.VehiculoID}.jpg`);
+            
+            // Verificar si la imagen existe y leerla en base64
+            try {
+              await fs.access(imagenPath);
+              const imagenBase64 = await fs.readFile(imagenPath, { encoding: 'base64' });
+              vehiculo.ImagenBase64 = `data:image/jpeg;base64,${imagenBase64}`;
+            } catch (error) {
+              vehiculo.ImagenBase64 = null; // Si la imagen no existe, asignar null
+            }
+          } catch (error) {
+            console.error(`Error al leer la imagen para el vehículo ${vehiculo.VehiculoID}:`, error);
+            vehiculo.ImagenBase64 = null;
+          }
+
+          return vehiculo;
+        }));
+
+        res.status(200).json(vehiculosConImagenes);
       } else {
-        res.status(404).json({ message: "No hay vehículos" });
+        res.status(404).json({ message: "No hay vehículos nuevos" });
       }
     } catch (error) {
-      console.error("Error al obtener vehículos:", error);
+      console.error("Error al obtener vehículos nuevos:", error);
       res.status(500).send("Error interno del servidor");
     }
   },
-
+  
   getVehiculosUsados: async (req, res) => {
     try {
-      const result = await sequelize.query("SELECT * FROM Vehiculos v WHERE Condicion = 'Usado' and Estado ='Activo'", {
+      // Modificar la consulta para obtener la URL de la imagen
+      const result = await sequelize.query("SELECT VehiculoID, Modelo, Marca, Anio, PrecioGerente, PrecioWeb, PrecioLista, ImagenUrl, MarcaID, Condicion, Estado FROM Vehiculos v WHERE Condicion = 'Usado' AND Estado ='Activo'", {
         type: sequelize.QueryTypes.SELECT,
       });
-
+  
       if (result.length > 0) {
-        res.status(200).json(result);
+        const vehiculosConImagenes = await Promise.all(result.map(async (vehiculo) => {
+          try {
+            // Construir la ruta completa de la imagen
+            const imagenPath = path.join(__dirname, '../../images', `${vehiculo.VehiculoID}.jpg`);
+            
+            // Verificar si la imagen existe y leerla en base64
+            try {
+              await fs.access(imagenPath);
+              const imagenBase64 = await fs.readFile(imagenPath, { encoding: 'base64' });
+              vehiculo.ImagenBase64 = `data:image/jpeg;base64,${imagenBase64}`;
+            } catch (error) {
+              vehiculo.ImagenBase64 = null; // Si la imagen no existe, asignar null
+            }
+          } catch (error) {
+            console.error(`Error al leer la imagen para el vehículo ${vehiculo.VehiculoID}:`, error);
+            vehiculo.ImagenBase64 = null;
+          }
+
+          return vehiculo;
+        }));
+
+        res.status(200).json(vehiculosConImagenes);
       } else {
-        res.status(404).json({ message: "No hay vehículos" });
+        res.status(404).json({ message: "No hay vehículos usados" });
       }
     } catch (error) {
-      console.error("Error al obtener vehículos:", error);
+      console.error("Error al obtener vehículos nuevos:", error);
       res.status(500).send("Error interno del servidor");
     }
   },
+  
   // Backend - Cambios en el endpoint getVehiculos
 getPaginar: async (req, res) => {
   try {
@@ -269,121 +328,131 @@ getPaginar: async (req, res) => {
       res.status(500).send("Error interno del servidor");
     }
   },
-
-  getVehiculoPorID: async (req, res) => {
-    const { id } = req.params;
-  
-    try {
-      // Consultar el vehículo por ID desde la base de datos
-      const result = await sequelize.query(
-        "SELECT * FROM Vehiculos WHERE VehiculoID = :id",
-        { replacements: { id }, type: sequelize.QueryTypes.SELECT }
-      );
-  
-      // Si no se encuentra el vehículo, retornar un error 404
-      if (result.length === 0) {
-        return res.status(404).send("Vehículo no encontrado");
-      }
-  
-      // Obtener la imagen desde la base de datos
-      const imagenBuffer = result[0].Imagen; // Asume que es un Buffer almacenado
-  
-      try {
-        // Convertir el Buffer a base64
-        const base64Image = Buffer.from(imagenBuffer).toString('base64');
-        const imageUrl = `data:image/jpeg;base64,${base64Image}`;
-  
-        // Agregar la URL de la imagen al objeto del vehículo
-        result[0].ImagenURL = imageUrl;
-  
-        // Enviar el vehículo con la URL de la imagen al cliente
-        res.json(result[0]);
-      } catch (error) {
-        console.error("Error al procesar la imagen:", error);
-        res.status(500).send("Error interno del servidor al procesar la imagen");
-      }
-    } catch (error) {
-      console.error("Error al obtener el vehículo getVehiculoPorID:", error);
-      res.status(500).send("Error interno del servidor");
-    }
-  },
-  
-
-  post: async (req, res) => {
-    try {
-      const { body, file } = req;
-      const imagenBuffer = file.buffer;  // Obtener el buffer del archivo
-
-      // Guardar el buffer de la imagen en la base de datos junto con otros datos del vehículo
-      const result = await sequelize.query(
-        `INSERT INTO Vehiculos (Modelo, Marca, Anio, PrecioGerente, PrecioWeb, PrecioLista, Imagen, MarcaID, Condicion, Estado)
-        VALUES (:Modelo, :Marca, :Anio, :PrecioGerente, :PrecioWeb, :PrecioLista, :Imagen, :MarcaID, :Condicion, :Estado)`,
-        {
-          replacements: {
-            Modelo: body.Modelo,
-            Marca: body.Marca,
-            Anio: body.Anio,
-            PrecioGerente: body.PrecioGerente,
-            PrecioWeb: body.PrecioWeb,
-            PrecioLista: body.PrecioLista,
-            Imagen: imagenBuffer,
-            MarcaID: body.MarcaID,
-            Condicion: body.Condicion,
-            Estado: body.Estado,
-          },
-        }
-      );
-
-      res.status(201).json({ message: "Vehículo creado con éxito", id: result[0] });
-    } catch (error) {
-      console.error("Error al crear vehículo:", error);
-      res.status(500).send("Error interno del servidor");
-    }
-  },
-
-  put: async (req, res) => {
-    try {
+//obtener vehiculo por ID
+    // Obtener vehículo específico por ID
+    getVehiculoPorID: async (req, res) => {
       const { id } = req.params;
-      const { body, file } = req;
-      const imagenBuffer = file ? file.buffer : null;
-
-      // Actualizar los datos del vehículo en la base de datos
-      const result = await sequelize.query(
-        `UPDATE Vehiculos SET 
-          Modelo = :Modelo, 
-          Marca = :Marca, 
-          Anio = :Anio, 
-          PrecioGerente = :PrecioGerente, 
-          PrecioWeb = :PrecioWeb, 
-          PrecioLista = :PrecioLista, 
-          Imagen = IFNULL(:Imagen, Imagen), 
-          MarcaID = :MarcaID ,
-          Condicion = :Condicion,
-          Estado = :Estado
-        WHERE VehiculoID = :id`,
-        {
-          replacements: {
-            Modelo: body.Modelo,
-            Marca: body.Marca,
-            Anio: body.Anio,
-            PrecioGerente: body.PrecioGerente,
-            PrecioWeb: body.PrecioWeb,
-            PrecioLista: body.PrecioLista,
-            Imagen: imagenBuffer,
-            MarcaID: body.MarcaID,
-            id: id,
-            Condicion: body.Condicion,
-            Estado: body.Estado
-          },
+    
+      try {
+        const result = await sequelize.query(
+          "SELECT VehiculoID, Modelo, Marca, Anio, PrecioGerente, PrecioWeb, PrecioLista, ImagenUrl, MarcaID, Condicion, Estado FROM Vehiculos WHERE VehiculoID = :id AND Estado = 'Activo'",
+          { replacements: { id }, type: sequelize.QueryTypes.SELECT }
+        );
+  
+        if (result.length === 0) {
+          return res.status(404).send("Vehículo no encontrado");
         }
-      );
+  
+        const vehiculo = result[0];
+        const imagenPath = path.join(__dirname, '../../images', `${vehiculo.VehiculoID}.jpg`);
+  
+        try {
+          await fs.access(imagenPath);
+          const imagenBase64 = await fs.readFile(imagenPath, { encoding: 'base64' });
+          vehiculo.ImagenBase64 = `data:image/jpeg;base64,${imagenBase64}`;
+        } catch {
+          vehiculo.ImagenBase64 = null;
+        }
+  
+        res.json(vehiculo);
+      } catch (error) {
+        console.error("Error al obtener el vehículo por ID:", error);
+        res.status(500).send("Error interno del servidor");
+      }
+    },
+  
 
-      res.json({ message: "Vehículo actualizado con éxito" });
-    } catch (error) {
-      console.error("Error al actualizar vehículo:", error);
-      res.status(500).send("Error interno del servidor");
-    }
-  },
+    post: async (req, res) => {
+      try {
+        const { body } = req;
+        let imagenUrl = null;
+  
+        // Si `ImagenBase64` está presente, convierte a imagen y guarda en el sistema de archivos
+        if (body.ImagenBase64) {
+          const imagenBuffer = Buffer.from(body.ImagenBase64.replace(/^data:image\/\w+;base64,/, ""), 'base64');
+          const imagenPath = path.join(__dirname, '../../images', `${Date.now()}.jpg`); // Ruta única basada en el timestamp
+  
+          await fs.writeFile(imagenPath, imagenBuffer);
+          imagenUrl = `images/${path.basename(imagenPath)}`; // Solo guarda el nombre relativo
+        }
+  
+        const result = await sequelize.query(
+          `INSERT INTO Vehiculos (Modelo, Marca, Anio, PrecioGerente, PrecioWeb, PrecioLista, ImagenUrl, MarcaID, Condicion, Estado)
+          VALUES (:Modelo, :Marca, :Anio, :PrecioGerente, :PrecioWeb, :PrecioLista, :ImagenUrl, :MarcaID, :Condicion, :Estado)`,
+          {
+            replacements: {
+              Modelo: body.Modelo,
+              Marca: body.Marca,
+              Anio: body.Anio,
+              PrecioGerente: body.PrecioGerente,
+              PrecioWeb: body.PrecioWeb,
+              PrecioLista: body.PrecioLista,
+              ImagenUrl: imagenUrl,
+              MarcaID: body.MarcaID,
+              Condicion: body.Condicion,
+              Estado: body.Estado,
+            },
+          }
+        );
+  
+        res.status(201).json({ message: "Vehículo creado con éxito", id: result[0] });
+      } catch (error) {
+        console.error("Error al crear vehículo:", error);
+        res.status(500).send("Error interno del servidor");
+      }
+    },
+
+    put: async (req, res) => {
+      try {
+        const { id } = req.params;
+        const { body } = req;
+        let imagenUrl = null;
+  
+        // Convertir Base64 a imagen si se proporciona
+        if (body.ImagenBase64) {
+          const imagenBuffer = Buffer.from(body.ImagenBase64.replace(/^data:image\/\w+;base64,/, ""), 'base64');
+          const imagenPath = path.join(__dirname, '../../images', `${id}.jpg`);
+  
+          await fs.writeFile(imagenPath, imagenBuffer);
+          imagenUrl = `images/${path.basename(imagenPath)}`;
+        }
+  
+        const result = await sequelize.query(
+          `UPDATE Vehiculos SET 
+            Modelo = :Modelo, 
+            Marca = :Marca, 
+            Anio = :Anio, 
+            PrecioGerente = :PrecioGerente, 
+            PrecioWeb = :PrecioWeb, 
+            PrecioLista = :PrecioLista, 
+            ImagenUrl = IFNULL(:ImagenUrl, ImagenUrl), 
+            MarcaID = :MarcaID,
+            Condicion = :Condicion,
+            Estado = :Estado
+          WHERE VehiculoID = :id`,
+          {
+            replacements: {
+              Modelo: body.Modelo,
+              Marca: body.Marca,
+              Anio: body.Anio,
+              PrecioGerente: body.PrecioGerente,
+              PrecioWeb: body.PrecioWeb,
+              PrecioLista: body.PrecioLista,
+              ImagenUrl: imagenUrl,
+              MarcaID: body.MarcaID,
+              id: id,
+              Condicion: body.Condicion,
+              Estado: body.Estado
+            },
+          }
+        );
+  
+        res.json({ message: "Vehículo actualizado con éxito" });
+      } catch (error) {
+        console.error("Error al actualizar vehículo:", error);
+        res.status(500).send("Error interno del servidor");
+      }
+    },
 
   delete: async (req, res) => {
     try {

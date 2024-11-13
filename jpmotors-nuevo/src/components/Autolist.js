@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import AutoItem from './AutoItem';
 import AutoModal from './AutoModal';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -6,8 +6,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 const AutoList = () => {
   const [autos, setAutos] = useState([]);
   const [selectedAuto, setSelectedAuto] = useState(null);
-  const [filterLinea, setFilterLinea] = useState('');
-  const [filterModelo, setFilterModelo] = useState([]);
+  const [filterMarca, setFilterMarca] = useState('');
+  const [filterModelo, setFilterModelo] = useState('');
   const [marcas, setMarcas] = useState([]);
   const [modelos, setModelos] = useState([]);
 
@@ -43,22 +43,36 @@ const AutoList = () => {
   }, []);
 
   const updateMarcasYModelos = (data) => {
-    setMarcas([...new Set(data.map(auto => auto.Marca))]);
-    setModelos([...new Set(data.map(auto => auto.Modelo))]);
+    const marcasUnicas = [...new Set(data.map(auto => auto.Marca))];
+    setMarcas(marcasUnicas);
+
+    // Filtrar modelos para la marca seleccionada (si existe una)
+    if (filterMarca) {
+      const modelosFiltrados = [...new Set(data.filter(auto => auto.Marca === filterMarca).map(auto => auto.Modelo))];
+      setModelos(modelosFiltrados);
+    } else {
+      const modelosUnicos = [...new Set(data.map(auto => auto.Modelo))];
+      setModelos(modelosUnicos);
+    }
   };
 
-  // Filtrar modelos según la marca seleccionada
   useEffect(() => {
-    if (filterLinea) {
-      const filteredModelos = autos
-        .filter(auto => auto.Marca === filterLinea)
-        .map(auto => auto.Modelo);
-      setModelos([...new Set(filteredModelos)]);
+    // Cada vez que cambia la marca seleccionada, actualizamos los modelos
+    if (filterMarca) {
+      const modelosFiltrados = [...new Set(autos.filter(auto => auto.Marca === filterMarca).map(auto => auto.Modelo))];
+      setModelos(modelosFiltrados);
+      setFilterModelo(''); // Reiniciar modelo cuando cambia la marca
     } else {
-      setModelos([...new Set(autos.map(auto => auto.Modelo))]);
+      updateMarcasYModelos(autos);
     }
-    setFilterModelo(''); // Resetear modelo seleccionado al cambiar la marca
-  }, [filterLinea, autos]);
+  }, [filterMarca, autos]);
+
+  const filteredAutos = autos.filter(auto => {
+    return (
+      (filterMarca === '' || auto.Marca === filterMarca) &&
+      (filterModelo === '' || auto.Modelo === filterModelo)
+    );
+  });
 
   const handleItemClick = (auto) => {
     if (auto && auto.VehiculoID) {
@@ -66,56 +80,61 @@ const AutoList = () => {
     }
   };
 
-  const filteredAutos = autos.filter(auto => {
-    return (
-      (filterLinea === '' || auto.Marca === filterLinea) &&
-      (filterModelo === '' || auto.Modelo === filterModelo)
-    );
-  });
-
   return (
     <div className="container-xl">
-      <h1 className="my-4 text-center">Lista de Vehiculos</h1>
+      <h1 className="my-4 text-center">Lista de Vehículos</h1>
       <div className="mb-4 d-flex justify-content-center">
         <div className="form-group mr-2">
-          <label htmlFor="filterLinea">Marca</label>
+          <label htmlFor="filterMarca">Marca</label>
           <select
-            id="filterLinea"
-            value={filterLinea}
-            onChange={(e) => setFilterLinea(e.target.value)}
+            id="filterMarca"
+            value={filterMarca}
+            onChange={(e) => setFilterMarca(e.target.value)}
             className="form-control"
           >
             <option value="">Todas las Marcas</option>
-            {marcas.map(marca => (
-              <option key={marca} value={marca}>{marca}</option>
-            ))}
+            {marcas.length > 0 ? (
+              marcas.map(marca => (
+                <option key={marca} value={marca}>{marca}</option>
+              ))
+            ) : (
+              <option>Cargando marcas...</option>
+            )}
           </select>
         </div>
         <div className="form-group">
-          <label htmlFor="filterModelo">Linea</label>
+          <label htmlFor="filterModelo">Modelo</label>
           <select
             id="filterModelo"
             value={filterModelo}
             onChange={(e) => setFilterModelo(e.target.value)}
             className="form-control"
-            disabled={!filterLinea}
+            disabled={!filterMarca}
           >
-            <option value="">Todas las Lineas</option>
-            {modelos.map(modelo => (
-              <option key={modelo} value={modelo}>{modelo}</option>
-            ))}
+            <option value="">Todos los Modelos</option>
+            {modelos.length > 0 ? (
+              modelos.map(modelo => (
+                <option key={modelo} value={modelo}>{modelo}</option>
+              ))
+            ) : (
+              <option>Cargando modelos...</option>
+            )}
           </select>
         </div>
       </div>
       <br />
       <div className="row">
-        {filteredAutos.map(auto => (
-          <AutoItem
-            key={auto.VehiculoID}
-            auto={auto}
-            onClick={() => handleItemClick(auto)}
-          />
-        ))}
+        {filteredAutos.length > 0 ? (
+          filteredAutos.map(auto => (
+            <AutoItem
+              key={auto.VehiculoID}
+              auto={auto}
+              onClick={() => handleItemClick(auto)}
+            />
+          ))
+        ) : (
+          <p>No se encontraron vehículos.</p>
+        )}
       </div>
       {selectedAuto && (
         <AutoModal

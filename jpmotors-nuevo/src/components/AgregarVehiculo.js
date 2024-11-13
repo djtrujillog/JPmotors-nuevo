@@ -47,8 +47,16 @@ const AgregarVehiculo = () => {
   }, []);
 
   const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSelectedFile(reader.result); // El resultado será una cadena en Base64
+      };
+      reader.readAsDataURL(file);
+    }
   };
+  
 
   const openEditModal = (vehiculo) => {
     setEditingVehiculo(vehiculo);
@@ -147,19 +155,18 @@ const AgregarVehiculo = () => {
   };
 
   const onSubmitAdd = async (data) => {
-    const formData = new FormData();
-    formData.append("file", selectedFile);
-    Object.keys(data).forEach((key) => {
-      formData.append(key, data[key]);
-    });
-
     try {
+      const vehiculoData = {
+        ...data,
+        imagen: selectedFile, // Imagen en formato Base64
+      };
+  
       const response = await axios.post(
         "http://localhost:4000/vehiculos",
-        formData,
+        vehiculoData,
         {
           headers: {
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
           },
         }
       );
@@ -171,19 +178,18 @@ const AgregarVehiculo = () => {
   };
 
   const onSubmitEdit = async (data) => {
-    const formData = new FormData();
-    formData.append("file", selectedFile);
-    Object.keys(data).forEach((key) => {
-      formData.append(key, data[key]);
-    });
-
     try {
+      const vehiculoData = {
+        ...data,
+        imagen: selectedFile, // Imagen en formato Base64
+      };
+  
       const response = await axios.put(
         `http://localhost:4000/vehiculos/${editingVehiculo.VehiculoID}`,
-        formData,
+        vehiculoData,
         {
           headers: {
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
           },
         }
       );
@@ -196,6 +202,7 @@ const AgregarVehiculo = () => {
       console.error("Error al editar vehículo:", error);
     }
   };
+  
 
   const deleteVehiculo = async (VehiculoID) => {
     try {

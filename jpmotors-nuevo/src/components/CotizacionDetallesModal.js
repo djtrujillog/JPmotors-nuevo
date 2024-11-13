@@ -1,12 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Button, Table, Form } from "react-bootstrap";
 import axios from "axios";
-import jsPDF from "jspdf";  // Importar jsPDF
-import "jspdf-autotable";   // Importar autotable para tablas en el PDF
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+
+const tipoSeguimientoMap = {
+  1: "Correo Electrónico",
+  2: "Llamada Telefónica",
+  3: "Visita del cliente a la Agencia",
+  4: "Whatsapp",
+  5: "Facebook",
+};
 
 const CotizacionDetallesModal = ({ cotizacion, show, onHide }) => {
   const [seguimientos, setSeguimientos] = useState([]);
-  const [imageBlob, setImageBlob] = useState(null); 
+  const [imageBase64, setImageBase64] = useState(null);
   const [formSeguimiento, setFormSeguimiento] = useState({
     CotizacionID: cotizacion?.CotizacionID || "",
     Comentario: "",
@@ -19,7 +27,7 @@ const CotizacionDetallesModal = ({ cotizacion, show, onHide }) => {
   useEffect(() => {
     if (show) {
       setSeguimientos([]);
-      setImageBlob(null); 
+      setImageBase64(null);
       setFormSeguimiento({
         CotizacionID: cotizacion?.CotizacionID || "",
         Comentario: "",
@@ -45,10 +53,13 @@ const CotizacionDetallesModal = ({ cotizacion, show, onHide }) => {
           try {
             const imageRes = await fetch(`http://localhost:4000/vehiculos/${cotizacion.VehiculoID}`);
             const imageData = await imageRes.json();
-            const blob = new Blob([new Uint8Array(imageData.Imagen.data)], {
-              type: "image/jpeg",
-            });
-            setImageBlob(blob);
+            
+            // Asegurar que la imagen tenga el prefijo adecuado
+            const base64Image = imageData.ImagenBase64.startsWith("data:image")
+              ? imageData.ImagenBase64
+              : `data:image/jpeg;base64,${imageData.ImagenBase64}`;
+
+            setImageBase64(base64Image);
           } catch (error) {
             console.error("Error al obtener la imagen del vehículo:", error);
           }
@@ -124,31 +135,23 @@ const CotizacionDetallesModal = ({ cotizacion, show, onHide }) => {
     }
   };
 
-  const imageUrl = imageBlob ? URL.createObjectURL(imageBlob) : null;
-
-  // Función para generar el PDF
   const generatePDF = () => {
     const doc = new jsPDF();
-
-    // Título
     doc.text("Detalles de la Cotización", 10, 10);
-
-    // Información del cliente y cotización
     doc.text(`Cliente: ${cotizacion?.NombreCliente}`, 10, 20);
     doc.text(`Vehículo: ${cotizacion?.VehiculoDescripcion}`, 10, 30);
     doc.text(`Fecha de Cotización: ${cotizacion?.FechaCotizacion}`, 10, 40);
     doc.text(`Estado: ${cotizacion?.EstadoCotizacion}`, 10, 50);
     doc.text(`Precio: ${cotizacion?.PrecioLista}`, 10, 60);
 
-    // Tabla de Seguimientos
     if (seguimientos.length > 0) {
-      const tableColumn = ["#", "Descripción", "Comentario", "Fecha Seguimiento"];
+      const tableColumn = ["#", "Tipo", "Comentario", "Fecha"];
       const tableRows = [];
 
       seguimientos.forEach((seguimiento, index) => {
         const seguimientoData = [
           index + 1,
-          seguimiento.Descripcion,
+          tipoSeguimientoMap[seguimiento.SeguimientoTipoID] || "N/A",
           seguimiento.Comentario,
           seguimiento.FechaSeguimiento,
         ];
@@ -157,8 +160,6 @@ const CotizacionDetallesModal = ({ cotizacion, show, onHide }) => {
 
       doc.autoTable(tableColumn, tableRows, { startY: 70 });
     }
-
-    // Descargar el archivo PDF
     doc.save(`cotizacion_${cotizacion?.CotizacionID}.pdf`);
   };
 
@@ -174,24 +175,25 @@ const CotizacionDetallesModal = ({ cotizacion, show, onHide }) => {
         <h5>Estado: {cotizacion?.EstadoCotizacion}</h5>
         <h5>Precio: {cotizacion?.PrecioLista}</h5>
        
-        {imageUrl && (
+        {imageBase64 && (
           <div className="text-center mb-4">
             <img
-              src={imageUrl}
+              src={imageBase64}
               alt={`Imagen de ${cotizacion?.VehiculoDescripcion}`}
-              style={{ maxWidth: "100%", height: "auto" }}
+              style={{ maxWidth: "50%", height: "auto" }}
             />
           </div>
         )}
+
         <h5>Seguimientos:</h5>
         {seguimientos.length > 0 ? (
           <Table striped bordered hover>
             <thead>
               <tr>
                 <th>#</th>
-                <th>Descripción</th>
+                <th>Tipo</th>
                 <th>Comentario</th>
-                <th>Fecha Seguimiento</th>
+                <th>Fecha</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -199,7 +201,7 @@ const CotizacionDetallesModal = ({ cotizacion, show, onHide }) => {
               {seguimientos.map((seguimiento, index) => (
                 <tr key={seguimiento.SeguimientoID}>
                   <td>{index + 1}</td>
-                  <td>{seguimiento.Descripcion}</td>
+                  <td>{tipoSeguimientoMap[seguimiento.SeguimientoTipoID] || "N/A"}</td>
                   <td>{seguimiento.Comentario}</td>
                   <td>{seguimiento.FechaSeguimiento}</td>
                   <td>
@@ -228,7 +230,6 @@ const CotizacionDetallesModal = ({ cotizacion, show, onHide }) => {
         )}
 
         <Form className="mt-4">
-          {/* Formulario para añadir/editar seguimiento */}
           <Form.Group controlId="formSeguimientoTipoID">
             <Form.Label>Tipo de Seguimiento</Form.Label>
             <Form.Control
@@ -237,11 +238,9 @@ const CotizacionDetallesModal = ({ cotizacion, show, onHide }) => {
               value={formSeguimiento.SeguimientoTipoID}
               onChange={handleFormChange}
             >
-              <option value={1}>Correo Electrónico</option>
-              <option value={2}>Llamada Telefónica</option>
-              <option value={3}>Visita del cliente a la Agencia</option>
-              <option value={4}>Whatsapp</option>
-              <option value={5}>Facebook</option>
+              {Object.entries(tipoSeguimientoMap).map(([id, label]) => (
+                <option key={id} value={id}>{label}</option>
+              ))}
             </Form.Control>
           </Form.Group>
           <Form.Group controlId="formSeguimientoComentario">
@@ -279,7 +278,7 @@ const CotizacionDetallesModal = ({ cotizacion, show, onHide }) => {
         </Button>
         <Button variant="primary" onClick={generatePDF}>
           Descargar PDF
-        </Button> {/* Botón para descargar el PDF */}
+        </Button>
       </Modal.Footer>
     </Modal>
   );

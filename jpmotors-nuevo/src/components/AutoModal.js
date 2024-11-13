@@ -5,8 +5,8 @@ import PdfDocument from "./pdfDocument";
 import "../css/AutoModal.css"; // Import custom CSS
 
 const AutoModal = ({ auto, onClose }) => {
-  const [imageBlob, setImageBlob] = useState(null);
-  const [logoBlob, setLogoBlob] = useState(null);
+  const [imageBase64, setImageBase64] = useState(null);
+  const [logoBlob, setLogoBlob] = useState(null); // Dejamos logoBlob como estaba
   const [motorDetails, setMotorDetails] = useState(null);
   const [seguridadDetails, setSeguridadDetails] = useState(null);
   const [interiorDetails, setInteriorDetails] = useState(null);
@@ -14,7 +14,6 @@ const AutoModal = ({ auto, onClose }) => {
   const [dimensionesDetails, setDimensionesDetails] = useState(null);
   const [garantiaDetails, setGarantiaDetails] = useState(null);
 
-  // Estado para manejar el modal de cotización
   const [showCotizacionModal, setShowCotizacionModal] = useState(false);
   const [cotizacionData, setCotizacionData] = useState({
     nombre: '',
@@ -24,7 +23,6 @@ const AutoModal = ({ auto, onClose }) => {
     email: '',
   });
 
-  // Manejo de estado para el envío de cotización
   const handleCotizacionChange = (e) => {
     const { name, value } = e.target;
     setCotizacionData({ ...cotizacionData, [name]: value });
@@ -98,13 +96,10 @@ const AutoModal = ({ auto, onClose }) => {
           garantiaRes.json()
         ]);
 
-        // Convertir la imagen del vehículo a Blob
-        const imageBlobData = new Blob([new Uint8Array(imageData.Imagen.data)], {
-          type: "image/jpeg",
-        });
-        setImageBlob(imageBlobData);
+        // Asignar directamente la imagen en formato base64 desde la respuesta
+        setImageBase64(imageData.ImagenBase64);
 
-        // Convertir el logo de la marca a Blob si está presente
+        // Convertir el logo a Blob si está presente
         if (marcaData[0]?.Logo?.data) {
           const logoBlobData = new Blob([new Uint8Array(marcaData[0].Logo.data)], {
             type: "image/jpeg",
@@ -126,9 +121,8 @@ const AutoModal = ({ auto, onClose }) => {
     fetchData();
   }, [auto]);
 
-  // Verificamos si faltan datos importantes para renderizar el modal
   const noDataAvailable = (
-    !imageBlob &&
+    !imageBase64 &&
     !motorDetails &&
     !seguridadDetails &&
     !interiorDetails &&
@@ -137,12 +131,10 @@ const AutoModal = ({ auto, onClose }) => {
     !garantiaDetails
   );
 
-  // Si no hay ningún dato relevante, no mostramos el modal
   if (noDataAvailable) {
     return null;
   }
 
-  const imageUrl = URL.createObjectURL(imageBlob);
   const logoUrl = logoBlob ? URL.createObjectURL(logoBlob) : null;
 
   return (
@@ -166,12 +158,14 @@ const AutoModal = ({ auto, onClose }) => {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <img
-            src={imageUrl}
-            className="img-fluid d-block mx-auto"
-            alt={`${auto.Marca} ${auto.Modelo}`}
-            style={{ maxWidth: "85%", height: "auto" }}
-          />
+          {imageBase64 && (
+            <img
+              src={imageBase64}
+              className="img-fluid d-block mx-auto"
+              alt={`${auto.Marca} ${auto.Modelo}`}
+              style={{ maxWidth: "85%", height: "auto" }}
+            />
+          )}
           <div className="container">
             <div className="row">
               <div className="col-md-6">
@@ -253,8 +247,8 @@ const AutoModal = ({ auto, onClose }) => {
               <PdfDocument
                 marca={auto.Marca}
                 modelo={auto.Modelo}
-                imageUrl={imageUrl}
-                logoUrl={logoUrl} // Pasar el logo para el PDF
+                imageUrl={imageBase64}
+                logoUrl={logoUrl}
                 motorDetails={motorDetails}
                 seguridadDetails={seguridadDetails}
                 interiorDetails={interiorDetails}

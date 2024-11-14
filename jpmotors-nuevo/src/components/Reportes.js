@@ -24,8 +24,8 @@ function Reportes() {
     const fetchData = async () => {
       try {
         const [empleadosRes, vehiculosRes] = await Promise.all([
-          axios.get('http://localhost:4000/empleados'),
-          axios.get('http://localhost:4000/vehiculos/pornombre')
+          axios.get('https://jpmotorsgt.azurewebsites.net/empleados'),
+          axios.get('https://jpmotorsgt.azurewebsites.net/vehiculos/pornombre')
         ]);
         setEmpleados(empleadosRes.data);
         setVehiculos(vehiculosRes.data);
@@ -43,7 +43,7 @@ const [clientes, setClientes] = useState([]);
 useEffect(() => {
   const fetchClientes = async () => {
     try {
-      const response = await axios.get('http://localhost:4000/clientes');
+      const response = await axios.get('https://jpmotorsgt.azurewebsites.net/clientes');
       setClientes(response.data);
     } catch (error) {
       setError('Error al cargar los clientes. Intente nuevamente.');
@@ -81,7 +81,7 @@ useEffect(() => {
         setError('Debe ingresar al menos un parámetro.');
         return;
       }
-      const response = await axios.post('http://localhost:4000/cotizaciones/byParameters', filtros);
+      const response = await axios.post('https://jpmotorsgt.azurewebsites.net/cotizaciones/byParameters', filtros);
       if (response.data.length === 0) {
         setError('No se encontraron registros para los parámetros enviados.');
       } else {

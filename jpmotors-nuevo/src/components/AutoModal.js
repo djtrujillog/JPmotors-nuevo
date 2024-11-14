@@ -32,7 +32,7 @@ const AutoModal = ({ auto, onClose }) => {
 
   const handleCotizacionSubmit = async (e) => {
     e.preventDefault();
-    const response = await fetch('http://localhost:4000/mail/cotizacion', {
+    const response = await fetch('https://jpmotorsgt.azurewebsites.net/mail/cotizacion', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -68,14 +68,14 @@ const AutoModal = ({ auto, onClose }) => {
           dimensionesRes,
           garantiaRes
         ] = await Promise.all([
-          fetch(`http://localhost:4000/vehiculos/${auto.VehiculoID}`),
-          fetch(`http://localhost:4000/marcas/${auto.MarcaID}`),
-          fetch(`http://localhost:4000/vehiculos/motor/${auto.VehiculoID}`),
-          fetch(`http://localhost:4000/vehiculos/seguridad/${auto.VehiculoID}`),
-          fetch(`http://localhost:4000/vehiculos/interior/${auto.VehiculoID}`),
-          fetch(`http://localhost:4000/vehiculos/exterior/${auto.VehiculoID}`),
-          fetch(`http://localhost:4000/vehiculos/dimensiones/${auto.VehiculoID}`),
-          fetch(`http://localhost:4000/vehiculos/detalleGarantia/${auto.VehiculoID}`)
+          fetch(`https://jpmotorsgt.azurewebsites.net/vehiculos/${auto.VehiculoID}`),
+          fetch(`https://jpmotorsgt.azurewebsites.net/marcas/${auto.MarcaID}`),
+          fetch(`https://jpmotorsgt.azurewebsites.net/vehiculos/motor/${auto.VehiculoID}`),
+          fetch(`https://jpmotorsgt.azurewebsites.net/vehiculos/seguridad/${auto.VehiculoID}`),
+          fetch(`https://jpmotorsgt.azurewebsites.net/vehiculos/interior/${auto.VehiculoID}`),
+          fetch(`https://jpmotorsgt.azurewebsites.net/vehiculos/exterior/${auto.VehiculoID}`),
+          fetch(`https://jpmotorsgt.azurewebsites.net/vehiculos/dimensiones/${auto.VehiculoID}`),
+          fetch(`https://jpmotorsgt.azurewebsites.net/vehiculos/detalleGarantia/${auto.VehiculoID}`)
         ]);
 
         const [

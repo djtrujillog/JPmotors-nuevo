@@ -272,20 +272,23 @@ const PdfDocument = ({
       <View style={styles.section}>
         <Text style={styles.priceText}>Precios</Text>
         {/* <Text style={styles.priceText}>Precio Web: {precioWeb}</Text> */}
-        <Text style={styles.priceText}>Precio lista: {precioGerente}</Text>
+        <Text style={styles.priceText}>
+        <Text style={{ color: 'black' }}>Precio lista: Q {precioGerente}</Text>
+        </Text>
+
         <View style={styles.section}>
   <Text style={styles.priceText}>
-    <Text style={{ color: 'black' }}>Precio promoción: </Text>
+    <Text style={{ color: 'red' }}>Precio promoción: Q</Text>
     <Text style={{ color: 'red' }}>{precioCotizacion}</Text>
   </Text>
   <Text style={styles.priceText}>
-    <Text style={{ color: 'black' }}>Placas: </Text>
-    <Text style={{ color: 'red' }}>{precioPlacas}</Text>
+    <Text style={{ color: 'black' }}>Placas: Q </Text>
+    <Text style={{ color: 'black' }}>{precioPlacas}</Text>
   </Text>
 </View>
 <Text style={styles.priceText}>
 
-        <Text style={{ color: 'black' }}>Color Disponible: {coloresDisponibles}</Text>
+        <Text style={{ color: 'black' }}>Color Disponible: Q{coloresDisponibles}</Text>
         <Text style={{ color: 'black' }}>*Precio incluye IVA</Text>
         </Text>
 

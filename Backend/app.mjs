@@ -13,6 +13,7 @@ import clienteRouter from './routes/cliente.routes.mjs';
 import seguimientoRouter from './routes/seguimiento.routes.mjs';
 import mailRouter from './routes/mail.routes.mjs';
 import migracion from './routes/migracion.routes.mjs';
+import image from './routes/image.routes.mjs';
 
 const app = express();
 
@@ -42,6 +43,7 @@ app.use('/clientes', clienteRouter);
 app.use('/seguimientos', seguimientoRouter);
 app.use('/mail', mailRouter);
 app.use('/migracion', migracion);
+app.use('/image', image);
 
 sequelize.authenticate()
   .then(() => {

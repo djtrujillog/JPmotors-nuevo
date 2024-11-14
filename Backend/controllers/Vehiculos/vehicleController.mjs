@@ -365,16 +365,7 @@ getPaginar: async (req, res) => {
     post: async (req, res) => {
       try {
         const { body } = req;
-        let imagenUrl = null;
-  
-        // Si `ImagenBase64` está presente, convierte a imagen y guarda en el sistema de archivos
-        if (body.ImagenBase64) {
-          const imagenBuffer = Buffer.from(body.ImagenBase64.replace(/^data:image\/\w+;base64,/, ""), 'base64');
-          const imagenPath = path.join(__dirname, '../../images', `${Date.now()}.jpg`); // Ruta única basada en el timestamp
-  
-          await fs.writeFile(imagenPath, imagenBuffer);
-          imagenUrl = `images/${path.basename(imagenPath)}`; // Solo guarda el nombre relativo
-        }
+        const imagenUrl = `http://localhost:4000/images/${Date.now()}.jpg`; // URL ficticia para el ejemplo
   
         const result = await sequelize.query(
           `INSERT INTO Vehiculos (Modelo, Marca, Anio, PrecioGerente, PrecioWeb, PrecioLista, ImagenUrl, MarcaID, Condicion, Estado)
@@ -395,10 +386,10 @@ getPaginar: async (req, res) => {
           }
         );
   
-        res.status(201).json({ message: "Vehículo creado con éxito", id: result[0] });
+        res.status(201).json({ message: 'Vehículo creado con éxito', id: result[0], imagenUrl });
       } catch (error) {
-        console.error("Error al crear vehículo:", error);
-        res.status(500).send("Error interno del servidor");
+        console.error('Error al crear vehículo:', error);
+        res.status(500).send('Error interno del servidor');
       }
     },
 

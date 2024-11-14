@@ -205,16 +205,16 @@ const AgregarVehiculo = () => {
   
 
   const deleteVehiculo = async (VehiculoID) => {
-    try {
-      await axios.delete(
-        `http://localhost:4000/vehiculos/${VehiculoID}`
-      );
-      setVehiculos(vehiculos.filter((v) => v.VehiculoID !== VehiculoID));
-    } catch (error) {
-      console.error("Error al eliminar vehículo:", error);
+    if (window.confirm("¿Estás seguro de que deseas eliminar este vehículo?")) {
+      try {
+        await axios.delete(`http://localhost:4000/vehiculos/${VehiculoID}`);
+        setVehiculos(vehiculos.filter((v) => v.VehiculoID !== VehiculoID));
+      } catch (error) {
+        console.error("Error al eliminar vehículo:", error);
+      }
     }
   };
-
+  
   return (
     <Container>
       <h2 className="my-4">Agregar, Editar y Eliminar Vehículos</h2>

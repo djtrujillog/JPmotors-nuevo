@@ -28,6 +28,8 @@ function App() {
   const [roles, setRoles] = useState([]);
   // eslint-disable-next-line no-unused-vars
   const [showLogin, setShowLogin] = useState(false);
+  const [expanded, setExpanded] = useState(false); // Estado para el control del menú
+
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -55,6 +57,10 @@ function App() {
   // eslint-disable-next-line no-unused-vars
   const handleLoginShow = () => setShowLogin(true);
 
+  const handleNavClick = () => {
+    setExpanded(false); // Cierra el menú al hacer clic en una opción
+  };
+
   return (
     <div style={{ marginBottom: "60px" }}>
       <br />
@@ -74,8 +80,8 @@ function App() {
 </a>
 
       <Router>
-        <Navbar expand="lg" variant="light" bg="light">
-          <div className="container-fluid fixed-top bg-light">
+      <Navbar expand="lg" expanded={expanded} onToggle={() => setExpanded(!expanded)}>
+      <div className="container-fluid fixed-top bg-light">
             <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
               <img src={logo} alt="Logo" width="20%" height="20%" className="mr-2" />
             </Navbar.Brand>
@@ -83,27 +89,27 @@ function App() {
             <Navbar.Collapse id="navbarSupportedContent">
               <Nav className="ms-auto mb-2 mb-lg-0">
                 <Nav.Item>
-                  <Nav.Link as={Link} to="/" className="nav-link active">
+                  <Nav.Link as={Link} to="/" className="nav-link active" onClick={handleNavClick}>
                     Inicio
                   </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                  <Nav.Link as={Link} to="/nosotros" className="nav-link">
+                  <Nav.Link as={Link} to="/nosotros" className="nav-link" onClick={handleNavClick}>
                     Nosotros
                   </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                  <Nav.Link as={Link} to="/nuevos" className="nav-link">
+                  <Nav.Link as={Link} to="/nuevos" className="nav-link" onClick={handleNavClick}>
                     Nuevos
                   </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                  <Nav.Link as={Link} to="/usados" className="nav-link">
+                  <Nav.Link as={Link} to="/usados" className="nav-link" onClick={handleNavClick}>
                     Usados
                   </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                  <Nav.Link as={Link} to="/contacto" className="nav-link">
+                  <Nav.Link as={Link} to="/contacto" className="nav-link" onClick={handleNavClick}>
                     Contacto
                   </Nav.Link>
                 </Nav.Item>
@@ -118,31 +124,33 @@ function App() {
                         </Nav.Item>
                         <NavDropdown title="Administrar" id="adminDropdown">
                         {roles.includes('Admin') && (
-                          <NavDropdown.Item as={Link} to="/empleados">Administrar Empleados</NavDropdown.Item>
+                          <NavDropdown.Item as={Link} to="/empleados" onClick={handleNavClick}>Administrar Empleados</NavDropdown.Item>
                         )}
-                          <NavDropdown.Item as={Link} to="/clientes">Administrar Clientes</NavDropdown.Item>
+                          <NavDropdown.Item as={Link} to="/clientes"onClick={handleNavClick}>Administrar Clientes</NavDropdown.Item>
                           {roles.includes('Admin') && (
-                            <NavDropdown.Item as={Link} to="/agvehiculo">Agregar Vehiculo</NavDropdown.Item>
+                            <NavDropdown.Item as={Link} to="/agvehiculo"onClick={handleNavClick}>Agregar Vehiculo</NavDropdown.Item>
                           )} {roles.includes('Admin') && (
-                            <NavDropdown.Item as={Link} to="/reportes">Reportes de Seguimientos</NavDropdown.Item>
+                            <NavDropdown.Item as={Link} to="/reportes"onClick={handleNavClick}>Reportes de Seguimientos</NavDropdown.Item>
                           )} {roles.includes('Admin') && (
-                            <NavDropdown.Item as={Link} to="/marcas">Marcas</NavDropdown.Item>
+                            <NavDropdown.Item as={Link} to="/marcas" onClick={handleNavClick}>Marcas</NavDropdown.Item>
                           )}{(roles.includes('Admin') || roles.includes('User')) && (
-                            <NavDropdown.Item as={Link} to="/misreportes">Mis Reportes de Seguimiento</NavDropdown.Item>
+                            <NavDropdown.Item as={Link} to="/misreportes" onClick={handleNavClick}>Mis Reportes de Seguimiento</NavDropdown.Item>
                           )}
                           
                         </NavDropdown>
                         <NavDropdown title="Seguimientos" id="seguimientosDropdown">
-                          <NavDropdown.Item as={Link} to="/cotizar">Cartera</NavDropdown.Item>
+                          <NavDropdown.Item as={Link} to="/cotizar" onClick={handleNavClick}>Cartera</NavDropdown.Item>
                           {roles.includes('Admin') && (
-                          <NavDropdown.Item as={Link} to="/reasignar">Reasingar</NavDropdown.Item>
+                          <NavDropdown.Item as={Link} to="/reasignar" onClick={handleNavClick}>Reasingar</NavDropdown.Item>
                           )}
                         </NavDropdown>
                        
                       </>
                     )}
                     <Nav.Item>
-                      <Nav.Link onClick={handleLogout} className="nav-link">
+                      {/* <Nav.Link onClick={handleLogout} className="nav-link"> */}
+                      <Nav.Link className="me-auto" onSelect={() => setExpanded(false)}>
+
                         Logout
                       </Nav.Link>
                     </Nav.Item>

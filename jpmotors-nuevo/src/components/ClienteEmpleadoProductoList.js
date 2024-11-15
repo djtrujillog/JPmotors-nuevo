@@ -229,11 +229,12 @@ const handleGeneratePdf = async (cotizacion) => {
     const empleadoResponse = await axios.get(`https://jpmotorsgt.azurewebsites.net/empleados/${empleado.id}`);
     const { Telefono: telefonoEmpleado } = empleadoResponse.data;
 
-    // Crear el documento PDF
+    // Crear el documento PDF y pasar solo el campo `Anio`
     const pdfDoc = (
       <PdfCotizar
         marca={vehiculo.Marca}
         modelo={vehiculo.Modelo}
+        anio={vehiculo.Anio}  // Pasar solo el año
         auto={cotizacion}
         cliente={cliente}
         empleado={{ ...empleado, telefono: telefonoEmpleado }}
@@ -269,6 +270,7 @@ const handleGeneratePdf = async (cotizacion) => {
     console.error("Error al generar el PDF:", error);
   }
 };
+
 
 
 

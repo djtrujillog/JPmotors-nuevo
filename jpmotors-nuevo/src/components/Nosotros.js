@@ -68,45 +68,45 @@ function Nosotros() {
       </div>
 
       <div className="row">
-      <Col sm={6}>
-  <Card className="mb-3">
-    <div className="row g-0">
-      <div className="col-md-4">
-        <img src={cardImg4} className="img-fluid rounded-start" alt="Descriptive text for mission" />
-      </div>
-      <div className="col-md-8">
-        <Card.Body>
-          <Card.Title>Fundación</Card.Title>
-          <Card.Text>
-            La empresa JP MOTORS, S. A. fue fundada el 2 de octubre del año 2023, por la Lcda. Diana Paola Rosado Burgos, visionaria, apasionada por la innovación y calidad en la industria automotriz, con experiencia de 13 años en ventas de vehículos nuevos, destacada a nivel nacional en ventas anuales en la marca KIA y pionera en la apertura de Agencia Multimarcas Excel Petén (2018-2021).
-          </Card.Text>
-        </Card.Body>
-      </div>
-    </div>
-  </Card>
-</Col>
+        {/* <Col sm={6}>
+          <Card className="mb-3">
+            <div className="row g-0">
+              <div className="col-md-4">
+                <img src={cardImg4} className="img-fluid rounded-start" alt="Descriptive text for mission" />
+              </div>
+              <div className="col-md-8">
+                <Card.Body>
+                  <Card.Title>Fundación</Card.Title>
+                  <Card.Text>
+                    La empresa JP MOTORS, S. A. fue fundada el 2 de octubre del año 2023, por la Lcda. Diana Paola Rosado Burgos, visionaria, apasionada por la innovación y calidad en la industria automotriz, con experiencia de 13 años en ventas de vehículos nuevos, destacada a nivel nacional en ventas anuales en la marca KIA y pionera en la apertura de Agencia Multimarcas Excel Petén (2018-2021).
+                  </Card.Text>
+                </Card.Body>
+              </div>
+            </div>
+          </Card>
+        </Col> */}
 
-<Col sm={6}>
-    <Card className="mb-3">
-      <div className="row g-0">
-        <div className="col-md-4">
-          <img src={cardImg5} className="img-fluid rounded-start" alt="Descriptive text for inicios" />
-        </div>
-        <div className="col-md-8">
-          <Card.Body>
-            <Card.Title>Inicios</Card.Title>
-            <Card.Text>
-              El primer año fue desafiante, pero con una visión clara, un compromiso inquebrantable con la excelencia de nuestro servicio y experiencia, la empresa ha comenzado a ganar reconocimiento en el mercado local y nacional.
-            </Card.Text>
-          </Card.Body>
-        </div>
+        {/* <Col sm={6}>
+          <Card className="mb-3">
+            <div className="row g-0">
+              <div className="col-md-4">
+                <img src={cardImg5} className="img-fluid rounded-start" alt="Descriptive text for inicios" />
+              </div>
+              <div className="col-md-8">
+                <Card.Body>
+                  <Card.Title>Inicios</Card.Title>
+                  <Card.Text>
+                    El primer año fue desafiante, pero con una visión clara, un compromiso inquebrantable con la excelencia de nuestro servicio y experiencia, la empresa ha comenzado a ganar reconocimiento en el mercado local y nacional.
+                  </Card.Text>
+                </Card.Body>
+              </div>
+            </div>
+          </Card>
+        </Col> */}
       </div>
-    </Card>
-  </Col>
-</div>
 
-<div className="row">
-  <Col sm={6}>
+      <div className="row">
+        {/* <Col sm={6}>
     <Card className="mb-3">
       <div className="row g-0">
         <div className="col-md-4">
@@ -122,29 +122,29 @@ function Nosotros() {
         </div>
       </div>
     </Card>
-  </Col>
+  </Col> */}
 
-  <Col sm={6}>
-    <Card className="mb-3">
-      <div className="row g-0">
-        <div className="col-md-4">
-          <img src={cardImg6} className="img-fluid rounded-start" alt="Descriptive text for actualidad" />
-        </div>
-        <div className="col-md-8">
-          <Card.Body>
-            <Card.Title>Actualidad</Card.Title>
-            <Card.Text>
-              Hoy en día, la empresa JP MOTORS, S. A. es reconocida por su compromiso con la calidad y el excelente servicio al cliente.
-            </Card.Text>
-          </Card.Body>
-        </div>
+        <Col sm={6}>
+          <Card className="mb-3">
+            <div className="row g-0">
+              <div className="col-md-4">
+                <img src={cardImg6} className="img-fluid rounded-start" alt="Descriptive text for actualidad" />
+              </div>
+              <div className="col-md-8">
+                <Card.Body>
+                  <Card.Title>Actualidad</Card.Title>
+                  <Card.Text>
+                    Hoy en día, la empresa JP MOTORS, S. A. es reconocida por su compromiso con la calidad y el excelente servicio al cliente.
+                  </Card.Text>
+                </Card.Body>
+              </div>
+            </div>
+          </Card>
+        </Col>
       </div>
-    </Card>
-  </Col>
-</div>
 
-<div className="row">
-  <Col sm={6}>
+      <div className="row">
+        {/* <Col sm={6}>
     <Card className="mb-3">
       <div className="row g-0">
         <div className="col-md-4">
@@ -160,22 +160,22 @@ function Nosotros() {
         </div>
       </div>
     </Card>
-  </Col>
-</div>
+  </Col> */}
+      </div>
       <br />
       {/* Productos y Servicios fuera de las tarjetas, centrado */}
       <div className="text-center mb-4" style={{ padding: '20px' }}>
-      <h4 style={{ fontSize: '2rem', fontWeight: 'bold' }}>Productos y Servicios</h4>
-      <p style={{ fontSize: '1.5rem' }}>
-        Vehículos Nuevos: Mitsubishi, Nissan, Kia, Ford, Fuso, BMW y Mini Cooper.
-      </p>
-      <p style={{ fontSize: '1.5rem' }}>
-        Vehículos Usados: Marcas en general.
-      </p>
-      <p style={{ fontSize: '1.5rem' }}>
-        <strong>Servicios Adicionales:</strong> Accesorios y repuestos para todas las marcas de vehículos.
-      </p>
-    </div>
+        <h4 style={{ fontSize: '2rem', fontWeight: 'bold' }}>Productos y Servicios</h4>
+        <p style={{ fontSize: '1.5rem' }}>
+          Vehículos Nuevos: Mitsubishi, Nissan, Kia, Ford, Fuso, BMW y Mini Cooper.
+        </p>
+        <p style={{ fontSize: '1.5rem' }}>
+          Vehículos Usados: Marcas en general.
+        </p>
+        <p style={{ fontSize: '1.5rem' }}>
+          <strong>Servicios Adicionales:</strong> Accesorios y repuestos para todas las marcas de vehículos.
+        </p>
+      </div>
 
     </div>
   );

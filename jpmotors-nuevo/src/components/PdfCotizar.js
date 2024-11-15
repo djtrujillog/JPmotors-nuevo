@@ -110,7 +110,43 @@ const styles = StyleSheet.create({
     fontSize: 8,
     marginBottom: 3,
   },
+  separatorLine: {
+    width: '100%', // Ajusta el ancho según lo necesites
+    height: 2,     // Ajusta el grosor de la línea según lo desees
+    backgroundColor: 'black', // Color de la línea
+    marginVertical: 5, // Espacio superior e inferior opcional
+  },
+  vehicleTextColumn: {
+    width: '48%',
+  },
+  vehicleImageColumn: {
+    width: '48%',
+    textAlign: 'right',
+  },
+  vehicleImage: {
+    width: '100%', // Adjust width as needed
+    height: 'auto',
+  },
+  vehicleInfoSection: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  
+  
 });
+const formatNumberWithCommas = (number) => {
+  // Verificar si el valor es un número
+  if (isNaN(number)) {
+    return "0.00"; // Devuelve un valor por defecto si no es un número
+  }
+
+  // Asegura que el número tiene dos decimales
+  const [integer, decimal] = Number(number).toFixed(2).split(".");
+  return integer.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "." + decimal;
+};
 
 
 // Componente para generar el documento PDF
@@ -133,12 +169,15 @@ const PdfDocument = ({
   precioCotizacion,    // Nuevo campo
   coloresDisponibles,   // Nuevo campo
   marcaLogoUrl,
+  anio,
 }) => (
+
   <Document>
     <Page style={styles.page}>
       <View style={styles.header}>
         <Image style={styles.headerImage} src={headerImg} />
         <Text style={styles.headerTitle}>{marca} {modelo}</Text>
+
         <View style={styles.headerInfo}>
           <Text>Por el centro de salud, Santa Elena, Petén.</Text>
           <Text>(502) 5060 1959</Text>
@@ -147,10 +186,17 @@ const PdfDocument = ({
       </View>
       {/* Agregar el logo de la marca */}
       {marcaLogoUrl && <Image style={styles.logo} src={marcaLogoUrl} />}
-      <View style={styles.section}>
-        <Text style={styles.headerPros}>Cotizacion</Text>
-        {imageUrl && <Image style={styles.image} src={imageUrl} />}
-      </View>
+      <View style={styles.vehicleInfoSection}>
+  <View style={styles.vehicleTextColumn}>
+    <Text style={styles.vehicleText}>{marca} {modelo}</Text>
+    
+    <Text style={styles.vehicleSubText}>Modelo: {anio}</Text>
+  </View>
+  <View style={styles.vehicleImageColumn}>
+    {imageUrl && <Image style={styles.vehicleImage} src={imageUrl} />}
+  </View>
+</View>
+
 
       <View style={styles.clientEmployeeSection}>
         <View style={styles.clientEmployeeColumn}>
@@ -249,45 +295,54 @@ const PdfDocument = ({
           </View>
         </View>
       </View>
-       {/* Detalles de Garantía */}
-       {garantiaDetails?.Garantia && (
-        <View style={styles.section}>
-          <Image style={styles.separadorImage} src={separador4} /> {/* Imagen separador4 */}
-          <View style={styles.columns}>
-            <View style={styles.column}>
-              {garantiaDetails.Garantia.slice(0, Math.ceil(garantiaDetails.Garantia.length / 2)).map((detail, index) => (
-                <Text key={index} style={styles.bulletPoint}>• {detail}</Text>
-              ))}
-            </View>
-            <View style={styles.column}>
-              {garantiaDetails.Garantia.slice(Math.ceil(garantiaDetails.Garantia.length / 2)).map((detail, index) => (
-                <Text key={index} style={styles.bulletPoint}>• {detail}</Text>
-              ))}
-            </View>
-          </View>
-        </View>
-      )}
+      {/* Detalles de Garantía */}
+      {garantiaDetails?.Garantia && (
+  <View style={styles.section}>
+    <Image style={styles.separadorImage} src={separador4} /> {/* Imagen separador4 */}
+    <View style={styles.columns}>
+      <View style={styles.column}>
+        {garantiaDetails.Garantia.slice(0, Math.ceil(garantiaDetails.Garantia.length / 2)).map((detail, index) => (
+          <Text key={index} style={styles.bulletText}>• {detail}</Text>
+        ))}
+      </View>
+      <View style={styles.column}>
+        {garantiaDetails.Garantia.slice(Math.ceil(garantiaDetails.Garantia.length / 2)).map((detail, index) => (
+          <Text key={index} style={styles.bulletText}>• {detail}</Text>
+        ))}
+      </View>
+    </View>
+  </View>
+)}
 
-<View style={styles.divider} />
+      <View style={styles.divider} />
       <View style={styles.section}>
         <Text style={styles.priceText}>Precios</Text>
         {/* <Text style={styles.priceText}>Precio Web: {precioWeb}</Text> */}
-        <Text style={styles.priceText}>Precio lista: {precioGerente}</Text>
-        <View style={styles.section}>
-  <Text style={styles.priceText}>
-    <Text style={{ color: 'black' }}>Precio promoción: </Text>
-    <Text style={{ color: 'red' }}>{precioCotizacion}</Text>
-  </Text>
-  <Text style={styles.priceText}>
-    <Text style={{ color: 'black' }}>Placas: </Text>
-    <Text style={{ color: 'red' }}>{precioPlacas}</Text>
-  </Text>
-</View>
-<Text style={styles.priceText}>
-
-        <Text style={{ color: 'black' }}>Color Disponible: {coloresDisponibles}</Text>
-        <Text style={{ color: 'black' }}>*Precio incluye IVA</Text>
+        <Text style={styles.priceText}>
+          <Text style={{ color: 'black' }}>
+            Precio lista: Q {formatNumberWithCommas(precioGerente)}
+          </Text>
         </Text>
+
+        <View style={styles.section}>
+          <Text style={styles.priceText}>
+            <Text style={{ color: 'red' }}>Precio promoción: Q</Text>
+            <Text style={{ color: 'red' }}>
+              {formatNumberWithCommas(precioCotizacion)}
+            </Text>
+          </Text>
+          <Text style={styles.priceText}>
+            <Text style={{ color: 'black' }}>Placas: Q </Text>
+            <Text style={{ color: 'black' }}>
+              {formatNumberWithCommas(precioPlacas)}
+            </Text>
+          </Text>
+        </View>
+        <Text style={styles.priceText}>
+  <Text style={{ color: 'black' }}>
+    Color Disponible: {coloresDisponibles}{"\n"}*Precio incluye IVA
+  </Text>
+</Text>
 
 
       </View>

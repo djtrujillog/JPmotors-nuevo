@@ -310,7 +310,7 @@ const PdfDocument = ({
           <Text key={index} style={styles.bulletText}>• {detail}</Text>
         ))}
       </View>
-    </View>
+    </View> 
   </View>
 )}
 

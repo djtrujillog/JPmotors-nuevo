@@ -13,65 +13,82 @@ const AutoList = () => {
 
   useEffect(() => {
     const fetchAutos = async () => {
-      try {
-        const cachedData = localStorage.getItem('autos');
-        const cachedTime = localStorage.getItem('autos_timestamp');
-        const currentTime = Date.now();
-        
-        if (cachedData && cachedTime && (currentTime - cachedTime < 3600000)) {
-          const data = JSON.parse(cachedData);
-          setAutos(data);
-          updateMarcasYModelos(data);
-        } else {
-          const response = await fetch('https://jpmotorsgt.azurewebsites.net/vehiculos/nuevos');
-          const data = await response.json();
-          if (response.ok) {
-            setAutos(data);
-            localStorage.setItem('autos', JSON.stringify(data));
-            localStorage.setItem('autos_timestamp', currentTime);
-            updateMarcasYModelos(data);
-          } else {
-            console.error("Error al cargar los autos");
-          }
+        try {
+            const cachedData = localStorage.getItem('autos');
+            const cachedTime = parseInt(localStorage.getItem('autos_timestamp'), 10); // Asegúrate de que sea un número
+            const currentTime = Date.now();
+
+            if (
+                cachedData && 
+                cachedTime && 
+                !isNaN(cachedTime) && 
+                (currentTime - cachedTime < 3600000)
+            ) {
+                const data = JSON.parse(cachedData);
+                if (Array.isArray(data) && data.length > 0) {
+                    setAutos(data);
+                    updateMarcasYModelos(data);
+                    return; // Termina la función si se usan datos del cache
+                }
+            }
+
+            // Si no hay cache válido, consulta a la API
+            const response = await fetch('https://jpmotorsgt.azurewebsites.net/vehiculos/nuevos');
+            const data = await response.json();
+            if (response.ok && Array.isArray(data) && data.length > 0) {
+                setAutos(data);
+
+                // Solo actualiza el cache si los datos cambian
+                const cachedDataString = localStorage.getItem('autos');
+                if (JSON.stringify(data) !== cachedDataString) {
+                    localStorage.setItem('autos', JSON.stringify(data));
+                    localStorage.setItem('autos_timestamp', currentTime);
+                }
+
+                updateMarcasYModelos(data);
+            } else {
+                console.error("Error al cargar los autos o datos inválidos.");
+            }
+        } catch (error) {
+            console.error("Error en la consulta a la API:", error);
         }
-      } catch (error) {
-        console.error("Error en la consulta a la API:", error);
-      }
     };
 
     fetchAutos();
-  }, []);
+}, []);
+
 
   const updateMarcasYModelos = (data) => {
     setMarcas([...new Set(data.map(auto => auto.Marca))]);
     setModelos([...new Set(data.map(auto => auto.Modelo))]);
   };
 
-  // Filtrar modelos según la marca seleccionada
-  useEffect(() => {
-    if (filterLinea) {
-      const filteredModelos = autos
-        .filter(auto => auto.Marca === filterLinea)
-        .map(auto => auto.Modelo);
-      setModelos([...new Set(filteredModelos)]);
-    } else {
-      setModelos([...new Set(autos.map(auto => auto.Modelo))]);
-    }
-    setFilterModelo(''); // Resetear modelo seleccionado al cambiar la marca
-  }, [filterLinea, autos]);
+ // Filtrar modelos según la marca seleccionada
+ useEffect(() => {
+  if (filterLinea) {
+    const filteredModelos = [...new Set(autos
+      .filter(auto => auto.Marca === filterLinea)
+      .map(auto => auto.Modelo))];
+    setModelos(filteredModelos);
+  } else {
+    const uniqueModelos = [...new Set(autos.map(auto => auto.Modelo))];
+    setModelos(uniqueModelos);
+  }
+  setFilterModelo(''); // Resetear modelo seleccionado al cambiar la marca
+}, [filterLinea, autos]);
 
-  const handleItemClick = (auto) => {
-    if (auto && auto.VehiculoID) {
-      setSelectedAuto(auto);
-    }
-  };
+const handleItemClick = (auto) => {
+  if (auto && auto.VehiculoID) {
+    setSelectedAuto(auto);
+  }
+};
 
-  const filteredAutos = autos.filter(auto => {
-    return (
-      (filterLinea === '' || auto.Marca === filterLinea) &&
-      (filterModelo === '' || auto.Modelo === filterModelo)
-    );
-  });
+const filteredAutos = autos.filter(auto => {
+  return (
+    (filterLinea === '' || auto.Marca === filterLinea) &&
+    (filterModelo === '' || auto.Modelo === filterModelo)
+  );
+});
 
   return (
     <div className="container-xl">

@@ -30,33 +30,41 @@ const AgregarVehiculo = () => {
   const [detailingSeguridadVehiculo, setDetailingSeguridadVehiculo] = useState(null);
   const [showGarantiaModal, setShowGarantiadModal] = useState(false);
   const [detailingGarantiaVehiculo, setDetailingGarantiaVehiculo] = useState(false);
+  const [marcas, setMarcas] = useState([]);
+
 
   const fetchVehiculos = async () => {
     try {
       // Cambiar la URL de la solicitud para hacer la consulta más ligera
-      const response = await axios.get("http://localhost:4000/vehiculos/pornombre");
+      const response = await axios.get("https://jpmotorsgt.azurewebsites.net/vehiculos/pornombre");
       setVehiculos(response.data || []); // Asegurarse de que siempre es un array
     } catch (error) {
       console.error("Error al obtener vehículos:", error);
     }
   };
-  
+
+  const fetchMarcas = async () => {
+    try {
+      const response = await axios.get("https://jpmotorsgt.azurewebsites.net/marcas");
+      setMarcas(response.data || []); // Asegura que se asigna un array
+    } catch (error) {
+      console.error("Error al obtener marcas:", error);
+    }
+  };
+
 
   useEffect(() => {
     fetchVehiculos();
   }, []);
 
+  useEffect(() => {
+    fetchMarcas();
+  }, []);
+
+
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setSelectedFile(reader.result); // El resultado será una cadena en Base64
-      };
-      reader.readAsDataURL(file);
-    }
+    setSelectedFile(e.target.files[0]);
   };
-  
 
   const openEditModal = (vehiculo) => {
     setEditingVehiculo(vehiculo);
@@ -155,18 +163,20 @@ const AgregarVehiculo = () => {
   };
 
   const onSubmitAdd = async (data) => {
+    console.log("Datos enviados al backend:", data); // MarcaID debe estar presente
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+    Object.keys(data).forEach((key) => {
+      formData.append(key, data[key]);
+    });
+
     try {
-      const vehiculoData = {
-        ...data,
-        imagen: selectedFile, // Imagen en formato Base64
-      };
-  
       const response = await axios.post(
-        "http://localhost:4000/vehiculos",
-        vehiculoData,
+        "https://jpmotorsgt.azurewebsites.net/vehiculos",
+        formData,
         {
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "multipart/form-data",
           },
         }
       );
@@ -177,361 +187,365 @@ const AgregarVehiculo = () => {
     }
   };
 
+
+
   const onSubmitEdit = async (data) => {
+    console.log("Datos enviados al backend:", data); // MarcaID debe estar presente
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+    Object.keys(data).forEach((key) => {
+      formData.append(key, data[key]);
+    });
+
     try {
-      const vehiculoData = {
-        ...data,
-        imagen: selectedFile, // Imagen en formato Base64
-      };
-  
       const response = await axios.put(
-        `http://localhost:4000/vehiculos/${editingVehiculo.VehiculoID}`,
-        vehiculoData,
+        `https://jpmotorsgt.azurewebsites.net/vehiculos/${editingVehiculo.VehiculoID}`,
+        formData,
         {
-          headers: {
-            "Content-Type": "application/json",
-          },
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
         }
-      );
-      const updatedVehiculos = vehiculos.map((v) =>
-        v.VehiculoID === editingVehiculo.VehiculoID ? response.data : v
-      );
-      setVehiculos(updatedVehiculos);
-      closeEditModal();
+    );
+const updatedVehiculos = vehiculos.map((v) =>
+  v.VehiculoID === editingVehiculo.VehiculoID ? response.data : v
+);
+setVehiculos(updatedVehiculos);
+closeEditModal();
     } catch (error) {
-      console.error("Error al editar vehículo:", error);
-    }
+  console.error("Error al editar vehículo:", error);
+}
   };
-  
 
-  const deleteVehiculo = async (VehiculoID) => {
-    if (window.confirm("¿Estás seguro de que deseas eliminar este vehículo?")) {
-      try {
-        await axios.delete(`http://localhost:4000/vehiculos/${VehiculoID}`);
-        setVehiculos(vehiculos.filter((v) => v.VehiculoID !== VehiculoID));
-      } catch (error) {
-        console.error("Error al eliminar vehículo:", error);
-      }
-    }
-  };
-  
-  return (
-    <Container>
-      <h2 className="my-4">Agregar, Editar y Eliminar Vehículos</h2>
+const deleteVehiculo = async (VehiculoID) => {
+  try {
+    await axios.delete(
+      `https://jpmotorsgt.azurewebsites.net/vehiculos/${VehiculoID}`
+    );
+    setVehiculos(vehiculos.filter((v) => v.VehiculoID !== VehiculoID));
+  } catch (error) {
+    console.error("Error al eliminar vehículo:", error);
+  }
+};
 
-      <Button variant="primary" className="mb-3" onClick={openAddModal}>
-        Agregar Vehículo
-      </Button>
+return (
+  <Container>
+    <h2 className="my-4">Agregar, Editar y Eliminar Vehículos</h2>
 
-      <ListGroup className="mb-4">
-        {vehiculos.map((vehiculo) => (
-          vehiculo && vehiculo.Modelo && (
-            <ListGroup.Item
-              key={vehiculo.VehiculoID}
-              className="d-flex justify-content-between align-items-center"
-            >
-              {vehiculo.Modelo} - {vehiculo.Marca}
-              <div>
-                <Button
-                  variant="outline-primary"
-                  size="sm"
-                  onClick={() => openEditModal(vehiculo)}
-                >
-                  Editar
-                </Button>{" "}
-                <Button
-                  variant="outline-danger"
-                  size="sm"
-                  onClick={() => deleteVehiculo(vehiculo.VehiculoID)}
-                >
-                  Eliminar
-                </Button>{" "}
-                <Button
-                  variant="outline-info"
-                  size="sm"
-                  onClick={() => openDetailsModal(vehiculo)}
-                >
-                  Dimensiones
-                </Button>{" "}
-                <Button
-                  variant="outline-info"
-                  size="sm"
-                  onClick={() => openExteriorModal(vehiculo)}
-                >
-                  Exterior
-                </Button>{" "}
-                <Button
-                  variant="outline-info"
-                  size="sm"
-                  onClick={() => openInteriorModal(vehiculo)}
-                >
-                  Interior
-                </Button>{" "}
-                <Button
-                  variant="outline-info"
-                  size="sm"
-                  onClick={() => openMotorModal(vehiculo)}
-                >
-                  Motor
-                </Button>{" "}
-                <Button
-  variant="outline-info"
-  size="sm"
-  onClick={() => openGarantiaModal(vehiculo)}
->
-  Garantia
-                </Button>{" "}
-                <Button
-  variant="outline-info"
-  size="sm"
-  onClick={() => openSeguridadModal(vehiculo)}
->
-  Seguridad
-                </Button>{" "}
-              </div>
-            </ListGroup.Item>
-          )
+    <Button variant="primary" className="mb-3" onClick={openAddModal}>
+      Agregar Vehículo
+    </Button>
+
+    <ListGroup className="mb-4">
+      {vehiculos.map((vehiculo) => (
+        vehiculo && vehiculo.Modelo && (
+          <ListGroup.Item
+            key={vehiculo.VehiculoID}
+            className="d-flex justify-content-between align-items-center"
+          >
+            {vehiculo.Modelo} - {vehiculo.Marca}
+            <div>
+              <Button
+                variant="outline-primary"
+                size="sm"
+                onClick={() => openEditModal(vehiculo)}
+              >
+                Editar
+              </Button>{" "}
+              <Button
+                variant="outline-danger"
+                size="sm"
+                onClick={() => deleteVehiculo(vehiculo.VehiculoID)}
+              >
+                Eliminar
+              </Button>{" "}
+              <Button
+                variant="outline-info"
+                size="sm"
+                onClick={() => openDetailsModal(vehiculo)}
+              >
+                Dimensiones
+              </Button>{" "}
+              <Button
+                variant="outline-info"
+                size="sm"
+                onClick={() => openExteriorModal(vehiculo)}
+              >
+                Exterior
+              </Button>{" "}
+              <Button
+                variant="outline-info"
+                size="sm"
+                onClick={() => openInteriorModal(vehiculo)}
+              >
+                Interior
+              </Button>{" "}
+              <Button
+                variant="outline-info"
+                size="sm"
+                onClick={() => openMotorModal(vehiculo)}
+              >
+                Motor
+              </Button>{" "}
+              <Button
+                variant="outline-info"
+                size="sm"
+                onClick={() => openGarantiaModal(vehiculo)}
+              >
+                Garantia
+              </Button>{" "}
+              <Button
+                variant="outline-info"
+                size="sm"
+                onClick={() => openSeguridadModal(vehiculo)}
+              >
+                Seguridad
+              </Button>{" "}
+            </div>
+          </ListGroup.Item>
+        )
+      ))}
+    </ListGroup>
+
+    <Modal show={showEditModal} onHide={closeEditModal}>
+      <Modal.Header closeButton>
+        <Modal.Title>Editar Vehículo</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form onSubmit={handleSubmit(onSubmitEdit)}>
+          <Form.Group>
+            <Form.Label>Linea:</Form.Label>
+            <Form.Control
+              type="text"
+              defaultValue={editingVehiculo?.Modelo || ''}
+              {...register("Modelo", { required: true })}
+            />
+          </Form.Group>
+          <Form.Group>
+    <Form.Label>Marca:</Form.Label>
+    <Form.Control
+        as="select"
+        {...register("Marca", { required: true })}
+        disabled={marcas.length === 0}
+    >
+        {marcas.map((marca) => (
+            <option key={marca.MarcaID} value={marca.NombreMarca}>
+                {marca.NombreMarca}
+            </option>
         ))}
-      </ListGroup>
+    </Form.Control>
+</Form.Group>
 
-      <Modal show={showEditModal} onHide={closeEditModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Editar Vehículo</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form onSubmit={handleSubmit(onSubmitEdit)}>
-            <Form.Group>
-              <Form.Label>Linea:</Form.Label>
-              <Form.Control
-                type="text"
-                defaultValue={editingVehiculo?.Modelo || ''}
-                {...register("Modelo", { required: true })}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Marca:</Form.Label>
-              <Form.Control
-                as="select"
-                defaultValue={editingVehiculo?.Marca}
-                {...register("Marca", { required: true })}
-              >
-                <option value="NISSAN">NISSAN</option>
-                <option value="MITSUBISHI">MITSUBISHI</option>
-                <option value="FORD">FORD</option>
-                <option value="KIA">KIA</option>
-                <option value="FUSO">FUSO</option>
-              </Form.Control>
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Año:</Form.Label>
-              <Form.Control
-                type="text"
-                defaultValue={editingVehiculo?.Anio}
-                {...register("Anio", { required: true })}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Precio Gerente:</Form.Label>
-              <Form.Control
-                type="text"
-                defaultValue={editingVehiculo?.PrecioGerente}
-                {...register("PrecioGerente", { required: true })}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Precio Web:</Form.Label>
-              <Form.Control
-                type="text"
-                defaultValue={editingVehiculo?.PrecioWeb}
-                {...register("PrecioWeb", { required: true })}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Precio Lista:</Form.Label>
-              <Form.Control
-                type="text"
-                defaultValue={editingVehiculo?.PrecioLista}
-                {...register("PrecioLista", { required: true })}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Marca ID:</Form.Label>
-              <Form.Control
-                as="select"
-                defaultValue={editingVehiculo?.MarcaID}
-                {...register("MarcaID", { required: true })}
-              >
-                <option value="1">NISSAN</option>
-                <option value="2">MITSUBISHI</option>
-                <option value="3">FORD</option>
-                <option value="4">KIA</option>
-                <option value="5">FUSO</option>
-              </Form.Control>
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Imagen:</Form.Label>
-              <Form.Control type="file" onChange={handleFileChange} />
-            </Form.Group>
-            <Form.Group>
-        <Form.Label>Condición:</Form.Label>
-        <Form.Control
-          as="select"
-          {...register("Condicion", { required: true })}
-        >
-          <option value="Nuevo">Nuevo</option>
-          <option value="Usado">Usado</option>
-        </Form.Control>
-      </Form.Group>
+          <Form.Group>
+            <Form.Label>Año:</Form.Label>
+            <Form.Control
+              type="text"
+              defaultValue={editingVehiculo?.Anio}
+              {...register("Anio", { required: true })}
+            />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Precio Gerente:</Form.Label>
+            <Form.Control
+              type="text"
+              defaultValue={editingVehiculo?.PrecioGerente}
+              {...register("PrecioGerente", { required: true })}
+            />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Precio Web:</Form.Label>
+            <Form.Control
+              type="text"
+              defaultValue={editingVehiculo?.PrecioWeb}
+              {...register("PrecioWeb", { required: true })}
+            />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Precio Lista:</Form.Label>
+            <Form.Control
+              type="text"
+              defaultValue={editingVehiculo?.PrecioLista}
+              {...register("PrecioLista", { required: true })}
+            />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Marca ID:</Form.Label>
+            <Form.Control as="select" {...register("MarcaID", { required: true })}>
+              {marcas.length > 0 ? (
+                marcas.map((marca) => (
+                  <option key={marca.MarcaID} value={marca.MarcaID}>
+                    {marca.NombreMarca}
+                  </option>
+                ))
+              ) : (
+                <option value="">Cargando marcas...</option>
+              )}
+            </Form.Control>
+          </Form.Group>
 
-      <Form.Group>
-        <Form.Label>Estado:</Form.Label>
-        <Form.Control
-          as="select"
-          {...register("Estado", { required: true })}
-        >
-          <option value="Activo">Activo</option>
-          <option value="Inactivo">Inactivo</option>
-        </Form.Control>
-      </Form.Group>
-            <Button variant="primary" type="submit">
-              Actualizar Vehículo
-            </Button>
-          </Form>
-        </Modal.Body>
-      </Modal>
+          <Form.Group>
+            <Form.Label>Imagen:</Form.Label>
+            <Form.Control type="file" onChange={handleFileChange} />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Condición:</Form.Label>
+            <Form.Control
+              as="select"
+              {...register("Condicion", { required: true })}
+            >
+              <option value="Nuevo">Nuevo</option>
+              <option value="Usado">Usado</option>
+            </Form.Control>
+          </Form.Group>
 
-      <Modal show={showAddModal} onHide={closeAddModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Agregar Nuevo Vehículo</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form onSubmit={handleSubmit(onSubmitAdd)}>
-            <Form.Group>
-              <Form.Label>Linea:</Form.Label>
-              <Form.Control
-                type="text"
-                {...register("Modelo", { required: true })}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Marca:</Form.Label>
-              <Form.Control
-                as="select"
-                {...register("Marca", { required: true })}
-              >
-                <option value="NISSAN">NISSAN</option>
-                <option value="MITSUBISHI">MITSUBISHI</option>
-                <option value="FORD">FORD</option>
-                <option value="KIA">KIA</option>
-                <option value="FUSO">FUSO</option>
-              </Form.Control>
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Año:</Form.Label>
-              <Form.Control
-                type="text"
-                {...register("Anio", { required: true })}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Precio Gerente:</Form.Label>
-              <Form.Control
-                type="text"
-                {...register("PrecioGerente", { required: true })}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Precio Web:</Form.Label>
-              <Form.Control
-                type="text"
-                {...register("PrecioWeb", { required: true })}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Precio Lista:</Form.Label>
-              <Form.Control
-                type="text"
-                {...register("PrecioLista", { required: true })}
-              />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Marca ID:</Form.Label>
-              <Form.Control
-                as="select"
-                {...register("MarcaID", { required: true })}
-              >
-                <option value="1">NISSAN</option>
-                <option value="2">MITSUBISHI</option>
-                <option value="3">FORD</option>
-                <option value="4">KIA</option>
-                <option value="5">FUSO</option>
-              </Form.Control>
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Imagen:</Form.Label>
-              <Form.Control type="file" onChange={handleFileChange} />
-            </Form.Group>
-            <Form.Group>
-        <Form.Label>Condición:</Form.Label>
-        <Form.Control
-          as="select"
-          {...register("Condicion", { required: true })}
-        >
-          <option value="Nuevo">Nuevo</option>
-          <option value="Usado">Usado</option>
-        </Form.Control>
-      </Form.Group>
+          <Form.Group>
+            <Form.Label>Estado:</Form.Label>
+            <Form.Control
+              as="select"
+              {...register("Estado", { required: true })}
+            >
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
+            </Form.Control>
+          </Form.Group>
+          <Button variant="primary" type="submit">
+            Actualizar Vehículo
+          </Button>
+        </Form>
+      </Modal.Body>
+    </Modal>
 
-      <Form.Group>
-        <Form.Label>Estado:</Form.Label>
-        <Form.Control
-          as="select"
-          {...register("Estado", { required: true })}
-        >
-          <option value="Activo">Activo</option>
-          <option value="Inactivo">Inactivo</option>
-        </Form.Control>
-      </Form.Group>
-            <Button variant="primary" type="submit">
-              Agregar Vehículo
-            </Button>
-          </Form>
-        </Modal.Body>
-      </Modal>
+    <Modal show={showAddModal} onHide={closeAddModal}>
+      <Modal.Header closeButton>
+        <Modal.Title>Agregar Nuevo Vehículo</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form onSubmit={handleSubmit(onSubmitAdd)}>
+          <Form.Group>
+            <Form.Label>Linea:</Form.Label>
+            <Form.Control
+              type="text"
+              {...register("Modelo", { required: true })}
+            />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Marca:</Form.Label>
+            <Form.Control
+              as="select"
+              defaultValue={editingVehiculo?.Marca || ''}
+              {...register("Marca", { required: true })}
+            >
+              {marcas.map((marca) => (
+                <option key={marca.MarcaID} value={marca.NombreMarca}>
+                  {marca.NombreMarca}
+                </option>
+              ))}
+            </Form.Control>
+          </Form.Group>
 
-      <DetallesVehiculoModal
-        show={showDetailsModal}
-        handleClose={closeDetailsModal}
-        vehiculo={detailingVehiculo}
-      />
+          <Form.Group>
+            <Form.Label>Año:</Form.Label>
+            <Form.Control
+              type="text"
+              {...register("Anio", { required: true })}
+            />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Precio Gerente:</Form.Label>
+            <Form.Control
+              type="text"
+              {...register("PrecioGerente", { required: true })}
+            />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Precio Web:</Form.Label>
+            <Form.Control
+              type="text"
+              {...register("PrecioWeb", { required: true })}
+            />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Precio Lista:</Form.Label>
+            <Form.Control
+              type="text"
+              {...register("PrecioLista", { required: true })}
+            />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Marca ID:</Form.Label>
+            <Form.Control as="select" {...register("MarcaID", { required: true })}>
+              {marcas.map((marca) => (
+                <option key={marca.MarcaID} value={marca.MarcaID}>
+                  {marca.NombreMarca}
+                </option>
+              ))}
+            </Form.Control>
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Imagen:</Form.Label>
+            <Form.Control type="file" onChange={handleFileChange} />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Condición:</Form.Label>
+            <Form.Control
+              as="select"
+              {...register("Condicion", { required: true })}
+            >
+              <option value="Nuevo">Nuevo</option>
+              <option value="Usado">Usado</option>
+            </Form.Control>
+          </Form.Group>
 
-      <DetallesVehiculoExteriorModal
-        show={showExteriorsModal}
-        handleClose={closeExteriorModal}
-        vehiculo={detailingExteriorVehiculo}
-      />
-      <DetallesVehiculoInteriorModal
-        show={showInteriorsModal}
-        handleClose={closeInteriorModal}
-        vehiculo={detailingInteriorVehiculo}
-      />
-      <DetallesVehiculoMotorModal
-        show={showMotorModal}
-        handleClose={closeMotorModal}
-        vehiculo={detailingMotorVehiculo}
-      />
-      <DetallesVehiculoSeguridadModal
-        show={showSeguridadModal}
-        handleClose={closeSeguridadModal}
-        vehiculo={detailingSeguridadVehiculo}
-      />
-      <DetallesVehiculoGarantia
-        show={showGarantiaModal}
-        handleClose={closeGarantiaModal}
-        vehiculo={detailingGarantiaVehiculo}
-      />
-    </Container>
-  );
+          <Form.Group>
+            <Form.Label>Estado:</Form.Label>
+            <Form.Control
+              as="select"
+              {...register("Estado", { required: true })}
+            >
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
+            </Form.Control>
+          </Form.Group>
+          <Button variant="primary" type="submit">
+            Agregar Vehículo
+          </Button>
+        </Form>
+      </Modal.Body>
+    </Modal>
+
+    <DetallesVehiculoModal
+      show={showDetailsModal}
+      handleClose={closeDetailsModal}
+      vehiculo={detailingVehiculo}
+    />
+
+    <DetallesVehiculoExteriorModal
+      show={showExteriorsModal}
+      handleClose={closeExteriorModal}
+      vehiculo={detailingExteriorVehiculo}
+    />
+    <DetallesVehiculoInteriorModal
+      show={showInteriorsModal}
+      handleClose={closeInteriorModal}
+      vehiculo={detailingInteriorVehiculo}
+    />
+    <DetallesVehiculoMotorModal
+      show={showMotorModal}
+      handleClose={closeMotorModal}
+      vehiculo={detailingMotorVehiculo}
+    />
+    <DetallesVehiculoSeguridadModal
+      show={showSeguridadModal}
+      handleClose={closeSeguridadModal}
+      vehiculo={detailingSeguridadVehiculo}
+    />
+    <DetallesVehiculoGarantia
+      show={showGarantiaModal}
+      handleClose={closeGarantiaModal}
+      vehiculo={detailingGarantiaVehiculo}
+    />
+  </Container>
+);
 };
 
 export default AgregarVehiculo;

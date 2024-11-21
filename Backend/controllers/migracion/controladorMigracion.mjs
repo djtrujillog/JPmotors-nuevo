@@ -36,7 +36,7 @@ export const migracionController = {
         fs.writeFileSync(filePath, Buffer.from(Imagen));
 
         // Crear la URL de la imagen
-        const imageUrl = `http://localhost:4000/images/${VehiculoID}.jpg`;
+        const imageUrl = `https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/images/${VehiculoID}.jpg`;
 
         // Actualizar la base de datos con la URL de la imagen
         await sequelize.query("UPDATE Vehiculos SET ImagenUrl = :imageUrl WHERE VehiculoID = :id", {

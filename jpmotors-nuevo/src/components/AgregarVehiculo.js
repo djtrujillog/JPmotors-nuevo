@@ -36,7 +36,7 @@ const AgregarVehiculo = () => {
   const fetchVehiculos = async () => {
     try {
       // Cambiar la URL de la solicitud para hacer la consulta más ligera
-      const response = await axios.get("https://jpmotorsgt.azurewebsites.net/vehiculos/pornombre");
+      const response = await axios.get("https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/vehiculos/pornombre");
       setVehiculos(response.data || []); // Asegurarse de que siempre es un array
     } catch (error) {
       console.error("Error al obtener vehículos:", error);
@@ -45,7 +45,7 @@ const AgregarVehiculo = () => {
 
   const fetchMarcas = async () => {
     try {
-      const response = await axios.get("https://jpmotorsgt.azurewebsites.net/marcas");
+      const response = await axios.get("https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/marcas");
       setMarcas(response.data || []); // Asegura que se asigna un array
     } catch (error) {
       console.error("Error al obtener marcas:", error);
@@ -161,18 +161,28 @@ const AgregarVehiculo = () => {
     setDetailingGarantiaVehiculo(null);
     reset();
   };
-
   const onSubmitAdd = async (data) => {
-    console.log("Datos enviados al backend:", data); // MarcaID debe estar presente
+    console.log("Datos enviados al backend:", data);
+  
+    if (!selectedFile) {
+      console.error("No se ha seleccionado un archivo");
+      alert("Por favor, seleccione un archivo antes de enviar.");
+      return;
+    }
+  
     const formData = new FormData();
-    formData.append("file", selectedFile);
+    formData.append("imagen", selectedFile); // Cambia el nombre a "imagen"
+  
+    // Adjunta los datos del formulario al FormData
     Object.keys(data).forEach((key) => {
+      console.log(`${key}:`, data[key]);
       formData.append(key, data[key]);
     });
-
+  
     try {
+      // Realiza la solicitud al backend
       const response = await axios.post(
-        "https://jpmotorsgt.azurewebsites.net/vehiculos",
+        "https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/image/create",
         formData,
         {
           headers: {
@@ -180,26 +190,30 @@ const AgregarVehiculo = () => {
           },
         }
       );
-      setVehiculos([...vehiculos, response.data.vehiculo]);
+  
+      // Actualiza el estado de los vehículos y cierra el modal
+      setVehiculos((prevVehiculos) => [...prevVehiculos, response.data.vehiculo]);
       closeAddModal();
     } catch (error) {
       console.error("Error al agregar vehículo:", error);
+      alert("Hubo un error al agregar el vehículo. Por favor, intente nuevamente.");
     }
   };
-
+  
+  
 
 
   const onSubmitEdit = async (data) => {
     console.log("Datos enviados al backend:", data); // MarcaID debe estar presente
     const formData = new FormData();
-    formData.append("file", selectedFile);
+    formData.append("image", selectedFile);
     Object.keys(data).forEach((key) => {
       formData.append(key, data[key]);
     });
 
     try {
       const response = await axios.put(
-        `https://jpmotorsgt.azurewebsites.net/vehiculos/${editingVehiculo.VehiculoID}`,
+        `https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/vehiculos/${editingVehiculo.VehiculoID}`,
         formData,
         {
             headers: {
@@ -220,7 +234,7 @@ closeEditModal();
 const deleteVehiculo = async (VehiculoID) => {
   try {
     await axios.delete(
-      `https://jpmotorsgt.azurewebsites.net/vehiculos/${VehiculoID}`
+      `https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/vehiculos/${VehiculoID}`
     );
     setVehiculos(vehiculos.filter((v) => v.VehiculoID !== VehiculoID));
   } catch (error) {

@@ -32,7 +32,7 @@ const AutolistUsadosdos = () => {
           setModelos(uniqueModelos);
         } else {
           // Hacer la consulta a la API
-          const response = await fetch('http://localhost:4000/vehiculos/usados');
+          const response = await fetch('https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/vehiculos/usados');
           const data = await response.json();
           if (response.ok) {
             setAutos(data);

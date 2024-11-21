@@ -82,42 +82,48 @@ const vehiculoController = {
   
   getVehiculosUsados: async (req, res) => {
     try {
-      // Modificar la consulta para obtener la URL de la imagen
-      const result = await sequelize.query("SELECT VehiculoID, Modelo, Marca, Anio, PrecioGerente, PrecioWeb, PrecioLista, ImagenUrl, MarcaID, Condicion, Estado FROM Vehiculos v WHERE Condicion = 'Usado' AND Estado ='Activo'", {
-        type: sequelize.QueryTypes.SELECT,
-      });
+      const result = await sequelize.query(
+        "SELECT VehiculoID, Modelo, Marca, Anio, PrecioGerente, PrecioWeb, PrecioLista, ImagenUrl, MarcaID, Condicion, Estado FROM Vehiculos v WHERE Condicion = 'Usado' AND Estado ='Activo'", 
+        {
+          type: sequelize.QueryTypes.SELECT,
+        }
+      );
   
       if (result.length > 0) {
         const vehiculosConImagenes = await Promise.all(result.map(async (vehiculo) => {
           try {
-            // Construir la ruta completa de la imagen
-            const imagenPath = path.join(__dirname, '../../images', `${vehiculo.VehiculoID}.jpg`);
-            
-            // Verificar si la imagen existe y leerla en base64
-            try {
-              await fs.access(imagenPath);
-              const imagenBase64 = await fs.readFile(imagenPath, { encoding: 'base64' });
-              vehiculo.ImagenBase64 = `data:image/jpeg;base64,${imagenBase64}`;
-            } catch (error) {
-              vehiculo.ImagenBase64 = null; // Si la imagen no existe, asignar null
-            }
+            // Extraer el nombre del archivo desde ImagenUrl
+            const nombreImagen = vehiculo.ImagenUrl.split('/').pop();
+            const imagenPath = path.join(__dirname, '../../images', nombreImagen);
+  
+            console.log('Ruta de la imagen:', imagenPath); // Debugging: Verificar la ruta
+  
+            // Verificar si la imagen existe
+            await fs.access(imagenPath);
+            console.log(`Imagen encontrada para el vehículo ${vehiculo.VehiculoID}`); // Debugging
+  
+            // Leer la imagen en base64
+            const imagenBase64 = await fs.readFile(imagenPath, { encoding: 'base64' });
+            vehiculo.ImagenBase64 = `data:image/jpeg;base64,${imagenBase64}`;
           } catch (error) {
-            console.error(`Error al leer la imagen para el vehículo ${vehiculo.VehiculoID}:`, error);
-            vehiculo.ImagenBase64 = null;
+            console.log(`Imagen no encontrada para el vehículo ${vehiculo.VehiculoID}:`, error); // Debugging
+            vehiculo.ImagenBase64 = null; // Si la imagen no existe, asignar null
           }
-
+  
           return vehiculo;
         }));
-
+  
         res.status(200).json(vehiculosConImagenes);
       } else {
         res.status(404).json({ message: "No hay vehículos usados" });
       }
     } catch (error) {
-      console.error("Error al obtener vehículos nuevos:", error);
+      console.error("Error al obtener vehículos usados:", error);
       res.status(500).send("Error interno del servidor");
     }
   },
+
+
   
   // Backend - Cambios en el endpoint getVehiculos
 getPaginar: async (req, res) => {
@@ -365,7 +371,7 @@ getPaginar: async (req, res) => {
     post: async (req, res) => {
       try {
         const { body } = req;
-        const imagenUrl = `http://localhost:4000/images/${Date.now()}.jpg`; // URL ficticia para el ejemplo
+        const imagenUrl = `https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/${Date.now()}.jpg`; // URL ficticia para el ejemplo
   
         const result = await sequelize.query(
           `INSERT INTO Vehiculos (Modelo, Marca, Anio, PrecioGerente, PrecioWeb, PrecioLista, ImagenUrl, MarcaID, Condicion, Estado)

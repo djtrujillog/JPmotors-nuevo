@@ -3,6 +3,7 @@ import AutoItem from './AutoItem';
 import AutoModal from './AutoModal';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+
 const AutoList = () => {
   const [autos, setAutos] = useState([]);
   const [selectedAuto, setSelectedAuto] = useState(null);
@@ -17,30 +18,32 @@ const AutoList = () => {
         const cachedData = localStorage.getItem('autos');
         const cachedTime = localStorage.getItem('autos_timestamp');
         const currentTime = Date.now();
-        
-        if (cachedData && cachedTime && (currentTime - cachedTime < 3600000)) {
+  
+        if (cachedData && cachedTime && currentTime - cachedTime < 3600000) {
           const data = JSON.parse(cachedData);
           setAutos(data);
           updateMarcasYModelos(data);
         } else {
-          const response = await fetch('http://localhost:4000/vehiculos/nuevos');
+          const response = await fetch('https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/vehiculos/nuevos');
           const data = await response.json();
           if (response.ok) {
+            console.log('Datos de vehículos:', data); // Agregar log
             setAutos(data);
             localStorage.setItem('autos', JSON.stringify(data));
             localStorage.setItem('autos_timestamp', currentTime);
             updateMarcasYModelos(data);
           } else {
-            console.error("Error al cargar los autos");
+            console.error('Error al cargar los autos');
           }
         }
       } catch (error) {
-        console.error("Error en la consulta a la API:", error);
+        console.error('Error en la consulta a la API:', error);
       }
     };
-
+  
     fetchAutos();
   }, []);
+  
 
   const updateMarcasYModelos = (data) => {
     const marcasUnicas = [...new Set(data.map(auto => auto.Marca))];

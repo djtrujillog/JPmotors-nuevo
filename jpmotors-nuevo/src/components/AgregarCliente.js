@@ -28,7 +28,7 @@ const Clientes = () => {
 
   const fetchClientes = async () => {
     try {
-      const response = await axios.get('http://localhost:4000/clientes');
+      const response = await axios.get('https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/clientes');
       setClientes(response.data);
     } catch (error) {
       console.error('Error al obtener clientes:', error);
@@ -72,7 +72,7 @@ const Clientes = () => {
 
   const addCliente = async () => {
     try {
-      await axios.post('http://localhost:4000/clientes', form);
+      await axios.post('https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/clientes', form);
     } catch (error) {
       console.error('Error al agregar cliente:', error);
     }
@@ -80,7 +80,7 @@ const Clientes = () => {
 
   const updateCliente = async () => {
     try {
-      await axios.put(`http://localhost:4000/clientes/${currentClienteId}`, form);
+      await axios.put(`https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/clientes/${currentClienteId}`, form);
     } catch (error) {
       console.error('Error al actualizar cliente:', error);
     }
@@ -95,7 +95,7 @@ const Clientes = () => {
 
   const deleteCliente = async (id) => {
     try {
-      await axios.delete(`http://localhost:4000/clientes/${id}`);
+      await axios.delete(`https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/clientes/${id}`);
       fetchClientes();
     } catch (error) {
       console.error('Error al eliminar cliente:', error);

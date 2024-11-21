@@ -19,7 +19,7 @@ const DetallesVehiculoInteriorModal = ({ show, handleClose, vehiculo }) => {
 
   const fetchExistingDetalles = async (VehiculoID) => {
     try {
-      const response = await axios.get(`http://localhost:4000/vehiculos/detalleInterior/${VehiculoID}`);
+      const response = await axios.get(`https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/vehiculos/detalleInterior/${VehiculoID}`);
       if (response.data) {
         setExistingDetalles(response.data.filter(detalle => detalle.Descripcion.trim() !== ''));
       } else {
@@ -36,7 +36,7 @@ const DetallesVehiculoInteriorModal = ({ show, handleClose, vehiculo }) => {
         VehiculoID: vehiculo.VehiculoID,
         descripcion: descripcion
       };
-      await axios.post('http://localhost:4000/vehiculos/eliminarInterior', body);
+      await axios.post('https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/vehiculos/eliminarInterior', body);
       const updatedDetalles = existingDetalles.filter(detalle => detalle.Descripcion !== descripcion);
       setExistingDetalles(updatedDetalles);
       alert('Detalle de interior eliminado correctamente');
@@ -65,7 +65,7 @@ const DetallesVehiculoInteriorModal = ({ show, handleClose, vehiculo }) => {
         Descripcion: editDetalle,
         originalDescripcion: originalDetalle
       };
-      await axios.put(`http://localhost:4000/vehiculos/detalleInterior/${encodeURIComponent(originalDetalle)}`, body);
+      await axios.put(`https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/vehiculos/detalleInterior/${encodeURIComponent(originalDetalle)}`, body);
       const updatedDetalles = existingDetalles.map(detalle => detalle.Descripcion === originalDetalle ? { ...detalle, Descripcion: editDetalle } : detalle);
       setExistingDetalles(updatedDetalles);
       alert('Detalle de interior editado correctamente');
@@ -83,7 +83,7 @@ const DetallesVehiculoInteriorModal = ({ show, handleClose, vehiculo }) => {
         VehiculoID: vehiculo.VehiculoID,
         Descripcion: newDetalle
       };
-      const response = await axios.post('http://localhost:4000/vehiculos/detalleInterior', body);
+      const response = await axios.post('https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/vehiculos/detalleInterior', body);
       setExistingDetalles([...existingDetalles, response.data.detalleInterior]);
       setNewDetalle('');
       alert('Detalle de interior agregado correctamente');

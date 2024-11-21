@@ -25,12 +25,12 @@ const AutoModalCotizar = ({ auto, cliente, empleado, onClose }) => {
           exteriorRes,
           dimensionesRes,
         ] = await Promise.all([
-          fetch(`http://localhost:4000/vehiculos/${auto.VehiculoID}`),
-          fetch(`http://localhost:4000/vehiculos/motor/${auto.VehiculoID}`),
-          fetch(`http://localhost:4000/vehiculos/seguridad/${auto.VehiculoID}`),
-          fetch(`http://localhost:4000/vehiculos/interior/${auto.VehiculoID}`),
-          fetch(`http://localhost:4000/vehiculos/exterior/${auto.VehiculoID}`),
-          fetch(`http://localhost:4000/vehiculos/dimensiones/${auto.VehiculoID}`),
+          fetch(`https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/vehiculos/${auto.VehiculoID}`),
+          fetch(`https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/vehiculos/motor/${auto.VehiculoID}`),
+          fetch(`https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/vehiculos/seguridad/${auto.VehiculoID}`),
+          fetch(`https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/vehiculos/interior/${auto.VehiculoID}`),
+          fetch(`https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/vehiculos/exterior/${auto.VehiculoID}`),
+          fetch(`https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/vehiculos/dimensiones/${auto.VehiculoID}`),
         ]);
 
         const [

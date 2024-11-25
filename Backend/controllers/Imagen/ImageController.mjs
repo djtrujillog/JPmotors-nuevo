@@ -113,6 +113,87 @@ const imageController = {
       res.status(500).send('Error interno del servidor');
     }
   },
+
+  updateVehicleWithImage: async (req, res) => {
+    try {
+      console.log(req.body); // Datos adicionales como Modelo, MarcaID, etc.
+      console.log(req.file); // Información del archivo cargado
+  
+      const { id } = req.params; // ID del vehículo a actualizar
+      const { body } = req;
+  
+      // Verificar si se envió un archivo para actualizar la imagen
+      let imageUrl;
+      if (req.file) {
+        imageUrl = `https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/image/${req.file.filename}`;
+      }
+  
+      // Log para depuración
+      console.log("Cuerpo del request:", body);
+  
+      // Validar campos requeridos
+      const camposRequeridos = [
+        'Modelo', 'Marca', 'Anio', 'PrecioGerente', 'PrecioWeb', 'PrecioLista', 'MarcaID', 'Condicion', 'Estado',
+      ];
+      for (const campo of camposRequeridos) {
+        if (!body[campo]) {
+          return res.status(400).json({ message: `Falta el campo requerido: ${campo}` });
+        }
+      }
+  
+      // Verificar si el vehículo existe en la base de datos
+      const [vehiculo] = await sequelize.query(
+        `SELECT * FROM Vehiculos WHERE VehiculoID = :id`,
+        { replacements: { id }, type: sequelize.QueryTypes.SELECT }
+      );
+  
+      if (!vehiculo) {
+        return res.status(404).json({ message: 'Vehículo no encontrado' });
+      }
+  
+      // Actualizar datos en la base de datos
+      const query = `
+        UPDATE Vehiculos
+        SET Modelo = :Modelo,
+            Marca = :Marca,
+            Anio = :Anio,
+            PrecioGerente = :PrecioGerente,
+            PrecioWeb = :PrecioWeb,
+            PrecioLista = :PrecioLista,
+            ImagenUrl = :ImagenUrl,
+            MarcaID = :MarcaID,
+            Condicion = :Condicion,
+            Estado = :Estado
+        WHERE VehiculoID = :id
+      `;
+  
+      await sequelize.query(query, {
+        replacements: {
+          id,
+          Modelo: body.Modelo,
+          Marca: body.Marca,
+          Anio: body.Anio,
+          PrecioGerente: body.PrecioGerente,
+          PrecioWeb: body.PrecioWeb,
+          PrecioLista: body.PrecioLista,
+          ImagenUrl: imageUrl || vehiculo.ImagenUrl, // Mantener la imagen anterior si no se sube una nueva
+          MarcaID: body.MarcaID,
+          Condicion: body.Condicion,
+          Estado: body.Estado,
+        },
+      });
+  
+      res.status(200).json({
+        message: 'Vehículo actualizado con éxito',
+        id,
+        imageUrl: imageUrl || vehiculo.ImagenUrl,
+      });
+    } catch (error) {
+      console.error('Error al actualizar vehículo:', error);
+      res.status(500).json({ message: 'Error interno del servidor' });
+    }
+  },
+  
 };
   
 

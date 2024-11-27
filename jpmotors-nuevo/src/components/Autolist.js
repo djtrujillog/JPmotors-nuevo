@@ -15,26 +15,14 @@ const AutoList = () => {
   useEffect(() => {
     const fetchAutos = async () => {
       try {
-        const cachedData = localStorage.getItem('autos');
-        const cachedTime = localStorage.getItem('autos_timestamp');
-        const currentTime = Date.now();
-  
-        if (cachedData && cachedTime && currentTime - cachedTime < 3600000) {
-          const data = JSON.parse(cachedData);
+        const response = await fetch('http://localhost:4000/vehiculos/nuevos');
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Datos de vehículos:', data); // Para depuración
           setAutos(data);
           updateMarcasYModelos(data);
         } else {
-          const response = await fetch('http://localhost:4000/vehiculos/nuevos');
-          const data = await response.json();
-          if (response.ok) {
-            console.log('Datos de vehículos:', data); // Agregar log
-            setAutos(data);
-            localStorage.setItem('autos', JSON.stringify(data));
-            localStorage.setItem('autos_timestamp', currentTime);
-            updateMarcasYModelos(data);
-          } else {
-            console.error('Error al cargar los autos');
-          }
+          console.error('Error al cargar los autos. Código de estado:', response.status);
         }
       } catch (error) {
         console.error('Error en la consulta a la API:', error);
@@ -43,6 +31,7 @@ const AutoList = () => {
   
     fetchAutos();
   }, []);
+  
   
 
   const updateMarcasYModelos = (data) => {

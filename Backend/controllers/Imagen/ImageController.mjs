@@ -113,6 +113,99 @@ const imageController = {
       res.status(500).send('Error interno del servidor');
     }
   },
+
+  //put
+
+  updateVehicleWithImage: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { body } = req;
+  
+      // Validar campos requeridos
+      const requiredFields = [
+        "Modelo",
+        "Marca",
+        "Anio",
+        "PrecioGerente",
+        "PrecioWeb",
+        "PrecioLista",
+        "MarcaID",
+        "Condicion",
+        "Estado",
+      ];
+      for (const field of requiredFields) {
+        if (!body[field]) {
+          return res
+            .status(400)
+            .json({ message: `Falta el campo requerido: ${field}` });
+        }
+      }
+  
+      // Validar existencia del vehículo
+      const [vehiculo] = await sequelize.query(
+        `SELECT * FROM Vehiculos WHERE VehiculoID = :id`,
+        { replacements: { id }, type: sequelize.QueryTypes.SELECT }
+      );
+      if (!vehiculo) {
+        return res.status(404).json({ message: "Vehículo no encontrado" });
+      }
+  
+      // Procesar imagen (si se envía)
+      let imageUrl = vehiculo.ImagenUrl;
+      if (req.file) {
+        // Validar formato del archivo
+        const validFormats = ["image/jpeg", "image/png", "image/jpg"];
+        if (!validFormats.includes(req.file.mimetype)) {
+          return res
+            .status(400)
+            .json({ message: "Formato de imagen no soportado." });
+        }
+        imageUrl = `https://cotizaciones-jpmotors.onrender.com/image/${req.file.filename}`;
+      }
+  
+      // Actualizar en la base de datos
+      const query = `
+        UPDATE Vehiculos
+        SET Modelo = :Modelo,
+            Marca = :Marca,
+            Anio = :Anio,
+            PrecioGerente = :PrecioGerente,
+            PrecioWeb = :PrecioWeb,
+            PrecioLista = :PrecioLista,
+            ImagenUrl = :ImagenUrl,
+            MarcaID = :MarcaID,
+            Condicion = :Condicion,
+            Estado = :Estado
+        WHERE VehiculoID = :id
+      `;
+      await sequelize.query(query, {
+        replacements: {
+          id,
+          Modelo: body.Modelo,
+          Marca: body.Marca,
+          Anio: body.Anio,
+          PrecioGerente: body.PrecioGerente,
+          PrecioWeb: body.PrecioWeb,
+          PrecioLista: body.PrecioLista,
+          ImagenUrl: imageUrl,
+          MarcaID: body.MarcaID,
+          Condicion: body.Condicion,
+          Estado: body.Estado,
+        },
+      });
+  
+      res.status(200).json({
+        message: "Vehículo actualizado con éxito",
+        vehiculo: { ...body, ImagenUrl: imageUrl },
+      });
+    } catch (error) {
+      console.error("Error al actualizar vehículo:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  },
+  
+
+
 };
   
 

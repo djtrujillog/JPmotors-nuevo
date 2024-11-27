@@ -204,32 +204,45 @@ const AgregarVehiculo = () => {
 
 
   const onSubmitEdit = async (data) => {
-    console.log("Datos enviados al backend:", data); // MarcaID debe estar presente
+    console.log("Datos enviados al backend:", data); // Asegúrate de que MarcaID esté presente.
+
+    if (!selectedFile) {
+        alert("Por favor, selecciona un archivo de imagen.");
+        return;
+    }
+
     const formData = new FormData();
     formData.append("image", selectedFile);
+
     Object.keys(data).forEach((key) => {
-      formData.append(key, data[key]);
+        formData.append(key, data[key]);
     });
 
     try {
-      const response = await axios.put(
-        `http://localhost:4000/vehiculos/${editingVehiculo.VehiculoID}`,
-        formData,
-        {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-        }
-    );
-const updatedVehiculos = vehiculos.map((v) =>
-  v.VehiculoID === editingVehiculo.VehiculoID ? response.data : v
-);
-setVehiculos(updatedVehiculos);
-closeEditModal();
+        const response = await axios.put(
+            `http://localhost:4000/image/create/${editingVehiculo.VehiculoID}`,
+            formData,
+            {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            }
+        );
+
+        // Actualizar la lista de vehículos en el estado.
+        const updatedVehiculos = vehiculos.map((v) =>
+            v.VehiculoID === editingVehiculo.VehiculoID ? response.data : v
+        );
+        setVehiculos(updatedVehiculos);
+
+        alert("Vehículo actualizado con éxito.");
+        closeEditModal();
     } catch (error) {
-  console.error("Error al editar vehículo:", error);
-}
-  };
+        console.error("Error al editar vehículo:", error);
+        alert("Ocurrió un error al actualizar el vehículo.");
+    }
+};
+
 
 const deleteVehiculo = async (VehiculoID) => {
   try {

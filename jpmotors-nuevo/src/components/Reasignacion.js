@@ -13,7 +13,7 @@ const Cotizaciones = () => {
 
   useEffect(() => {
     // Llamar a la API de cotizaciones
-    axios.get('http://localhost:4000/cotizaciones')
+    axios.get('https://cotizaciones-jpmotors.onrender.com/cotizaciones')
       .then(response => {
         setCotizaciones(response.data);
       })
@@ -22,7 +22,7 @@ const Cotizaciones = () => {
       });
 
     // Llamar a la API de empleados
-    axios.get('http://localhost:4000/empleados')
+    axios.get('https://cotizaciones-jpmotors.onrender.com/empleados')
       .then(response => {
         setEmpleados(response.data);
       })
@@ -57,7 +57,7 @@ const Cotizaciones = () => {
       }
 
       // Llamada a la API para reasignar
-      axios.put(`http://localhost:4000/cotizaciones/reasignarEmpleado/${cotizacionSeleccionada.CotizacionID}`, {
+      axios.put(`https://cotizaciones-jpmotors.onrender.com/cotizaciones/reasignarEmpleado/${cotizacionSeleccionada.CotizacionID}`, {
         EmpleadoID: nuevoEmpleadoId
       })
       .then(response => {
@@ -113,7 +113,7 @@ const Cotizaciones = () => {
       }
 
       // Llamada a la API para editar la cotización
-      axios.put(`http://localhost:4000/cotizaciones/modificarseparado/${cotizacionSeleccionada.CotizacionID}`, {
+      axios.put(`https://cotizaciones-jpmotors.onrender.com/cotizaciones/modificarseparado/${cotizacionSeleccionada.CotizacionID}`, {
         EmpleadoID: nuevoEmpleadoId,
         EstadoCotizacion: nuevoEstado
       })

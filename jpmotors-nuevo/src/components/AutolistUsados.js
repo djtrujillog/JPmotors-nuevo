@@ -32,7 +32,7 @@ const AutolistUsadosdos = () => {
           setModelos(uniqueModelos);
         } else {
           // Hacer la consulta a la API
-          const response = await fetch('http://localhost:4000/vehiculos/usados');
+          const response = await fetch('https://cotizaciones-jpmotors.onrender.com/vehiculos/usados');
           const data = await response.json();
           if (response.ok) {
             setAutos(data);

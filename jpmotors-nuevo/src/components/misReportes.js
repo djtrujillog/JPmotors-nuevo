@@ -45,7 +45,7 @@ const MisReportes = () => {
 
   const fetchClientes = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/clientes");
+      const response = await axios.get("https://cotizaciones-jpmotors.onrender.com/clientes");
       setClientes(response.data);
     } catch (error) {
       console.error("Error fetching clients:", error);
@@ -55,7 +55,7 @@ const MisReportes = () => {
 
   const fetchVehiculos = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/vehiculos");
+      const response = await axios.get("https://cotizaciones-jpmotors.onrender.com/vehiculos");
       setVehiculos(response.data);
     } catch (error) {
       console.error("Error fetching vehicles:", error);
@@ -74,7 +74,7 @@ const MisReportes = () => {
         EmpleadoId: empleado.id, // Se obtiene el empleadoId desde localStorage
       };
 
-      const response = await axios.post("http://localhost:4000/cotizaciones/byParameters", filtros);
+      const response = await axios.post("https://cotizaciones-jpmotors.onrender.com/cotizaciones/byParameters", filtros);
 
       const reportesNormalizados = response.data.map(reporte => ({
         CotizacionID: reporte.cotizacionId,

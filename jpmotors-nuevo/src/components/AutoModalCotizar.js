@@ -25,12 +25,12 @@ const AutoModalCotizar = ({ auto, cliente, empleado, onClose }) => {
           exteriorRes,
           dimensionesRes,
         ] = await Promise.all([
-          fetch(`http://localhost:4000/vehiculos/${auto.VehiculoID}`),
-          fetch(`http://localhost:4000/vehiculos/motor/${auto.VehiculoID}`),
-          fetch(`http://localhost:4000/vehiculos/seguridad/${auto.VehiculoID}`),
-          fetch(`http://localhost:4000/vehiculos/interior/${auto.VehiculoID}`),
-          fetch(`http://localhost:4000/vehiculos/exterior/${auto.VehiculoID}`),
-          fetch(`http://localhost:4000/vehiculos/dimensiones/${auto.VehiculoID}`),
+          fetch(`https://cotizaciones-jpmotors.onrender.com/vehiculos/${auto.VehiculoID}`),
+          fetch(`https://cotizaciones-jpmotors.onrender.com/vehiculos/motor/${auto.VehiculoID}`),
+          fetch(`https://cotizaciones-jpmotors.onrender.com/vehiculos/seguridad/${auto.VehiculoID}`),
+          fetch(`https://cotizaciones-jpmotors.onrender.com/vehiculos/interior/${auto.VehiculoID}`),
+          fetch(`https://cotizaciones-jpmotors.onrender.com/vehiculos/exterior/${auto.VehiculoID}`),
+          fetch(`https://cotizaciones-jpmotors.onrender.com/vehiculos/dimensiones/${auto.VehiculoID}`),
         ]);
 
         const [

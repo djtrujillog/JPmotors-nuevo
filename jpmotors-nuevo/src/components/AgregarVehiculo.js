@@ -36,7 +36,7 @@ const AgregarVehiculo = () => {
   const fetchVehiculos = async () => {
     try {
       // Cambiar la URL de la solicitud para hacer la consulta más ligera
-      const response = await axios.get("http://localhost:4000/vehiculos/pornombre");
+      const response = await axios.get("https://cotizaciones-jpmotors.onrender.com/vehiculos/pornombre");
       setVehiculos(response.data || []); // Asegurarse de que siempre es un array
     } catch (error) {
       console.error("Error al obtener vehículos:", error);
@@ -45,7 +45,7 @@ const AgregarVehiculo = () => {
 
   const fetchMarcas = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/marcas");
+      const response = await axios.get("https://cotizaciones-jpmotors.onrender.com/marcas");
       setMarcas(response.data || []); // Asegura que se asigna un array
     } catch (error) {
       console.error("Error al obtener marcas:", error);
@@ -182,7 +182,7 @@ const AgregarVehiculo = () => {
     try {
       // Realiza la solicitud al backend
       const response = await axios.post(
-        "http://localhost:4000/image/create",
+        "https://cotizaciones-jpmotors.onrender.com/image/create",
         formData,
         {
           headers: {
@@ -213,7 +213,7 @@ const AgregarVehiculo = () => {
 
     try {
       const response = await axios.put(
-        `http://localhost:4000/vehiculos/${editingVehiculo.VehiculoID}`,
+        `https://cotizaciones-jpmotors.onrender.com/vehiculos/${editingVehiculo.VehiculoID}`,
         formData,
         {
             headers: {
@@ -234,7 +234,7 @@ closeEditModal();
 const deleteVehiculo = async (VehiculoID) => {
   try {
     await axios.delete(
-      `http://localhost:4000/vehiculos/${VehiculoID}`
+      `https://cotizaciones-jpmotors.onrender.com/vehiculos/${VehiculoID}`
     );
     setVehiculos(vehiculos.filter((v) => v.VehiculoID !== VehiculoID));
   } catch (error) {

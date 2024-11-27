@@ -82,43 +82,39 @@ const vehiculoController = {
   
   getVehiculosUsados: async (req, res) => {
     try {
-      const result = await sequelize.query(
-        "SELECT VehiculoID, Modelo, Marca, Anio, PrecioGerente, PrecioWeb, PrecioLista, ImagenUrl, MarcaID, Condicion, Estado FROM Vehiculos v WHERE Condicion = 'Usado' AND Estado ='Activo'", 
-        {
-          type: sequelize.QueryTypes.SELECT,
-        }
-      );
-  
+      // Consulta para obtener los datos de los vehículos
+      const result = await sequelize.query("SELECT VehiculoID, Modelo, Marca, Anio, PrecioGerente, PrecioWeb, PrecioLista, ImagenUrl, MarcaID, Condicion, Estado FROM Vehiculos v WHERE Condicion = 'Usado' AND Estado ='Activo'", {
+        type: sequelize.QueryTypes.SELECT,
+      });
+
       if (result.length > 0) {
         const vehiculosConImagenes = await Promise.all(result.map(async (vehiculo) => {
           try {
-            // Extraer el nombre del archivo desde ImagenUrl
-            const nombreImagen = vehiculo.ImagenUrl.split('/').pop();
-            const imagenPath = path.join(__dirname, '../../images', nombreImagen);
-  
-            console.log('Ruta de la imagen:', imagenPath); // Debugging: Verificar la ruta
-  
-            // Verificar si la imagen existe
-            await fs.access(imagenPath);
-            console.log(`Imagen encontrada para el vehículo ${vehiculo.VehiculoID}`); // Debugging
-  
-            // Leer la imagen en base64
-            const imagenBase64 = await fs.readFile(imagenPath, { encoding: 'base64' });
-            vehiculo.ImagenBase64 = `data:image/jpeg;base64,${imagenBase64}`;
+            // Construir la ruta completa de la imagen
+            const imagenPath = path.join(__dirname, '../../images', `${vehiculo.VehiculoID}.jpg`);
+            
+            // Verificar si la imagen existe y leerla en base64
+            try {
+              await fs.access(imagenPath);
+              const imagenBase64 = await fs.readFile(imagenPath, { encoding: 'base64' });
+              vehiculo.ImagenBase64 = `data:image/jpeg;base64,${imagenBase64}`;
+            } catch (error) {
+              vehiculo.ImagenBase64 = null; // Si la imagen no existe, asignar null
+            }
           } catch (error) {
-            console.log(`Imagen no encontrada para el vehículo ${vehiculo.VehiculoID}:`, error); // Debugging
-            vehiculo.ImagenBase64 = null; // Si la imagen no existe, asignar null
+            console.error(`Error al leer la imagen para el vehículo ${vehiculo.VehiculoID}:`, error);
+            vehiculo.ImagenBase64 = null;
           }
-  
+
           return vehiculo;
         }));
-  
+
         res.status(200).json(vehiculosConImagenes);
       } else {
-        res.status(404).json({ message: "No hay vehículos usados" });
+        res.status(404).json({ message: "No hay vehículos nuevos" });
       }
     } catch (error) {
-      console.error("Error al obtener vehículos usados:", error);
+      console.error("Error al obtener vehículos nuevos:", error);
       res.status(500).send("Error interno del servidor");
     }
   },

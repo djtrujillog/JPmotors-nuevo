@@ -28,7 +28,7 @@ const AgregarEmpleado = () => {
 
   const fetchEmpleados = async () => {
     try {
-      const response = await axios.get('https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/empleados');
+      const response = await axios.get('http://localhost:4000/empleados');
       setEmpleados(response.data);
     } catch (error) {
       console.error('Error al obtener empleados:', error);
@@ -37,7 +37,7 @@ const AgregarEmpleado = () => {
 
   const fetchRolesDisponibles = async () => {
     try {
-      const response = await axios.get('https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/empleados/roles');
+      const response = await axios.get('http://localhost:4000/empleados/roles');
       setRolesDisponibles(response.data);
     } catch (error) {
       console.error('Error al obtener roles:', error);
@@ -46,7 +46,7 @@ const AgregarEmpleado = () => {
 
   const fetchRolesDeEmpleado = async (empleadoId) => {
     try {
-      const response = await axios.get(`https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/empleados/${empleadoId}/roles`);
+      const response = await axios.get(`http://localhost:4000/empleados/${empleadoId}/roles`);
       return response.data.length > 0 ? response.data[0].RolID : '';
     } catch (error) {
       console.error('Error al obtener roles del empleado:', error);
@@ -80,7 +80,7 @@ const AgregarEmpleado = () => {
 
   const addEmpleado = async () => {
     try {
-      const response = await axios.post('https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/empleados', form);
+      const response = await axios.post('http://localhost:4000/empleados', form);
       if (form.RolID) {
         await asignarRol(response.data.results.insertId, form.RolID);
       }
@@ -91,7 +91,7 @@ const AgregarEmpleado = () => {
 
   const updateEmpleado = async () => {
     try {
-      await axios.put(`https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/empleados/${currentEmpleadoId}`, form);
+      await axios.put(`http://localhost:4000/empleados/${currentEmpleadoId}`, form);
       await asignarRol(currentEmpleadoId, form.RolID);
     } catch (error) {
       console.error('Error al actualizar empleado:', error);
@@ -100,7 +100,7 @@ const AgregarEmpleado = () => {
 
   const asignarRol = async (EmpleadoID, RolID) => {
     try {
-      await axios.post('https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/empleados/asignar-rol', { EmpleadoID, RolID });
+      await axios.post('http://localhost:4000/empleados/asignar-rol', { EmpleadoID, RolID });
     } catch (error) {
       console.error('Error al asignar rol:', error);
     }
@@ -118,7 +118,7 @@ const AgregarEmpleado = () => {
 
   const deleteEmpleado = async (id) => {
     try {
-      await axios.delete(`https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/empleados/${id}`);
+      await axios.delete(`http://localhost:4000/empleados/${id}`);
       fetchEmpleados();
     } catch (error) {
       console.error('Error al eliminar empleado:', error);

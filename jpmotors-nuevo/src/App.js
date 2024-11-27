@@ -139,7 +139,7 @@ function App() {
                           
                         </NavDropdown>
                         <NavDropdown title="Seguimientos" id="seguimientosDropdown">
-                          <NavDropdown.Item as={Link} to="/cotizar"> onClick={handleNavClick}Cartera</NavDropdown.Item>
+                          <NavDropdown.Item as={Link} to="/cotizar" onClick={handleNavClick}>Cartera</NavDropdown.Item>
                           {roles.includes('Admin') && (
                           <NavDropdown.Item as={Link} to="/reasignar" onClick={handleNavClick}>Reasingar</NavDropdown.Item>
                           )}
@@ -148,11 +148,7 @@ function App() {
                       </>
                     )}
                     <Nav.Item>
-                      {/* <Nav.Link onClick={handleLogout} className="nav-link"> */}
-                      <Nav.Link className="me-auto" onSelect={() => setExpanded(false)}>
-
-                        Logout
-                      </Nav.Link>
+                      <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
                     </Nav.Item>
                   </>
                 )}

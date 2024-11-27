@@ -24,7 +24,7 @@ const AutoList = () => {
           setAutos(data);
           updateMarcasYModelos(data);
         } else {
-          const response = await fetch('https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/vehiculos/nuevos');
+          const response = await fetch('http://localhost:4000/vehiculos/nuevos');
           const data = await response.json();
           if (response.ok) {
             console.log('Datos de vehículos:', data); // Agregar log

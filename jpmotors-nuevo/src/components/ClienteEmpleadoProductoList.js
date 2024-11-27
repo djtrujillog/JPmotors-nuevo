@@ -39,7 +39,7 @@ const ClienteEmpleadoProductoList = () => {
       try {
         await fetchVehiculos();
         const clientesResponse = await axios.get(
-          "https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/clientes"
+          "http://localhost:4000/clientes"
         );
         setClientes(clientesResponse.data);
 
@@ -69,7 +69,7 @@ const ClienteEmpleadoProductoList = () => {
 
   const fetchCotizaciones = async (empleadoId, rol) => {
     try {
-      const response = await axios.get(`https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/cotizaciones/byEmpleadoId/${empleadoId}`);
+      const response = await axios.get(`http://localhost:4000/cotizaciones/byEmpleadoId/${empleadoId}`);
       let cotizacionesData = response.data;
   
       if (rol === "User" || rol === "Admin") {
@@ -80,11 +80,11 @@ const ClienteEmpleadoProductoList = () => {
   
       cotizacionesData = await Promise.all(
         cotizacionesData.map(async (cotizacion) => {
-          const vehiculoRes = await axios.get(`https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/vehiculos/${cotizacion.VehiculoID}`);
+          const vehiculoRes = await axios.get(`http://localhost:4000/vehiculos/${cotizacion.VehiculoID}`);
           if (!vehiculoRes.data) throw new Error('Vehículo data es undefined');
           const vehiculo = vehiculoRes.data;
   
-          const marcaRes = await axios.get(`https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/marcas/${vehiculo.MarcaID}`);
+          const marcaRes = await axios.get(`http://localhost:4000/marcas/${vehiculo.MarcaID}`);
           if (!marcaRes.data || !Array.isArray(marcaRes.data) || marcaRes.data.length === 0) {
             throw new Error('Marca data es undefined o el array está vacío');
           }
@@ -113,7 +113,7 @@ const ClienteEmpleadoProductoList = () => {
 
   const fetchVehiculos = async () => {
     try {
-      const response = await axios.get("https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/vehiculos/pornombre");
+      const response = await axios.get("http://localhost:4000/vehiculos/pornombre");
       setVehiculos(response.data);
       setVehiculosLoaded(true);
     } catch (error) {
@@ -130,13 +130,13 @@ const ClienteEmpleadoProductoList = () => {
       }
   
       if (selectedCotizacion) {
-        await axios.put("https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/cotizaciones", {
+        await axios.put("http://localhost:4000/cotizaciones", {
           CotizacionID: selectedCotizacion.CotizacionID,
           ...formCotizacion,
           EmpleadoID: empleado.id,
         });
       } else {
-        await axios.post("https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/cotizaciones", {
+        await axios.post("http://localhost:4000/cotizaciones", {
           ...formCotizacion,
           EmpleadoID: empleado.id,
           FechaCotizacion: new Date().toISOString().slice(0, 10),
@@ -173,13 +173,13 @@ const handleGeneratePdf = async (cotizacion) => {
       dimensionesRes,
       garantiaRes,
     ] = await Promise.all([
-      fetch(`https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/vehiculos/${cotizacion.VehiculoID}`),
-      fetch(`https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/vehiculos/motor/${cotizacion.VehiculoID}`),
-      fetch(`https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/vehiculos/seguridad/${cotizacion.VehiculoID}`),
-      fetch(`https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/vehiculos/interior/${cotizacion.VehiculoID}`),
-      fetch(`https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/vehiculos/exterior/${cotizacion.VehiculoID}`),
-      fetch(`https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/vehiculos/dimensiones/${cotizacion.VehiculoID}`),
-      fetch(`https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/vehiculos/detalleGarantia/${cotizacion.VehiculoID}`),
+      fetch(`http://localhost:4000/vehiculos/${cotizacion.VehiculoID}`),
+      fetch(`http://localhost:4000/vehiculos/motor/${cotizacion.VehiculoID}`),
+      fetch(`http://localhost:4000/vehiculos/seguridad/${cotizacion.VehiculoID}`),
+      fetch(`http://localhost:4000/vehiculos/interior/${cotizacion.VehiculoID}`),
+      fetch(`http://localhost:4000/vehiculos/exterior/${cotizacion.VehiculoID}`),
+      fetch(`http://localhost:4000/vehiculos/dimensiones/${cotizacion.VehiculoID}`),
+      fetch(`http://localhost:4000/vehiculos/detalleGarantia/${cotizacion.VehiculoID}`),
     ]);
 
     const [
@@ -208,7 +208,7 @@ const handleGeneratePdf = async (cotizacion) => {
     }
 
     // Hacer la solicitud al logo de la marca usando el MarcaID del vehículo
-    const marcaRes = await axios.get(`https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/marcas/${vehiculo.MarcaID}`);
+    const marcaRes = await axios.get(`http://localhost:4000/marcas/${vehiculo.MarcaID}`);
     const marcaData = marcaRes.data[0];
 
     // Crear blob para el logo de la marca si está disponible
@@ -229,7 +229,7 @@ const vehicleImageUrl = imageData.ImagenBase64; // Usar directamente la base64
     const cliente = clientes.find((c) => c.ClienteID === cotizacion.ClienteID);
 
     // Obtener los detalles del empleado desde la API
-    const empleadoResponse = await axios.get(`https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/empleados/${empleado.id}`);
+    const empleadoResponse = await axios.get(`http://localhost:4000/empleados/${empleado.id}`);
     const { Telefono: telefonoEmpleado } = empleadoResponse.data;
 
     // Crear el documento PDF
@@ -391,7 +391,7 @@ const vehicleImageUrl = imageData.ImagenBase64; // Usar directamente la base64
                         ) {
                           try {
                             await axios.delete(
-                              `https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/cotizaciones/${cotizacion.CotizacionID}`
+                              `http://localhost:4000/cotizaciones/${cotizacion.CotizacionID}`
                             );
                             await fetchCotizaciones(empleado.id, empleado.rol);
                           } catch (error) {

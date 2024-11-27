@@ -371,7 +371,7 @@ getPaginar: async (req, res) => {
     post: async (req, res) => {
       try {
         const { body } = req;
-        const imagenUrl = `https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/${Date.now()}.jpg`; // URL ficticia para el ejemplo
+        const imagenUrl = `https://cotizaciones-jpmotors.onrender.com/${Date.now()}.jpg`; // URL ficticia para el ejemplo
   
         const result = await sequelize.query(
           `INSERT INTO Vehiculos (Modelo, Marca, Anio, PrecioGerente, PrecioWeb, PrecioLista, ImagenUrl, MarcaID, Condicion, Estado)

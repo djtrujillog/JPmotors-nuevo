@@ -17,7 +17,7 @@ const imageController = {
         return res.status(400).json({ message: 'No se ha cargado ninguna imagen' });
       }
 
-      const imageUrl = `https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/image/${req.file.filename}`;
+      const imageUrl = `https://cotizaciones-jpmotors.onrender.com/image/${req.file.filename}`;
       res.status(201).json({ message: 'Imagen subida con éxito', imageUrl });
     } catch (error) {
       if (error.code === 'ENOENT') {
@@ -81,7 +81,7 @@ const imageController = {
         }
       }
   
-      const imageUrl = `https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/image/${req.file.filename}`;
+      const imageUrl = `https://cotizaciones-jpmotors.onrender.com/image/${req.file.filename}`;
   
       // Insertar los datos del vehículo en la base de datos
       const result = await sequelize.query(
@@ -125,7 +125,7 @@ const imageController = {
       // Verificar si se envió un archivo para actualizar la imagen
       let imageUrl;
       if (req.file) {
-        imageUrl = `https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/image/${req.file.filename}`;
+        imageUrl = `https://cotizaciones-jpmotors.onrender.com/image/${req.file.filename}`;
       }
   
       // Log para depuración

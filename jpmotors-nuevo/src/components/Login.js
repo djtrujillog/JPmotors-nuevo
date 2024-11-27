@@ -10,7 +10,7 @@ const Login = ({ setAuth, handleClose }) => {
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    axios.post('https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/auth/signin', { usuario, contrasena })
+    axios.post('http://localhost:4000/auth/signin', { usuario, contrasena })
       .then(res => {
         // Almacenar la información en el localStorage
         localStorage.setItem('token', res.data.token);

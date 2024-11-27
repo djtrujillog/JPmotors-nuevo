@@ -13,7 +13,7 @@ const Cotizaciones = () => {
 
   useEffect(() => {
     // Llamar a la API de cotizaciones
-    axios.get('https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/cotizaciones')
+    axios.get('http://localhost:4000/cotizaciones')
       .then(response => {
         setCotizaciones(response.data);
       })
@@ -22,7 +22,7 @@ const Cotizaciones = () => {
       });
 
     // Llamar a la API de empleados
-    axios.get('https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/empleados')
+    axios.get('http://localhost:4000/empleados')
       .then(response => {
         setEmpleados(response.data);
       })
@@ -57,7 +57,7 @@ const Cotizaciones = () => {
       }
 
       // Llamada a la API para reasignar
-      axios.put(`https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/cotizaciones/reasignarEmpleado/${cotizacionSeleccionada.CotizacionID}`, {
+      axios.put(`http://localhost:4000/cotizaciones/reasignarEmpleado/${cotizacionSeleccionada.CotizacionID}`, {
         EmpleadoID: nuevoEmpleadoId
       })
       .then(response => {
@@ -113,7 +113,7 @@ const Cotizaciones = () => {
       }
 
       // Llamada a la API para editar la cotización
-      axios.put(`https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/cotizaciones/modificarseparado/${cotizacionSeleccionada.CotizacionID}`, {
+      axios.put(`http://localhost:4000/cotizaciones/modificarseparado/${cotizacionSeleccionada.CotizacionID}`, {
         EmpleadoID: nuevoEmpleadoId,
         EstadoCotizacion: nuevoEstado
       })

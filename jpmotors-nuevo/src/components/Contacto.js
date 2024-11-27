@@ -41,7 +41,7 @@ function Contacto() {
       }
       
       try {
-          const response = await fetch('https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/mail/send', {
+          const response = await fetch('http://localhost:4000/mail/send', {
               method: 'POST',
               headers: {
                   'Content-Type': 'application/json',

@@ -7,7 +7,7 @@ import cardImg2 from "../img/Logo-03.jpg";
 function Home() {
   const [carouselImages, setCarouselImages] = useState([]);
   const [loading, setLoading] = useState(true);
-  const apiUrl = "http://localhost:4000/image/all";
+  const apiUrl = "https://cotizaciones-jpmotors.onrender.com/image/all";
 
   // Cargar imágenes desde el endpoint
   const fetchCarouselImages = async () => {

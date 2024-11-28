@@ -15,7 +15,7 @@ const AutoList = () => {
   useEffect(() => {
     const fetchAutos = async () => {
       try {
-        const response = await fetch('http://localhost:4000/vehiculos/nuevos');
+        const response = await fetch('https://cotizaciones-jpmotors.onrender.com/vehiculos/nuevos');
         if (response.ok) {
           const data = await response.json();
           console.log('Datos de vehículos:', data); // Para depuración

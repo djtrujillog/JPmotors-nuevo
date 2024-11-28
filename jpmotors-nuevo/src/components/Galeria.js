@@ -11,9 +11,9 @@ const ImageGallery = () => {
   const [selectedFile, setSelectedFile] = useState(null);
 
   const limit = 10; // Número de imágenes por página
-  const apiUrl = "http://localhost:4000/image/all"; // Endpoint para obtener imágenes
-  const deleteUrl = "http://localhost:4000/image/imagesg"; // Endpoint para eliminar imágenes
-  const uploadUrl = "http://localhost:4000/image/uploadg"; // Endpoint para subir imágenes
+  const apiUrl = "https://cotizaciones-jpmotors.onrender.com/image/all"; // Endpoint para obtener imágenes
+  const deleteUrl = "https://cotizaciones-jpmotors.onrender.com/image/imagesg"; // Endpoint para eliminar imágenes
+  const uploadUrl = "https://cotizaciones-jpmotors.onrender.com/image/uploadg"; // Endpoint para subir imágenes
 
   // Obtener imágenes desde la API
   const fetchImages = async (page) => {

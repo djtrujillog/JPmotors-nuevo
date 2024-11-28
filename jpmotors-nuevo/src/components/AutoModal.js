@@ -30,7 +30,7 @@ const AutoModal = ({ auto, onClose }) => {
 
   const handleCotizacionSubmit = async (e) => {
     e.preventDefault();
-    const response = await fetch('http://localhost:4000/mail/cotizacion', {
+    const response = await fetch('https://cotizaciones-jpmotors.onrender.com/mail/cotizacion', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -66,14 +66,14 @@ const AutoModal = ({ auto, onClose }) => {
           dimensionesRes,
           garantiaRes
         ] = await Promise.all([
-          fetch(`http://localhost:4000/vehiculos/${auto.VehiculoID}`),
-          fetch(`http://localhost:4000/marcas/${auto.MarcaID}`),
-          fetch(`http://localhost:4000/vehiculos/motor/${auto.VehiculoID}`),
-          fetch(`http://localhost:4000/vehiculos/seguridad/${auto.VehiculoID}`),
-          fetch(`http://localhost:4000/vehiculos/interior/${auto.VehiculoID}`),
-          fetch(`http://localhost:4000/vehiculos/exterior/${auto.VehiculoID}`),
-          fetch(`http://localhost:4000/vehiculos/dimensiones/${auto.VehiculoID}`),
-          fetch(`http://localhost:4000/vehiculos/detalleGarantia/${auto.VehiculoID}`)
+          fetch(`https://cotizaciones-jpmotors.onrender.com/vehiculos/${auto.VehiculoID}`),
+          fetch(`https://cotizaciones-jpmotors.onrender.com/marcas/${auto.MarcaID}`),
+          fetch(`https://cotizaciones-jpmotors.onrender.com/vehiculos/motor/${auto.VehiculoID}`),
+          fetch(`https://cotizaciones-jpmotors.onrender.com/vehiculos/seguridad/${auto.VehiculoID}`),
+          fetch(`https://cotizaciones-jpmotors.onrender.com/vehiculos/interior/${auto.VehiculoID}`),
+          fetch(`https://cotizaciones-jpmotors.onrender.com/vehiculos/exterior/${auto.VehiculoID}`),
+          fetch(`https://cotizaciones-jpmotors.onrender.com/vehiculos/dimensiones/${auto.VehiculoID}`),
+          fetch(`https://cotizaciones-jpmotors.onrender.com/vehiculos/detalleGarantia/${auto.VehiculoID}`)
         ]);
 
         const [

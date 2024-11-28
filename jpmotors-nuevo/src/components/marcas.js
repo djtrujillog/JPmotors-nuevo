@@ -18,7 +18,7 @@ function ListaMarcas() {
 
   const fetchMarcas = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/marcas/");
+      const response = await axios.get("https://cotizaciones-jpmotors.onrender.com/marcas/");
       setMarcas(response.data);
     } catch (error) {
       console.error("Error al obtener marcas:", error);
@@ -40,7 +40,7 @@ function ListaMarcas() {
     console.log("ID a eliminar:", id); // Log para depuración
     if (window.confirm("¿Estás seguro de que deseas eliminar esta marca?")) {
         try {
-            await axios.delete(`http://localhost:4000/marcas/${id}`);
+            await axios.delete(`https://cotizaciones-jpmotors.onrender.com/marcas/${id}`);
             fetchMarcas(); // Llama a la función para actualizar la lista
         } catch (error) {
             console.error("Error al eliminar la marca:", error);
@@ -58,11 +58,11 @@ function ListaMarcas() {
 
     try {
       if (isEditMode) {
-        await axios.put(`http://localhost:4000/marcas/${marcaActual.MarcaID}/logo`, formData); // Actualiza la marca
+        await axios.put(`https://cotizaciones-jpmotors.onrender.com/marcas/${marcaActual.MarcaID}/logo`, formData); // Actualiza la marca
 
 
       } else {
-        await axios.post("http://localhost:4000/marcas/", formData);
+        await axios.post("https://cotizaciones-jpmotors.onrender.com/marcas/", formData);
       }
       fetchMarcas();
       handleCloseModal();

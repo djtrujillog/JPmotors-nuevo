@@ -40,7 +40,7 @@ const CotizacionDetallesModal = ({ cotizacion, show, onHide }) => {
       const fetchSeguimientos = async () => {
         if (cotizacion) {
           try {
-            const response = await axios.get(`http://localhost:4000/seguimientos/${cotizacion.CotizacionID}`);
+            const response = await axios.get(`https://cotizaciones-jpmotors.onrender.com/seguimientos/${cotizacion.CotizacionID}`);
             setSeguimientos(response.data);
           } catch (error) {
             console.error("Error al obtener seguimientos:", error);
@@ -51,7 +51,7 @@ const CotizacionDetallesModal = ({ cotizacion, show, onHide }) => {
       const fetchVehicleImage = async () => {
         if (cotizacion) {
           try {
-            const imageRes = await fetch(`http://localhost:4000/vehiculos/${cotizacion.VehiculoID}`);
+            const imageRes = await fetch(`https://cotizaciones-jpmotors.onrender.com/vehiculos/${cotizacion.VehiculoID}`);
             const imageData = await imageRes.json();
             
             // Asegurar que la imagen tenga el prefijo adecuado
@@ -78,11 +78,11 @@ const CotizacionDetallesModal = ({ cotizacion, show, onHide }) => {
 
   const handleAddSeguimiento = async () => {
     try {
-      await axios.post("http://localhost:4000/seguimientos", {
+      await axios.post("https://cotizaciones-jpmotors.onrender.com/seguimientos", {
         ...formSeguimiento,
         CotizacionID: cotizacion.CotizacionID,
       });
-      const updatedSeguimientos = await axios.get(`http://localhost:4000/seguimientos/${cotizacion.CotizacionID}`);
+      const updatedSeguimientos = await axios.get(`https://cotizaciones-jpmotors.onrender.com/seguimientos/${cotizacion.CotizacionID}`);
       setSeguimientos(updatedSeguimientos.data);
       setFormSeguimiento({
         Comentario: "",
@@ -106,12 +106,12 @@ const CotizacionDetallesModal = ({ cotizacion, show, onHide }) => {
 
   const handleUpdateSeguimiento = async () => {
     try {
-      await axios.put("http://localhost:4000/seguimientos", {
+      await axios.put("https://cotizaciones-jpmotors.onrender.com/seguimientos", {
         SeguimientoID: editingId,
         CotizacionID: cotizacion.CotizacionID,
         ...formSeguimiento,
       });
-      const updatedSeguimientos = await axios.get(`http://localhost:4000/seguimientos/${cotizacion.CotizacionID}`);
+      const updatedSeguimientos = await axios.get(`https://cotizaciones-jpmotors.onrender.com/seguimientos/${cotizacion.CotizacionID}`);
       setSeguimientos(updatedSeguimientos.data);
       setIsEditing(false);
       setEditingId(null);
@@ -127,8 +127,8 @@ const CotizacionDetallesModal = ({ cotizacion, show, onHide }) => {
 
   const handleDeleteSeguimiento = async (id) => {
     try {
-      await axios.delete(`http://localhost:4000/seguimientos/${id}`);
-      const updatedSeguimientos = await axios.get(`http://localhost:4000/seguimientos/${cotizacion.CotizacionID}`);
+      await axios.delete(`https://cotizaciones-jpmotors.onrender.com/seguimientos/${id}`);
+      const updatedSeguimientos = await axios.get(`https://cotizaciones-jpmotors.onrender.com/seguimientos/${cotizacion.CotizacionID}`);
       setSeguimientos(updatedSeguimientos.data);
     } catch (error) {
       console.error("Error al eliminar seguimiento:", error);

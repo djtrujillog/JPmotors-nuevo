@@ -19,7 +19,7 @@ const DetallesVehiculoSeguridadModal = ({ show, handleClose, vehiculo }) => {
 
   const fetchExistingDetalles = async (VehiculoID) => {
     try {
-      const response = await axios.get(`http://localhost:4000/vehiculos/detalleSeguridad/${VehiculoID}`);
+      const response = await axios.get(`https://cotizaciones-jpmotors.onrender.com/vehiculos/detalleSeguridad/${VehiculoID}`);
       if (response.data) {
         setExistingDetalles(response.data.filter(detalle => detalle.Descripcion.trim() !== ''));
       } else {
@@ -36,7 +36,7 @@ const DetallesVehiculoSeguridadModal = ({ show, handleClose, vehiculo }) => {
         VehiculoID: vehiculo.VehiculoID,
         descripcion: descripcion
       };
-      await axios.post('http://localhost:4000/vehiculos/eliminarSeguridad', body);
+      await axios.post('https://cotizaciones-jpmotors.onrender.com/vehiculos/eliminarSeguridad', body);
       const updatedDetalles = existingDetalles.filter(detalle => detalle.Descripcion !== descripcion);
       setExistingDetalles(updatedDetalles);
       alert('Detalle de Seguridad eliminado correctamente');
@@ -65,7 +65,7 @@ const DetallesVehiculoSeguridadModal = ({ show, handleClose, vehiculo }) => {
         Descripcion: editDetalle,
         originalDescripcion: originalDetalle
       };
-      await axios.put(`http://localhost:4000/vehiculos/detalleSeguridad/${encodeURIComponent(originalDetalle)}`, body);
+      await axios.put(`https://cotizaciones-jpmotors.onrender.com/vehiculos/detalleSeguridad/${encodeURIComponent(originalDetalle)}`, body);
       const updatedDetalles = existingDetalles.map(detalle => detalle.Descripcion === originalDetalle ? { ...detalle, Descripcion: editDetalle } : detalle);
       setExistingDetalles(updatedDetalles);
       alert('Detalle de Seguridad editado correctamente');
@@ -83,7 +83,7 @@ const DetallesVehiculoSeguridadModal = ({ show, handleClose, vehiculo }) => {
         VehiculoID: vehiculo.VehiculoID,
         Descripcion: newDetalle
       };
-      const response = await axios.post('http://localhost:4000/vehiculos/detalleSeguridad', body);
+      const response = await axios.post('https://cotizaciones-jpmotors.onrender.com/vehiculos/detalleSeguridad', body);
       setExistingDetalles([...existingDetalles, response.data.detalleSeguridad]);
       setNewDetalle('');
       alert('Detalle de Seguridad agregado correctamente');

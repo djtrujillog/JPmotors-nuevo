@@ -41,6 +41,7 @@ const imageController = {
       }
     });
   },
+  // Método para servir una imagen del carusel
 
   getCarusel: (req, res) => {
     const { nombreImagen } = req.params;
@@ -235,7 +236,7 @@ const imageController = {
         const imageDir = path.join(__dirname, '../../images/carusel');
         const files = await fs.readdir(imageDir); // Listar todos los archivos del directorio
         
-        const baseUrl = 'http://localhost:4000/image/caru';
+        const baseUrl = 'https://cotizaciones-jpmotors.onrender.com/image/caru';
         const images = files.map(file => ({
           name: file,
           url: `${baseUrl}/${file}`
@@ -267,7 +268,7 @@ getAllImagesPag: async (req, res) => {
     const paginatedFiles = files.slice(startIndex, endIndex);
 
     // Construir URLs para las imágenes seleccionadas
-    const baseUrl = 'http://localhost:4000/image/images';
+    const baseUrl = 'https://cotizaciones-jpmotors.onrender.com/image/images';
     const images = paginatedFiles.map(file => ({
       name: file,
       url: `${baseUrl}/${file}`

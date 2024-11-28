@@ -31,7 +31,7 @@ app.use(cors());
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
-app.get('/', (req, res) => res.json({ message: 'API JP Motors GT Septiembre 20 2024 By J&M' }));
+app.get('/', (req, res) => res.json({ message: 'API JP Motors GT Noviembre 27 2024 By J&M' }));
 
 app.use('/auth', authRouters);
 app.use('/dashboard', dashboardRouters);

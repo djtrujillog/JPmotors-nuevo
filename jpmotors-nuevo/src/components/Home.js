@@ -1,38 +1,57 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Carousel, Row, Col, Container } from "react-bootstrap";
-import img1 from "../img/caru1.jpg";
-import img2 from "../img/caru2.jpg";
-import img3 from "../img/caru3.jpg";
-import img4 from "../img/caru4.jpg";
-import img5 from "../img/caru3.jpg";
+import axios from "axios";
 import cardImg1 from "../img/Logo-02.jpg";
 import cardImg2 from "../img/Logo-03.jpg";
 
 function Home() {
-  return (
-    
-    <Container>
-      <Carousel>
-        <Carousel.Item>
-          <img src={img1} className="d-block w-100" alt="First slide" />
-        </Carousel.Item>
-        <Carousel.Item>
-          <img src={img2} className="d-block w-100" alt="Second slide" />
-        </Carousel.Item>
-        <Carousel.Item>
-          <img src={img3} className="d-block w-100" alt="Third slide" />
-        </Carousel.Item>
-        <Carousel.Item>
-          <img src={img4} className="d-block w-100" alt="Four slide" />
-        </Carousel.Item>
-        <Carousel.Item>
-          <img src={img5} className="d-block w-100" alt="Five slide" />
-        </Carousel.Item>
-      </Carousel>
+  const [carouselImages, setCarouselImages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const apiUrl = "http://localhost:4000/image/all";
 
+  // Cargar imágenes desde el endpoint
+  const fetchCarouselImages = async () => {
+    try {
+      const response = await axios.get(apiUrl);
+      setCarouselImages(response.data.images); // Guardar las imágenes obtenidas
+    } catch (error) {
+      console.error("Error al cargar las imágenes del carrusel:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Cargar imágenes al montar el componente
+  useEffect(() => {
+    fetchCarouselImages();
+  }, []);
+
+  return (
+    <Container>
+      {/* Carrusel */}
+      {loading ? (
+        <div className="d-flex justify-content-center my-4">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Cargando carrusel...</span>
+          </div>
+        </div>
+      ) : (
+        <Carousel>
+          {carouselImages.map((image, index) => (
+            <Carousel.Item key={image.name}>
+              <img
+                src={image.url}
+                className="d-block w-100"
+                alt={`Slide ${index + 1}`}
+              />
+            </Carousel.Item>
+          ))}
+        </Carousel>
+      )}
+
+      {/* Tarjetas */}
       <Row className="mt-4">
         <Col sm={6} className="mb-3 mb-sm-0">
-          
           <div className="card mb-3" style={{ maxWidth: "540px" }}>
             <div className="row g-0">
               <div className="col-md-4">
@@ -43,21 +62,21 @@ function Home() {
                 />
               </div>
               <div className="container-xl">
-              <div className="col-md-8">
-                <div className="card-body">
-                  <h5 className="card-title">
-                    ¿ESTÁS PENSANDO EN COMPRAR UN AUTO NUEVO?
-                  </h5>
-                  <p className="card-text">
-                    ¡En Jp Motors te ofrecemos las mejores opciones del mercado!
-                    Nuestros autos están equipados con la última tecnología, lo
-                    que te garantiza una experiencia de conducción segura,
-                    cómoda y eficiente. Además, ofrecemos una amplia variedad de
-                    modelos para que puedas elegir el que mejor se ajuste a tus
-                    necesidades.
-                  </p>
+                <div className="col-md-8">
+                  <div className="card-body">
+                    <h5 className="card-title">
+                      ¿ESTÁS PENSANDO EN COMPRAR UN AUTO NUEVO?
+                    </h5>
+                    <p className="card-text">
+                      ¡En Jp Motors te ofrecemos las mejores opciones del
+                      mercado! Nuestros autos están equipados con la última
+                      tecnología, lo que te garantiza una experiencia de
+                      conducción segura, cómoda y eficiente. Además, ofrecemos
+                      una amplia variedad de modelos para que puedas elegir el
+                      que mejor se ajuste a tus necesidades.
+                    </p>
+                  </div>
                 </div>
-              </div>
               </div>
             </div>
           </div>
@@ -75,18 +94,17 @@ function Home() {
               <div className="col-md-8">
                 <div className="card-body">
                   <div className="container-xl">
-                  <h5 className="card-title">¿BUSCAS UN AUTO USADO?</h5>
-                  <p className="card-text">
-                    ¡En JP Motors tenemos las mejores opciones para ti! Nuestros
-                    autos usados están rigurosamente revisados para garantizarte
-                    seguridad, comodidad y eficiencia a un precio inmejorable.
-                    Con una amplia variedad de modelos, estamos seguros de que
-                    encontrarás el auto perfecto que se ajuste a tus necesidades
-                    y presupuesto. ¡Visítanos hoy y descubre todas nuestras
-                    ofertas!
-                  </p>
-                  
-                </div>
+                    <h5 className="card-title">¿BUSCAS UN AUTO USADO?</h5>
+                    <p className="card-text">
+                      ¡En JP Motors tenemos las mejores opciones para ti!
+                      Nuestros autos usados están rigurosamente revisados para
+                      garantizarte seguridad, comodidad y eficiencia a un precio
+                      inmejorable. Con una amplia variedad de modelos, estamos
+                      seguros de que encontrarás el auto perfecto que se ajuste a
+                      tus necesidades y presupuesto. ¡Visítanos hoy y descubre
+                      todas nuestras ofertas!
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>

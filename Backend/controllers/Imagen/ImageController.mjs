@@ -42,6 +42,18 @@ const imageController = {
     });
   },
 
+  getCarusel: (req, res) => {
+    const { nombreImagen } = req.params;
+    const imagenPath = path.join(__dirname, '../../images/carusel', nombreImagen);
+
+    res.sendFile(imagenPath, (err) => {
+      if (err) {
+        console.error('Error al enviar la imagen:', err);
+        res.status(404).json({ message: 'Imagen no encontrada' });
+      }
+    });
+  },
+
   // Método para eliminar una imagen
   deleteImage: async (req, res) => {
     const { nombreImagen } = req.params;
@@ -52,6 +64,19 @@ const imageController = {
       res.status(200).json({ message: 'Imagen eliminada con éxito' });
     } catch (error) {
       console.error('Error al eliminar la imagen:', error);
+      res.status(404).json({ message: 'Imagen no encontrada o error al eliminarla' });
+    }
+  },
+   // Método para eliminar una imagen de carusel
+   deleteImageCarusel: async (req, res) => {
+    const { nombreImagen } = req.params;
+    const imagenPath = path.join(__dirname, '../../images/carusel', nombreImagen);
+
+    try {
+      await fs.unlink(imagenPath);
+      res.status(200).json({ message: 'Imagen eliminada de Carusel con éxito' });
+    } catch (error) {
+      console.error('Error al eliminar la imagen Carusel:', error);
       res.status(404).json({ message: 'Imagen no encontrada o error al eliminarla' });
     }
   },
@@ -203,7 +228,66 @@ const imageController = {
       res.status(500).json({ message: "Error interno del servidor" });
     }
   },
+
+    // Método para obtener todas las imágenes disponibles
+    getAllImages: async (req, res) => {
+      try {
+        const imageDir = path.join(__dirname, '../../images/carusel');
+        const files = await fs.readdir(imageDir); // Listar todos los archivos del directorio
+        
+        const baseUrl = 'http://localhost:4000/image/caru';
+        const images = files.map(file => ({
+          name: file,
+          url: `${baseUrl}/${file}`
+        }));
   
+        res.status(200).json({ message: 'Imágenes obtenidas con éxito', images });
+      } catch (error) {
+        console.error('Error al obtener las imágenes:', error);
+        res.status(500).json({ message: 'Error interno del servidor' });
+      }
+    },
+  
+
+    // Método para obtener todas las imágenes con paginación
+getAllImagesPag: async (req, res) => {
+  try {
+    const imageDir = path.join(__dirname, '../../images/carusel');
+    const files = await fs.readdir(imageDir); // Listar todos los archivos del directorio
+    
+    // Parámetros de paginación desde la consulta
+    const page = parseInt(req.query.page) || 1; // Página actual, por defecto 1
+    const limit = parseInt(req.query.limit) || 10; // Imágenes por página, por defecto 10
+
+    // Calcular el índice inicial y final para la paginación
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+
+    // Recortar la lista de imágenes según los índices calculados
+    const paginatedFiles = files.slice(startIndex, endIndex);
+
+    // Construir URLs para las imágenes seleccionadas
+    const baseUrl = 'http://localhost:4000/image/images';
+    const images = paginatedFiles.map(file => ({
+      name: file,
+      url: `${baseUrl}/${file}`
+    }));
+
+    // Preparar respuesta con información de la paginación
+    const totalPages = Math.ceil(files.length / limit);
+    res.status(200).json({
+      message: 'Imágenes obtenidas con éxito',
+      currentPage: page,
+      totalPages,
+      totalImages: files.length,
+      images
+    });
+  } catch (error) {
+    console.error('Error al obtener las imágenes:', error);
+    res.status(500).json({ message: 'Error interno del servidor' });
+  }
+},
+
 
 
 };

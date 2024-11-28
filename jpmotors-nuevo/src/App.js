@@ -17,6 +17,9 @@ import Reasignar from "./components/Reasignacion.js";
 import ClienteEmpleadoProductoList from "./components/ClienteEmpleadoProductoList.js";
 import MisReportes from "./components/misReportes.js";
 import Marcas from "./components/marcas.js";
+import ImageGallery from "./components/Galeria.js";
+// import { ImageGallery } from "./components/Galeria.js";
+
 import Login from "./components/Login";
 import logo from "./img/Logo-12.png";
 import "./App.css";
@@ -128,8 +131,10 @@ function App() {
                         )}
                           <NavDropdown.Item as={Link} to="/clientes"onClick={handleNavClick}>Administrar Clientes</NavDropdown.Item>
                           {roles.includes('Admin') && (
+                            <NavDropdown.Item as={Link} to="/galeria"onClick={handleNavClick}>Galeria</NavDropdown.Item>
+                          )}  {roles.includes('Admin') && (
                             <NavDropdown.Item as={Link} to="/agvehiculo"onClick={handleNavClick}>Agregar Vehiculo</NavDropdown.Item>
-                          )} {roles.includes('Admin') && (
+                          )}                           {roles.includes('Admin') && (
                             <NavDropdown.Item as={Link} to="/reportes"onClick={handleNavClick}>Reportes de Seguimientos</NavDropdown.Item>
                           )} {roles.includes('Admin') && (
                             <NavDropdown.Item as={Link} to="/marcas" onClick={handleNavClick}>Marcas</NavDropdown.Item>
@@ -186,6 +191,7 @@ function App() {
                   <Route path="/empleados" element={<Empleados />} />
                   <Route path="/reasignar" element={<Reasignar />} />
                   <Route path="/marcas" element={<Marcas />} />
+                  <Route path="/galeria" element={<ImageGallery />} />
                 </>
               )}
               {(roles.includes('Admin') || roles.includes('User')) && (

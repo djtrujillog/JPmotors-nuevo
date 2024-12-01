@@ -5,7 +5,7 @@ import PdfDocument from "./pdfDocument";
 import "../css/AutoModal.css"; // Import custom CSS
 
 const AutoModal = ({ auto, onClose }) => {
-  const [imageBase64, setImageBase64] = useState(null);
+  // const [imageBase64, setImageBase64] = useState(null);
   const [logoBlob, setLogoBlob] = useState(null); // Dejamos logoBlob como estaba
   const [motorDetails, setMotorDetails] = useState(null);
   const [seguridadDetails, setSeguridadDetails] = useState(null);
@@ -57,7 +57,7 @@ const AutoModal = ({ auto, onClose }) => {
     const fetchData = async () => {
       try {
         const [
-          imageRes,
+          // imageRes,
           marcaRes,
           motorRes,
           seguridadRes,
@@ -75,7 +75,6 @@ const AutoModal = ({ auto, onClose }) => {
           fetch(`https://cotizaciones-jpmotors.onrender.com/vehiculos/dimensiones/${auto.VehiculoID}`),
           fetch(`https://cotizaciones-jpmotors.onrender.com/vehiculos/detalleGarantia/${auto.VehiculoID}`)
         ]);
-
         const [
           imageData,
           marcaData,
@@ -86,7 +85,7 @@ const AutoModal = ({ auto, onClose }) => {
           dimensionesData,
           garantiaData
         ] = await Promise.all([
-          imageRes.json(),
+          // imageRes.json(),
           marcaRes.json(),
           motorRes.json(),
           seguridadRes.json(),
@@ -97,7 +96,7 @@ const AutoModal = ({ auto, onClose }) => {
         ]);
 
         // Asignar directamente la imagen en formato base64 desde la respuesta
-        setImageBase64(imageData.ImagenBase64);
+        // setImageBase64(imageData.ImagenBase64);
 
         // Convertir el logo a Blob si está presente
         if (marcaData[0]?.Logo?.data) {
@@ -117,12 +116,19 @@ const AutoModal = ({ auto, onClose }) => {
         console.error("Error al cargar los datos del vehículo:", error);
       }
     };
+    if (!auto) {
+      console.log("El objeto 'auto' no está definido");
+      return;
+    }
+
+    console.log("Contenido de 'auto':", auto);
+
 
     fetchData();
   }, [auto]);
 
   const noDataAvailable = (
-    !imageBase64 &&
+    // !imageBase64 &&
     !motorDetails &&
     !seguridadDetails &&
     !interiorDetails &&
@@ -158,14 +164,15 @@ const AutoModal = ({ auto, onClose }) => {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {imageBase64 && (
+          {auto.ImagenUrl && ( // Cambiado a auto.ImagenUrl
             <img
-              src={imageBase64}
+              src={auto.ImagenUrl} // Cambiado a auto.ImagenUrl
               className="img-fluid d-block mx-auto"
               alt={`${auto.Marca} ${auto.Modelo}`}
               style={{ maxWidth: "85%", height: "auto" }}
             />
           )}
+
           <div className="container">
             <div className="row">
               <div className="col-md-6">
@@ -247,7 +254,7 @@ const AutoModal = ({ auto, onClose }) => {
               <PdfDocument
                 marca={auto.Marca}
                 modelo={auto.Modelo}
-                imageUrl={imageBase64}
+                imageUrl={auto.ImagenUrl}
                 logoUrl={logoUrl}
                 motorDetails={motorDetails}
                 seguridadDetails={seguridadDetails}

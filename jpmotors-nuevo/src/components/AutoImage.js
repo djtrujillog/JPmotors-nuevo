@@ -1,34 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { Buffer } from 'buffer';
+import React from 'react';
 
-function AutoImage({ longBlobData, alt }) {
-    const [imgSrc, setImgSrc] = useState('');
-
-    useEffect(() => {
-        if (longBlobData) {
-            try {
-                if (typeof Buffer !== 'undefined') {
-                    const imgData = `data:image/jpeg;base64,${Buffer.from(longBlobData).toString('base64')}`;
-                    setImgSrc(imgData);
-                } else {
-                    console.error('Buffer is undefined.');
-                }
-            } catch (error) {
-                console.error('Error converting longBlobData to base64:', error);
-            }
-        }
-    }, [longBlobData]);
-
+function AutoImage({ imageUrl, alt }) {
     const handleImageClick = () => {
         // Implementar aquí la lógica para mostrar un modal o overlay con zoom
-        // console.log('Implementar lógica de zoom aquí');
+        console.log('Implementar lógica de zoom aquí');
     };
 
     return (
         <div className="text-center mb-3"> {/* Centrar la imagen */}
-            {imgSrc && (
+            {imageUrl && (
                 <img
-                    src={imgSrc}
+                    src={imageUrl}  // Usar la URL proporcionada en lugar de la conversión a base64
                     alt={alt}
                     style={{ maxWidth: '100%', height: 'auto', cursor: 'pointer' }}
                     onClick={handleImageClick}

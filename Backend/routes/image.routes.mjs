@@ -52,7 +52,7 @@ router.post('/uploadg', (req, res) => {
   });
 });
 
-// Obtener una imagen por su nombre
+// Obtener una imagen por su nombrerender
 router.get('/images/:nombreImagen', imageController.getImage);
 
 // Obtener una imagen por su nombre

@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   logo: {
-    width: '5%', // Ajusta el tamaño del logo según sea necesario
+    width: '25%', // Ajusta el tamaño del logo según sea necesario
     height: 'auto',
     marginBottom: 10,
     alignSelf: 'center', // Centrar el logo

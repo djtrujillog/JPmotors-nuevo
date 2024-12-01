@@ -107,7 +107,7 @@ const imageController = {
         }
       }
   
-      const imageUrl = `https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/image/${req.file.filename}`;
+      const imageUrl = `https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/image/images${req.file.filename}`;
   
       // Insertar los datos del vehículo en la base de datos
       const result = await sequelize.query(
@@ -186,7 +186,7 @@ const imageController = {
             .status(400)
             .json({ message: "Formato de imagen no soportado." });
         }
-        imageUrl = `https://cotizaciones-jpmotors.onrender.com/image/${req.file.filename}`;
+        imageUrl = `https://cotizaciones-jpmotors.onrender.com/image/images/${req.file.filename}`;
       }
   
       // Actualizar en la base de datos

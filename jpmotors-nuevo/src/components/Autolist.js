@@ -18,7 +18,7 @@ const AutoList = () => {
         const response = await fetch('https://cotizaciones-jpmotors.onrender.com/vehiculos/nuevos');
         if (response.ok) {
           const data = await response.json();
-          console.log('Datos de vehículos:', data); // Para depuración
+          // console.log('Datos de vehículos:', data); // Para depuración
           setAutos(data);
           updateMarcasYModelos(data);
         } else {

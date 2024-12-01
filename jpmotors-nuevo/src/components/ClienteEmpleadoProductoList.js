@@ -97,7 +97,7 @@ const ClienteEmpleadoProductoList = () => {
             PrecioLista: vehiculo.PrecioLista,
             Anio: vehiculo.Anio,
             VehiculoDescripcion: `${vehiculo.Modelo} ${vehiculo.Marca} ${vehiculo.Anio}`,
-            VehiculoImagen: vehiculo.ImagenBase64, // Usando la imagen en base64
+            VehiculoImagen: vehiculo.ImagenUrl, // Usando la imagen en base64
             MarcaLogo: marca.Logo?.data, // Añadir el logo de la marca si está disponible
           };
         })
@@ -220,7 +220,7 @@ const handleGeneratePdf = async (cotizacion) => {
 
     // Crear blob para la imagen del vehículo
     // Suponiendo que imageData.ImagenBase64 contiene la imagen en formato base64
-const vehicleImageUrl = imageData.ImagenBase64; // Usar directamente la base64
+const vehicleImageUrl = imageData.ImagenUrl; // Usar directamente la base64
 
 // Luego, puedes usar `vehicleImageUrl` en tu componente PDF
 

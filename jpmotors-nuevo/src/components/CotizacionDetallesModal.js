@@ -14,7 +14,7 @@ const tipoSeguimientoMap = {
 
 const CotizacionDetallesModal = ({ cotizacion, show, onHide }) => {
   const [seguimientos, setSeguimientos] = useState([]);
-  const [imageBase64, setImageBase64] = useState(null);
+  const [vehicleImageUrl, setVehicleImageUrl] = useState(null); // Usamos URL en lugar de base64
   const [formSeguimiento, setFormSeguimiento] = useState({
     CotizacionID: cotizacion?.CotizacionID || "",
     Comentario: "",
@@ -27,7 +27,7 @@ const CotizacionDetallesModal = ({ cotizacion, show, onHide }) => {
   useEffect(() => {
     if (show) {
       setSeguimientos([]);
-      setImageBase64(null);
+      setVehicleImageUrl(null);
       setFormSeguimiento({
         CotizacionID: cotizacion?.CotizacionID || "",
         Comentario: "",
@@ -51,15 +51,11 @@ const CotizacionDetallesModal = ({ cotizacion, show, onHide }) => {
       const fetchVehicleImage = async () => {
         if (cotizacion) {
           try {
-            const imageRes = await fetch(`https://cotizaciones-jpmotors.onrender.com/vehiculos/${cotizacion.VehiculoID}`);
-            const imageData = await imageRes.json();
-            
-            // Asegurar que la imagen tenga el prefijo adecuado
-            const base64Image = imageData.ImagenBase64.startsWith("data:image")
-              ? imageData.ImagenBase64
-              : `data:image/jpeg;base64,${imageData.ImagenBase64}`;
+            const response = await fetch(`https://cotizaciones-jpmotors.onrender.com/vehiculos/${cotizacion.VehiculoID}`);
+            const data = await response.json();
 
-            setImageBase64(base64Image);
+            // Asignar la URL de la imagen directamente
+            setVehicleImageUrl(data.ImagenUrl);
           } catch (error) {
             console.error("Error al obtener la imagen del vehículo:", error);
           }
@@ -175,10 +171,10 @@ const CotizacionDetallesModal = ({ cotizacion, show, onHide }) => {
         <h5>Estado: {cotizacion?.EstadoCotizacion}</h5>
         <h5>Precio: {cotizacion?.PrecioLista}</h5>
        
-        {imageBase64 && (
+        {vehicleImageUrl && (
           <div className="text-center mb-4">
             <img
-              src={imageBase64}
+              src={vehicleImageUrl}
               alt={`Imagen de ${cotizacion?.VehiculoDescripcion}`}
               style={{ maxWidth: "50%", height: "auto" }}
             />

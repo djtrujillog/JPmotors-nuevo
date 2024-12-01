@@ -44,33 +44,35 @@ const vehiculoController = {
   getVehiculosNuevos: async (req, res) => {
     try {
       // Consulta para obtener los datos de los vehículos
-      const result = await sequelize.query("SELECT VehiculoID, Modelo, Marca, Anio, PrecioGerente, PrecioWeb, PrecioLista, ImagenUrl, MarcaID, Condicion, Estado FROM Vehiculos v WHERE Condicion = 'Nuevo' AND Estado ='Activo'", {
-        type: sequelize.QueryTypes.SELECT,
-      });
-
+      const result = await sequelize.query(
+        `SELECT VehiculoID, Modelo, Marca, Anio, PrecioGerente, PrecioWeb, 
+         PrecioLista, ImagenUrl, MarcaID, Condicion, Estado 
+         FROM Vehiculos 
+         WHERE Condicion = 'Nuevo' AND Estado = 'Activo'`,
+        { type: sequelize.QueryTypes.SELECT }
+      );
+  
       if (result.length > 0) {
-        const vehiculosConImagenes = await Promise.all(result.map(async (vehiculo) => {
-          try {
-            // Construir la ruta completa de la imagen
-            const imagenPath = path.join(__dirname, '../../images', `${vehiculo.VehiculoID}.jpg`);
-            
-            // Verificar si la imagen existe y leerla en base64
-            try {
-              await fs.access(imagenPath);
-              const imagenBase64 = await fs.readFile(imagenPath, { encoding: 'base64' });
-              vehiculo.ImagenBase64 = `data:image/jpeg;base64,${imagenBase64}`;
-            } catch (error) {
-              vehiculo.ImagenBase64 = null; // Si la imagen no existe, asignar null
-            }
-          } catch (error) {
-            console.error(`Error al leer la imagen para el vehículo ${vehiculo.VehiculoID}:`, error);
-            vehiculo.ImagenBase64 = null;
+        // Base URL para construir rutas relativas
+        const baseUrl = "https://cotizaciones-jpmotors.onrender.com/image/images";
+  
+        const vehiculosConUrls = result.map((vehiculo) => {
+          // Verificar si ImagenUrl ya es una URL completa
+          if (vehiculo.ImagenUrl && vehiculo.ImagenUrl.startsWith("http")) {
+            // Si ya es una URL completa, usarla como está
+            return vehiculo;
+          } else if (vehiculo.ImagenUrl) {
+            // Si no es completa, construir la URL con baseUrl
+            vehiculo.ImagenUrl = `${baseUrl}/${vehiculo.ImagenUrl}`;
+          } else {
+            // Si no existe, asignar null
+            vehiculo.ImagenUrl = null;
           }
-
+  
           return vehiculo;
-        }));
-
-        res.status(200).json(vehiculosConImagenes);
+        });
+  
+        res.status(200).json(vehiculosConUrls);
       } else {
         res.status(404).json({ message: "No hay vehículos nuevos" });
       }
@@ -80,45 +82,44 @@ const vehiculoController = {
     }
   },
   
+  
   getVehiculosUsados: async (req, res) => {
     try {
+      // Consulta para obtener los datos de los vehículos
       const result = await sequelize.query(
-        "SELECT VehiculoID, Modelo, Marca, Anio, PrecioGerente, PrecioWeb, PrecioLista, ImagenUrl, MarcaID, Condicion, Estado FROM Vehiculos v WHERE Condicion = 'Usado' AND Estado ='Activo'", 
-        {
-          type: sequelize.QueryTypes.SELECT,
-        }
+        `SELECT VehiculoID, Modelo, Marca, Anio, PrecioGerente, PrecioWeb, 
+         PrecioLista, ImagenUrl, MarcaID, Condicion, Estado 
+         FROM Vehiculos 
+         WHERE Condicion = 'Usado' AND Estado = 'Activo'`,
+        { type: sequelize.QueryTypes.SELECT }
       );
   
       if (result.length > 0) {
-        const vehiculosConImagenes = await Promise.all(result.map(async (vehiculo) => {
-          try {
-            // Extraer el nombre del archivo desde ImagenUrl
-            const nombreImagen = vehiculo.ImagenUrl.split('/').pop();
-            const imagenPath = path.join(__dirname, '../../images', nombreImagen);
+        // Base URL para construir rutas relativas
+        const baseUrl = "https://cotizaciones-jpmotors.onrender.com/image/images";
   
-            console.log('Ruta de la imagen:', imagenPath); // Debugging: Verificar la ruta
-  
-            // Verificar si la imagen existe
-            await fs.access(imagenPath);
-            console.log(`Imagen encontrada para el vehículo ${vehiculo.VehiculoID}`); // Debugging
-  
-            // Leer la imagen en base64
-            const imagenBase64 = await fs.readFile(imagenPath, { encoding: 'base64' });
-            vehiculo.ImagenBase64 = `data:image/jpeg;base64,${imagenBase64}`;
-          } catch (error) {
-            console.log(`Imagen no encontrada para el vehículo ${vehiculo.VehiculoID}:`, error); // Debugging
-            vehiculo.ImagenBase64 = null; // Si la imagen no existe, asignar null
+        const vehiculosConUrls = result.map((vehiculo) => {
+          // Verificar si ImagenUrl ya es una URL completa
+          if (vehiculo.ImagenUrl && vehiculo.ImagenUrl.startsWith("http")) {
+            // Si ya es una URL completa, usarla como está
+            return vehiculo;
+          } else if (vehiculo.ImagenUrl) {
+            // Si no es completa, construir la URL con baseUrl
+            vehiculo.ImagenUrl = `${baseUrl}/${vehiculo.ImagenUrl}`;
+          } else {
+            // Si no existe, asignar null
+            vehiculo.ImagenUrl = null;
           }
   
           return vehiculo;
-        }));
+        });
   
-        res.status(200).json(vehiculosConImagenes);
+        res.status(200).json(vehiculosConUrls);
       } else {
-        res.status(404).json({ message: "No hay vehículos usados" });
+        res.status(404).json({ message: "No hay vehículos nuevos" });
       }
     } catch (error) {
-      console.error("Error al obtener vehículos usados:", error);
+      console.error("Error al obtener vehículos nuevos:", error);
       res.status(500).send("Error interno del servidor");
     }
   },
@@ -334,45 +335,48 @@ getPaginar: async (req, res) => {
       res.status(500).send("Error interno del servidor");
     }
   },
-//obtener vehiculo por ID
-    // Obtener vehículo específico por ID
-    getVehiculoPorID: async (req, res) => {
-      const { id } = req.params;
-    
-      try {
-        const result = await sequelize.query(
-          "SELECT VehiculoID, Modelo, Marca, Anio, PrecioGerente, PrecioWeb, PrecioLista, ImagenUrl, MarcaID, Condicion, Estado FROM Vehiculos WHERE VehiculoID = :id AND Estado = 'Activo'",
-          { replacements: { id }, type: sequelize.QueryTypes.SELECT }
-        );
-  
-        if (result.length === 0) {
-          return res.status(404).send("Vehículo no encontrado");
-        }
-  
-        const vehiculo = result[0];
-        const imagenPath = path.join(__dirname, '../../images', `${vehiculo.VehiculoID}.jpg`);
-  
-        try {
-          await fs.access(imagenPath);
-          const imagenBase64 = await fs.readFile(imagenPath, { encoding: 'base64' });
-          vehiculo.ImagenBase64 = `data:image/jpeg;base64,${imagenBase64}`;
-        } catch {
-          vehiculo.ImagenBase64 = null;
-        }
-  
-        res.json(vehiculo);
-      } catch (error) {
-        console.error("Error al obtener el vehículo por ID:", error);
-        res.status(500).send("Error interno del servidor");
-      }
-    },
-  
+// Obtener vehículo específico por ID
+getVehiculoPorID: async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Consulta para obtener el vehículo por ID
+    const result = await sequelize.query(
+      `SELECT VehiculoID, Modelo, Marca, Anio, PrecioGerente, PrecioWeb, 
+       PrecioLista, ImagenUrl, MarcaID, Condicion, Estado 
+       FROM Vehiculos 
+       WHERE VehiculoID = :id AND Estado = 'Activo'`,
+      { replacements: { id }, type: sequelize.QueryTypes.SELECT }
+    );
+
+    if (result.length === 0) {
+      return res.status(404).send("Vehículo no encontrado");
+    }
+
+    const vehiculo = result[0];
+
+    // Base URL para construir la URL de la imagen
+    const baseUrl = "https://cotizaciones-jpmotors.onrender.com/image/images";
+
+    // Verificar y construir la URL de la imagen
+    if (vehiculo.ImagenUrl && !vehiculo.ImagenUrl.startsWith("http")) {
+      vehiculo.ImagenUrl = `${baseUrl}/${vehiculo.ImagenUrl}`;
+    } else if (!vehiculo.ImagenUrl) {
+      vehiculo.ImagenUrl = null; // Manejar el caso donde no haya imagen
+    }
+
+    res.status(200).json(vehiculo);
+  } catch (error) {
+    console.error("Error al obtener el vehículo por ID:", error);
+    res.status(500).send("Error interno del servidor");
+  }
+},
+
 
     post: async (req, res) => {
       try {
         const { body } = req;
-        const imagenUrl = `https://jpmotorsgtimg-afa7fve9gmarguep.centralus-01.azurewebsites.net/${Date.now()}.jpg`; // URL ficticia para el ejemplo
-  
+        const imagenUrl = `${Date.now()}.jpg`; // nombre de la imagen (antes se colocaba la url para visualizarla)
         const result = await sequelize.query(
           `INSERT INTO Vehiculos (Modelo, Marca, Anio, PrecioGerente, PrecioWeb, PrecioLista, ImagenUrl, MarcaID, Condicion, Estado)
           VALUES (:Modelo, :Marca, :Anio, :PrecioGerente, :PrecioWeb, :PrecioLista, :ImagenUrl, :MarcaID, :Condicion, :Estado)`,

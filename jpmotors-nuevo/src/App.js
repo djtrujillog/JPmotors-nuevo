@@ -134,7 +134,7 @@ function App() {
                           {roles.includes('Admin') && (
                             <NavDropdown.Item as={Link} to="/galeria"onClick={handleNavClick}>Galeria</NavDropdown.Item>
                           )}  {roles.includes('Admin') && (
-                            <NavDropdown.Item as={Link} to="/agvehiculo"onClick={handleNavClick}>Agregar Vehiculo</NavDropdown.Item>
+                            <NavDropdown.Item as={Link} to="/agvehiculo"onClick={handleNavClick}>Agregar Vehiculo Nuevo</NavDropdown.Item>
                           )}  {roles.includes('Admin') && (
                             <NavDropdown.Item as={Link} to="/agvehiculoUsado"onClick={handleNavClick}>Agregar Vehiculo Usado</NavDropdown.Item>
                           )}  {roles.includes('Admin') && (

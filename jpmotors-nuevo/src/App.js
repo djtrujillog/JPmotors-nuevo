@@ -9,6 +9,7 @@ import Contacto from "./components/Contacto";
 import Footer from "./components/Footer"; 
 import AutoList from "./components/Autolist.js";
 import AgVehiculo from "./components/AgregarVehiculo";
+import AgVehiculoUsado from "./components/AgregarVehiculoUsado";
 import Clientes from "./components/AgregarCliente.js";
 import Empleados from "./components/AgregarEmpleado.js";
 import Calendario from "./components/Calendario.js";
@@ -134,7 +135,9 @@ function App() {
                             <NavDropdown.Item as={Link} to="/galeria"onClick={handleNavClick}>Galeria</NavDropdown.Item>
                           )}  {roles.includes('Admin') && (
                             <NavDropdown.Item as={Link} to="/agvehiculo"onClick={handleNavClick}>Agregar Vehiculo</NavDropdown.Item>
-                          )}                           {roles.includes('Admin') && (
+                          )}  {roles.includes('Admin') && (
+                            <NavDropdown.Item as={Link} to="/agvehiculoUsado"onClick={handleNavClick}>Agregar Vehiculo Usado</NavDropdown.Item>
+                          )}  {roles.includes('Admin') && (
                             <NavDropdown.Item as={Link} to="/reportes"onClick={handleNavClick}>Reportes de Seguimientos</NavDropdown.Item>
                           )} {roles.includes('Admin') && (
                             <NavDropdown.Item as={Link} to="/marcas" onClick={handleNavClick}>Marcas</NavDropdown.Item>
@@ -188,6 +191,7 @@ function App() {
               {roles.includes('Admin') && (
                 <>
                   <Route path="/agvehiculo" element={<AgVehiculo />} />
+                  <Route path="/agvehiculoUsado" element={<AgVehiculoUsado />} />
                   <Route path="/empleados" element={<Empleados />} />
                   <Route path="/reasignar" element={<Reasignar />} />
                   <Route path="/marcas" element={<Marcas />} />

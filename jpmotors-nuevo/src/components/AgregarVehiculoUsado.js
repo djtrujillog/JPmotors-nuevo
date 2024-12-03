@@ -36,7 +36,7 @@ const AgregarVehiculo = () => {
   const fetchVehiculos = async () => {
     try {
       // Cambiar la URL de la solicitud para hacer la consulta más ligera
-      const response = await axios.get("https://cotizaciones-jpmotors.onrender.com/vehiculos/nuevos");
+      const response = await axios.get("https://cotizaciones-jpmotors.onrender.com/vehiculos/usados");
       setVehiculos(response.data || []); // Asegurarse de que siempre es un array
     } catch (error) {
       console.error("Error al obtener vehículos:", error);

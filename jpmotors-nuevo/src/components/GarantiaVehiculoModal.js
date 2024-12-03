@@ -21,8 +21,12 @@ const DetallesVehiculoGarantia = ({ show, handleClose, vehiculo }) => {
   const fetchExistingDetalles = async (VehiculoID) => {
     try {
       const response = await axios.get(`https://cotizaciones-jpmotors.onrender.com/vehiculos/detalleGarantia/${VehiculoID}`);
-      if (response.data) {
-        setExistingDetalles(response.data.filter(detalle => detalle.Descripcion.trim() !== ''));
+      if (response.data && response.data.Garantia) {
+        // Mapear los elementos del array 'Garantia' para estructurarlos como objetos
+        const detalles = response.data.Garantia.map((detalle) => ({
+          Descripcion: detalle,
+        }));
+        setExistingDetalles(detalles);
       } else {
         setExistingDetalles([]);
       }
@@ -30,6 +34,7 @@ const DetallesVehiculoGarantia = ({ show, handleClose, vehiculo }) => {
       console.error('Error al obtener los detalles existentes de interior:', error);
     }
   };
+  
 
   const eliminarDetalle = async (descripcion) => {
     try {
@@ -37,15 +42,21 @@ const DetallesVehiculoGarantia = ({ show, handleClose, vehiculo }) => {
         VehiculoID: vehiculo.VehiculoID,
         descripcion: descripcion
       };
-      await axios.post('https://cotizaciones-jpmotors.onrender.com/vehiculos/eliminarInterior', body);
-      const updatedDetalles = existingDetalles.filter(detalle => detalle.Descripcion !== descripcion);
-      setExistingDetalles(updatedDetalles);
-      alert('Detalle de interior eliminado correctamente');
+      const response = await axios.post('https://cotizaciones-jpmotors.onrender.com/vehiculos/eliminarput', body);
+  
+      if (response.status === 200) {
+        alert('Detalle de interior eliminado correctamente');
+        // Actualizar la lista desde la API para asegurarse de que refleja los cambios
+        fetchExistingDetalles(vehiculo.VehiculoID);
+      } else {
+        alert('No se pudo eliminar el detalle. Verifica con el administrador.');
+      }
     } catch (error) {
       console.error('Error al eliminar el detalle de interior:', error);
       alert('Error al eliminar el detalle de interior');
     }
   };
+  
 
   const openEditModal = (descripcion) => {
     setEditDetalle(descripcion);

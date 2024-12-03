@@ -80,7 +80,7 @@ router.post("/detalleSeguridad", detalleSeguridadController.create);
 router.put("/detalleSeguridad/:VehiculoID", detalleSeguridadController.put);
 router.post("/eliminarSeguridad", detalleSeguridadController.post);
 
-// Rutas para detalleSeguridad
+// Rutas para detalleGarantia
 router.get("/detalleGarantia", detalleGarantiacontroller.getAll);
 router.get("/detalleGarantia/:VehiculoID", detalleGarantiacontroller.getByVehiculoID);
 router.post("/detalleGarantia", detalleGarantiacontroller.create);
